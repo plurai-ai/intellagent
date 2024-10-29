@@ -18,11 +18,7 @@ def should_continue(state: MessagesState):
 
 
 # Define the function that calls the model
-def call_model(state: MessagesState):
-    messages = state['messages']
-    response = model.invoke(messages)
-    # We return a list, because this will get added to the existing list
-    return {"messages": [response]}
+
 
 
 
@@ -34,12 +30,20 @@ class AgentTools:
         :param tools (list[BaseTool]): The tools to use
         :param save_memory (bool, optional): Whether to use memory. Defaults to False.
         """
-        self.llm = llm
+        self.llm = llm.bind_tools(tools)
         self.tools = tools
         self.checkpointer = None
         if save_memory:
             self.checkpointer = MemorySaver()
         self.graph = self.compile_agent()
+
+    def get_call_model(self):
+        def call_model(state: MessagesState):
+            messages = state['messages']
+            response = self.llm.invoke(messages)
+            # We return a list, because this will get added to the existing list
+            return {"messages": [response]}
+        return call_model
 
     def compile_agent(self):
         # Define a graph and compile it
@@ -47,7 +51,7 @@ class AgentTools:
         tool_node = ToolNode(self.tools)
 
         # Define the two nodes we will cycle between
-        workflow.add_node("agent", call_model)
+        workflow.add_node("agent", self.get_call_model())
         workflow.add_node("tools", tool_node)
 
         # Set the entrypoint as `agent`
