@@ -16,12 +16,6 @@ def should_continue(state: MessagesState):
     # Otherwise, we stop (reply to the user)
     return END
 
-
-# Define the function that calls the model
-
-
-
-
 class AgentTools:
     # A tool based agent implementation using langgraph
     def __init__(self, llm: LLM, tools: list[BaseTool], save_memory: bool = False):
