@@ -3,8 +3,6 @@ from typing_extensions import TypedDict
 from pydantic import BaseModel, Field
 import operator
 from langchain_core.runnables.base import Runnable
-from typing import Literal
-from langchain_core.prompts import HumanMessagePromptTemplate, SystemMessagePromptTemplate, AIMessagePromptTemplate
 from langchain_core.language_models.llms import LLM
 from langgraph.graph import END
 from langchain import hub
@@ -16,8 +14,8 @@ from typing import Union
 class SingleStep(BaseModel):
     """Single step in the plan"""
 
-    step: str = Field(description="The step to execute")
-    table: str = Field(description="The table to execute the step on")
+    content: str = Field(description="The step to execute")
+    executor: str = Field(description="The table to executor name")
 
 
 class Plan(BaseModel):
@@ -30,9 +28,10 @@ class Plan(BaseModel):
 
 class PlanExecute(TypedDict):
     input: str
-    plan: List[str]
+    plan: List[dict]
     past_steps: Annotated[List[Tuple], operator.add]
     response: str
+    args: dict
 
 
 class Response(BaseModel):
@@ -62,7 +61,7 @@ class PlanExecuteImplementation:
     Building the plan and execute graph
     """
 
-    def __init__(self, planer: Runnable = None, executor: Runnable = None, replanner: Runnable = None):
+    def __init__(self, planer: Runnable = None, executor: list[Runnable] = None, replanner: Runnable = None):
         """
         Initialize the event generator.]
         :param planer (Runnable): The planer model
@@ -73,19 +72,20 @@ class PlanExecuteImplementation:
         self.executor = executor
         self.replanner = replanner
 
-    def set_replanner(self, system_prompt: str, llm: LLM):
+    def set_replanner(self, llm: LLM, **kwargs):
         """
-        Set the replanner from a system prompt
-        :param system_prompt: The system prompt for the replanner
-        :param llm (LLM): The LLM model
+        Set the replanner from a system prompt. Expecting either prompt or prompt_hub_name and prompt_hub_key
+        :param llm: The LLM model
         """
         replanner_prompt = hub.pull("eladlev/replanner")
-        messages = [
-            SystemMessagePromptTemplate.from_template(system_prompt),
-            replanner_prompt.messages[0],
-        ]
-        replanner_template = ChatPromptTemplate.from_messages(messages)
-        self.replanner = replanner_template | llm.with_structured_output(Act)
+        if "prompt_hub_name" in kwargs:
+            hub_key = kwargs.get("prompt_hub_key", None)
+            system_prompt_template = hub.pull(kwargs["prompt_hub_name"], api_key=hub_key)
+        elif "prompt" in kwargs:
+            system_prompt_template = kwargs["prompt"]
+        else:
+            raise ValueError("Either prompt or prompt_hub_name should be provided")
+        self.replanner = system_prompt_template | llm.with_structured_output(Act)
 
     def set_planner(self, llm: LLM, **kwargs):
         """
@@ -99,38 +99,35 @@ class PlanExecuteImplementation:
             planner_template = kwargs["prompt"]
         else:
             raise ValueError("Either prompt or prompt_hub_name should be provided")
-
         self.planner = planner_template | llm.with_structured_output(Plan)
 
     def get_replanner_function(self):
-        async def replan_step(state: PlanExecute):
-            output = await self.replanner.ainvoke(state)
+        def replan_step(state: PlanExecute):
+            output = self.replanner.invoke(state)
             if isinstance(output.action, Response):
                 return {"response": output.action.response}
             else:
-                return {"plan": output.action.steps}
+                return {"plan": output.action.dict()['steps']}
 
         return replan_step
 
     def get_planer_function(self):
-        async def plan_step(state: PlanExecute):
-            plan = await self.planner.ainvoke({"messages": [("user", state["input"])]})
-            return {"plan": plan.steps}
-
+        def plan_step(state: PlanExecute):
+            plan = self.planner.invoke(state['input'])
+            return {"plan": plan.dict()['steps']}
         return plan_step
 
     def get_executor_function(self):
-        async def execute_step(state: PlanExecute):
+        def execute_step(state: PlanExecute):
             plan = state["plan"]
-            plan_str = "\n".join(f"{i + 1}. {step}" for i, step in enumerate(plan))
+            plan_str = "\n".join(f"{i + 1}. {step['content']}" for i, step in enumerate(plan))
             task = plan[0]
             task_formatted = f"""For the following plan:
-        {plan_str}\n\nYou are tasked with executing step {1}, {task}."""
-            agent_response = await self.executor.ainvoke(
-                {"messages": [("user", task_formatted)]}
-            )
+        {plan_str}\n\nYou are tasked with executing step {1}, {task['content']}."""
+            agent_response = self.executor[task['executor']].invoke(task_formatted, additional_args=state['args'])
             return {
-                "past_steps": [(task, agent_response["messages"][-1].content)],
+                "past_steps": [(task['content'], agent_response["messages"][-1].content)],
+                "args": agent_response["args"]
             }
 
         return execute_step
@@ -139,7 +136,7 @@ class PlanExecuteImplementation:
         workflow = StateGraph(PlanExecute)
 
         # Add the plan node
-        workflow.add_node("planner", self.get_replanner_function())
+        workflow.add_node("planner", self.get_planer_function())
 
         # Add the execution step
         workflow.add_node("agent", self.get_executor_function())
@@ -166,3 +163,9 @@ class PlanExecuteImplementation:
         # This compiles it into a LangChain Runnable,
         # meaning you can use it as you would any other runnable
         self.graph = workflow.compile()
+    def invoke(self, **kwargs):
+        """
+        Invoke the agent with the messages
+        :return:
+        """
+        return self.graph.invoke(**kwargs)

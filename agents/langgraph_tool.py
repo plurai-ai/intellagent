@@ -1,10 +1,60 @@
 from typing import Annotated, Literal, TypedDict
 from langchain_core.tools import tool, BaseTool
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, START, StateGraph, MessagesState
-from langgraph.prebuilt import ToolNode
+from langgraph.graph import END, START, StateGraph#, MessagesState
 from langchain_core.language_models.llms import LLM
+from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.store.memory import InMemoryStore
+from langgraph.utils.runnable import RunnableCallable, RunnableConfig
+from langgraph.graph.message import add_messages
+from langchain_core.messages import (
+    AIMessage,
+    AnyMessage,
+    ToolCall,
+    ToolMessage,
+)
+from typing import (
+    Callable,
+    Sequence,
+    Union,
+    Any,
+    Optional
+)
 
+
+class MessageGraph(StateGraph):
+    """A StateGraph where every node receives a list of messages as input and returns one or more messages as output.
+
+    MessageGraph is a subclass of StateGraph whose entire state is a single, append-only* list of messages.
+    Each node in a MessageGraph takes a list of messages as input and returns zero or more
+    messages as output. The `add_messages` function is used to merge the output messages from each node
+    into the existing list of messages in the graph's state.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(Annotated[list[AnyMessage], add_messages])
+
+
+class MessagesState(TypedDict):
+    messages: Annotated[list[AnyMessage], add_messages]
+    args: dict
+
+
+class ToolNode(RunnableCallable):
+    def __init__(self,tools: Sequence[Union[BaseTool, Callable]]):
+        super().__init__(self._func)
+        self.tools_by_name = {tool.name: tool for tool in tools}
+    def _func(self, state: MessagesState):
+        result = []
+        for tool_call in state["messages"][-1].tool_calls:
+            tool = self.tools_by_name[tool_call["name"]]
+            function_args = state['args'] | tool_call["args"]
+            observation = tool.func(**function_args)
+            result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
+        return {"messages": result, 'args': state['args']}
+    def invoke(self, input: Any, config: Optional[RunnableConfig] = None, **kwargs: Any):
+        result = self._func(input)
+        return result
 
 # Define the function that determines whether to continue or not
 def should_continue(state: MessagesState):
@@ -18,18 +68,24 @@ def should_continue(state: MessagesState):
 
 class AgentTools:
     # A tool based agent implementation using langgraph
-    def __init__(self, llm: LLM, tools: list[BaseTool], save_memory: bool = False):
+    def __init__(self, llm: LLM, tools: list[BaseTool], save_memory: bool = False, system_prompt: list = None,
+                 store: InMemoryStore = None):
         """Initialize the agent with the LLM and tools
         :param llm (LLM): The LLM model
         :param tools (list[BaseTool]): The tools to use
         :param save_memory (bool, optional): Whether to use memory. Defaults to False.
+        :param template (ChatPromptTemplate, optional): The template to use. Defaults to None.
         """
         self.llm = llm.bind_tools(tools)
         self.tools = tools
         self.checkpointer = None
+        self.store = store
         if save_memory:
             self.checkpointer = MemorySaver()
+        else:
+            self.checkpointer = None
         self.graph = self.compile_agent()
+        self.system_prompt = system_prompt
 
     def get_call_model(self):
         def call_model(state: MessagesState):
@@ -64,11 +120,16 @@ class AgentTools:
         # We now add a normal edge from `tools` to `agent`.
         # This means that after `tools` is called, `agent` node is called next.
         workflow.add_edge("tools", 'agent')
-        return workflow.compile(checkpointer=self.checkpointer)
+        return workflow.compile(checkpointer=self.checkpointer, store=self.store)
 
-    def invoke(self, messages, config=None):
+    def invoke(self, user_message, messages = None , config=None, additional_args=None):
         """Invoke the agent with the messages
+        :param user_message: The user message
         :param messages: The messages to invoke the agent with
-        :param config: The configuration for the agent"""
-        return self.graph.invoke({'messages': messages}, config=config)
-
+        :param config: The configuration for the agent
+        :param additional_args: Additional args arguments for the agent
+        """
+        if self.system_prompt is not None:
+            messages = self.system_prompt + [HumanMessage(
+                            content=user_message)]
+        return self.graph.invoke({'messages': messages, 'args': additional_args}, config=config)
