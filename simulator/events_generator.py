@@ -10,7 +10,8 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
 from langchain_core.language_models.llms import LLM
-from simulator.utils import dict_to_str
+from simulator.utils import dict_to_str, set_llm_chain
+from agents.plan_and_execute import Act, Plan
 
 
 @tool
@@ -107,10 +108,11 @@ class EventsGenerator:
         """
         Initialize the agent.
         """
-        self.agent = PlanExecuteImplementation(executor=self.init_executors())
-        self.agent.set_planner(llm=self.llm, prompt=self.get_planner_prompt())
-        self.agent.set_replanner(llm=self.llm, prompt_hub_name="eladlev/replanner_event_generator")
-        self.agent.compile_graph()
+        planner = set_llm_chain(self.llm, prompt=self.get_planner_prompt(), structure=Plan)
+        replanner = set_llm_chain(self.llm, prompt_hub_name="eladlev/replanner_event_generator", structure=Act)
+        self.agent = PlanExecuteImplementation(planer= planner,
+                                               replanner=replanner,
+                                               executor=self.init_executors())
 
     def description_to_event(self, event: str) -> str:
         """

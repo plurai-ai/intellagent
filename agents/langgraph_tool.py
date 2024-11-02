@@ -6,6 +6,7 @@ from langchain_core.language_models.llms import LLM
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.store.memory import InMemoryStore
 from langgraph.utils.runnable import RunnableCallable, RunnableConfig
+from langchain_core.runnables.base import Runnable
 from langgraph.graph.message import add_messages
 from langchain_core.messages import (
     AIMessage,
@@ -66,7 +67,7 @@ def should_continue(state: MessagesState):
     # Otherwise, we stop (reply to the user)
     return END
 
-class AgentTools:
+class AgentTools(Runnable):
     # A tool based agent implementation using langgraph
     def __init__(self, llm: LLM, tools: list[BaseTool], save_memory: bool = False, system_prompt: list = None,
                  store: InMemoryStore = None):

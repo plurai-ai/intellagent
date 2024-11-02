@@ -7,7 +7,6 @@ from langchain_core.language_models.llms import LLM
 from langgraph.graph import END
 from langchain import hub
 from langgraph.graph import StateGraph, START
-from langchain_core.prompts import ChatPromptTemplate
 from typing import Union
 
 
@@ -61,9 +60,9 @@ class PlanExecuteImplementation:
     Building the plan and execute graph
     """
 
-    def __init__(self, planer: Runnable = None, executor: list[Runnable] = None, replanner: Runnable = None):
+    def __init__(self, planer: Runnable, executor: dict[Runnable], replanner: Runnable):
         """
-        Initialize the event generator.]
+        Initialize the event generator.
         :param planer (Runnable): The planer model
         :param executor (Runnable): The executor model
         :param replanner (Runnable): The replanner model
@@ -71,35 +70,7 @@ class PlanExecuteImplementation:
         self.planer = planer
         self.executor = executor
         self.replanner = replanner
-
-    def set_replanner(self, llm: LLM, **kwargs):
-        """
-        Set the replanner from a system prompt. Expecting either prompt or prompt_hub_name and prompt_hub_key
-        :param llm: The LLM model
-        """
-        replanner_prompt = hub.pull("eladlev/replanner")
-        if "prompt_hub_name" in kwargs:
-            hub_key = kwargs.get("prompt_hub_key", None)
-            system_prompt_template = hub.pull(kwargs["prompt_hub_name"], api_key=hub_key)
-        elif "prompt" in kwargs:
-            system_prompt_template = kwargs["prompt"]
-        else:
-            raise ValueError("Either prompt or prompt_hub_name should be provided")
-        self.replanner = system_prompt_template | llm.with_structured_output(Act)
-
-    def set_planner(self, llm: LLM, **kwargs):
-        """
-        Set the planner from a langchain prompt name. Expecting either prompt or prompt_hub_name and prompt_hub_key
-        :param llm (LLM): The LLM model
-        """
-        if "prompt_hub_name" in kwargs:
-            hub_key = kwargs.get("prompt_hub_key", None)
-            planner_template = hub.pull(kwargs["prompt_hub_name"], api_key=hub_key)
-        elif "prompt" in kwargs:
-            planner_template = kwargs["prompt"]
-        else:
-            raise ValueError("Either prompt or prompt_hub_name should be provided")
-        self.planner = planner_template | llm.with_structured_output(Plan)
+        self.compile_graph()
 
     def get_replanner_function(self):
         def replan_step(state: PlanExecute):
