@@ -9,7 +9,7 @@ from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
-from langchain_core.language_models.llms import LLM
+from langchain_core.language_models.chat_models import BaseChatModel
 from simulator.utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Act, Plan
 
@@ -48,10 +48,10 @@ class EventsGenerator:
     This class is responsible for generating events for the simulator.
     """
 
-    def __init__(self, llm: LLM, env: Env):
+    def __init__(self, llm: BaseChatModel, env: Env):
         """
         Initialize the event generator.
-        :param llm (Runnable): The language model to use.
+        :param llm (BaseChatModel): The language model to use.
         :param env (Env): The environment of the simulator.
         """
         self.llm = llm
@@ -110,7 +110,7 @@ class EventsGenerator:
         """
         planner = set_llm_chain(self.llm, prompt=self.get_planner_prompt(), structure=Plan)
         replanner = set_llm_chain(self.llm, prompt_hub_name="eladlev/replanner_event_generator", structure=Act)
-        self.agent = PlanExecuteImplementation(planer= planner,
+        self.agent = PlanExecuteImplementation(planner= planner,
                                                replanner=replanner,
                                                executor=self.init_executors())
 

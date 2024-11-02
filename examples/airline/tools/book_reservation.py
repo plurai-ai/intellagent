@@ -3,7 +3,7 @@
 import json
 from copy import deepcopy
 from typing import Any, Dict, List
-
+from langchain.tools import StructuredTool
 
 class BookReservation():
     @staticmethod
@@ -223,3 +223,10 @@ class BookReservation():
                 },
             },
         }
+
+book_reservation_schema = BookReservation.get_info()
+book_reservation = StructuredTool.from_function(
+        func=BookReservation.invoke,
+        name=book_reservation_schema['function']["name"],
+        description=book_reservation_schema['function']["description"],
+    )

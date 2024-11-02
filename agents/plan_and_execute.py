@@ -3,7 +3,7 @@ from typing_extensions import TypedDict
 from pydantic import BaseModel, Field
 import operator
 from langchain_core.runnables.base import Runnable
-from langchain_core.language_models.llms import LLM
+
 from langgraph.graph import END
 from langchain import hub
 from langgraph.graph import StateGraph, START
@@ -60,14 +60,14 @@ class PlanExecuteImplementation:
     Building the plan and execute graph
     """
 
-    def __init__(self, planer: Runnable, executor: dict[Runnable], replanner: Runnable):
+    def __init__(self, planner: Runnable, executor: dict[Runnable], replanner: Runnable):
         """
         Initialize the event generator.
-        :param planer (Runnable): The planer model
+        :param planner (Runnable): The planner model
         :param executor (Runnable): The executor model
         :param replanner (Runnable): The replanner model
         """
-        self.planer = planer
+        self.planner = planner
         self.executor = executor
         self.replanner = replanner
         self.compile_graph()
@@ -82,7 +82,7 @@ class PlanExecuteImplementation:
 
         return replan_step
 
-    def get_planer_function(self):
+    def get_planner_function(self):
         def plan_step(state: PlanExecute):
             plan = self.planner.invoke(state['input'])
             return {"plan": plan.dict()['steps']}
@@ -107,7 +107,7 @@ class PlanExecuteImplementation:
         workflow = StateGraph(PlanExecute)
 
         # Add the plan node
-        workflow.add_node("planner", self.get_planer_function())
+        workflow.add_node("planner", self.get_planner_function())
 
         # Add the execution step
         workflow.add_node("agent", self.get_executor_function())

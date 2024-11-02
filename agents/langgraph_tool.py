@@ -2,7 +2,7 @@ from typing import Annotated, Literal, TypedDict
 from langchain_core.tools import tool, BaseTool
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph#, MessagesState
-from langchain_core.language_models.llms import LLM
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.store.memory import InMemoryStore
 from langgraph.utils.runnable import RunnableCallable, RunnableConfig
@@ -69,15 +69,22 @@ def should_continue(state: MessagesState):
 
 class AgentTools(Runnable):
     # A tool based agent implementation using langgraph
-    def __init__(self, llm: LLM, tools: list[BaseTool], save_memory: bool = False, system_prompt: list = None,
+    def __init__(self, llm: BaseChatModel, tools: list[BaseTool], tools_schema: list[dict] = None,
+                 save_memory: bool = False, system_prompt: list = None,
                  store: InMemoryStore = None):
         """Initialize the agent with the LLM and tools
-        :param llm (LLM): The LLM model
+        :param llm (BaseChatModel): The LLM model
         :param tools (list[BaseTool]): The tools to use
+        :param tools_schema (list[dict], optional): The schema for the tools. If None infer the schema from the tools.
+        :param store (InMemoryStore, optional): The store to use. Defaults to None.
+        :param system_prompt (list, optional): The system prompt. Defaults to None.
         :param save_memory (bool, optional): Whether to use memory. Defaults to False.
         :param template (ChatPromptTemplate, optional): The template to use. Defaults to None.
         """
-        self.llm = llm.bind_tools(tools)
+        if tools_schema is None:
+            self.llm = llm.bind_tools(tools)
+        else:
+            self.llm = llm.bind(tools=tools_schema)
         self.tools = tools
         self.checkpointer = None
         self.store = store

@@ -3,3 +3,4 @@ langchain_core
 langchain_openai
 langgraph
 pandas
+langchain_community

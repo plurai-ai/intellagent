@@ -1,12 +1,20 @@
 import os
 import pandas as pd
 from pathlib import Path
+from simulator.utils import load_tools
 import json
+import logging
+
 
 class Env:
     def __init__(self, config):
         self.config = config
         self.load_database()
+        self.tools, self.tools_schema = load_tools(self.config['tools_folder'])
+        if self.tools_schema and  not(len(self.tools) == len(self.tools_schema)):
+            logging.warning(f"If providing a schema, make sure to provide a schema for each tool. Found {len(self.tools)} tools and {len(self.tools_schema)} schemas."
+                            f"Using the default tools schema for all tools.")
+            self.tools_schema = []
 
     def load_database(self):
         all_data_files = [file for file in os.listdir(self.config['data_folder']) if file.endswith('.json')]

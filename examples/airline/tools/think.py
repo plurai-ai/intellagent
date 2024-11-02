@@ -1,7 +1,7 @@
 # Copyright Sierra
 
 from typing import Any, Dict
-
+from langchain.tools import StructuredTool
 
 class Think():
     @staticmethod
@@ -27,3 +27,10 @@ class Think():
                 },
             },
         }
+
+think_schema = Think.get_info()
+think = StructuredTool.from_function(
+        func=Think.invoke,
+        name=think_schema['function']["name"],
+        description=think_schema['function']["description"],
+    )
