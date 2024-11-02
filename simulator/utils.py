@@ -4,6 +4,31 @@ from langchain_core.runnables.base import Runnable
 import importlib
 import os
 import sys
+from langchain_core.prompts import ChatPromptTemplate
+
+def get_prompt_template(args: dict) -> ChatPromptTemplate:
+    if "prompt_hub_name" in args:
+        hub_key = args.get("prompt_hub_key", None)
+        return hub.pull(args["prompt_hub_name"], api_key=hub_key)
+    elif "prompt" in args:
+        return args["prompt"]
+    elif 'from_str' in args:
+        return ChatPromptTemplate.from_messages( [
+                (
+                    "system",
+                    args['template'],
+                )
+            ])
+    elif 'path' in args:
+        with open(args['path'], 'r') as file:
+            return ChatPromptTemplate.from_messages( [
+                (
+                    "system",
+                    file.read(),
+                )
+            ])
+    else:
+        raise ValueError("Either prompt or prompt_hub_name should be provided")
 
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''
@@ -18,13 +43,7 @@ def set_llm_chain(llm: BaseChatModel, **kwargs) -> Runnable:
     """
     Initialize a chain
     """
-    if "prompt_hub_name" in kwargs:
-        hub_key = kwargs.get("prompt_hub_key", None)
-        system_prompt_template = hub.pull(kwargs["prompt_hub_name"], api_key=hub_key)
-    elif "prompt" in kwargs:
-        system_prompt_template = kwargs["prompt"]
-    else:
-        raise ValueError("Either prompt or prompt_hub_name should be provided")
+    system_prompt_template = get_prompt_template(kwargs)
     if "structure" in kwargs:
         return system_prompt_template | llm.with_structured_output(kwargs["structure"])
     else:

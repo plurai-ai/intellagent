@@ -15,6 +15,8 @@ class Env:
             logging.warning(f"If providing a schema, make sure to provide a schema for each tool. Found {len(self.tools)} tools and {len(self.tools_schema)} schemas."
                             f"Using the default tools schema for all tools.")
             self.tools_schema = []
+        self.user_prompt_args = self.config.get('user_prompt_args', {'prompt_hub_name': 'eladlev/user_sim'})
+        self.chatbot_prompt_args = self.config['chatbot_prompt_args']
 
     def load_database(self):
         all_data_files = [file for file in os.listdir(self.config['data_folder']) if file.endswith('.json')]

@@ -1,13 +1,15 @@
 from typing import Annotated, Literal, TypedDict
 from langchain_core.tools import tool, BaseTool
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, START, StateGraph#, MessagesState
+from langgraph.graph import END, START, StateGraph  # , MessagesState
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.store.memory import InMemoryStore
 from langgraph.utils.runnable import RunnableCallable, RunnableConfig
 from langchain_core.runnables.base import Runnable
 from langgraph.graph.message import add_messages
+import inspect
+
 from langchain_core.messages import (
     AIMessage,
     AnyMessage,
@@ -42,20 +44,27 @@ class MessagesState(TypedDict):
 
 
 class ToolNode(RunnableCallable):
-    def __init__(self,tools: Sequence[Union[BaseTool, Callable]]):
+    def __init__(self, tools: Sequence[Union[BaseTool, Callable]]):
         super().__init__(self._func)
         self.tools_by_name = {tool.name: tool for tool in tools}
+
     def _func(self, state: MessagesState):
         result = []
         for tool_call in state["messages"][-1].tool_calls:
             tool = self.tools_by_name[tool_call["name"]]
-            function_args = state['args'] | tool_call["args"]
+            all_tool_args = list(inspect.signature(tool.func).parameters)
+            function_args = tool_call["args"]
+            if state['args'] is not None:
+                function_args.update({k: v for k, v in state['args'].items()
+                                      if (k in all_tool_args) and (k not in function_args)})
             observation = tool.func(**function_args)
             result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
         return {"messages": result, 'args': state['args']}
+
     def invoke(self, input: Any, config: Optional[RunnableConfig] = None, **kwargs: Any):
         result = self._func(input)
         return result
+
 
 # Define the function that determines whether to continue or not
 def should_continue(state: MessagesState):
@@ -66,6 +75,7 @@ def should_continue(state: MessagesState):
         return "tools"
     # Otherwise, we stop (reply to the user)
     return END
+
 
 class AgentTools(Runnable):
     # A tool based agent implementation using langgraph
@@ -101,6 +111,7 @@ class AgentTools(Runnable):
             response = self.llm.invoke(messages)
             # We return a list, because this will get added to the existing list
             return {"messages": [response]}
+
         return call_model
 
     def compile_agent(self):
@@ -130,14 +141,14 @@ class AgentTools(Runnable):
         workflow.add_edge("tools", 'agent')
         return workflow.compile(checkpointer=self.checkpointer, store=self.store)
 
-    def invoke(self, user_message, messages = None , config=None, additional_args=None):
+    def invoke(self, user_message=None, messages=None, config=None, additional_args=None):
         """Invoke the agent with the messages
         :param user_message: The user message
         :param messages: The messages to invoke the agent with
         :param config: The configuration for the agent
         :param additional_args: Additional args arguments for the agent
         """
-        if self.system_prompt is not None:
+        if self.system_prompt is not None and user_message is not None:
             messages = self.system_prompt + [HumanMessage(
-                            content=user_message)]
+                content=user_message)]
         return self.graph.invoke({'messages': messages, 'args': additional_args}, config=config)

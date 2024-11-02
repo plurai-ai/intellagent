@@ -4,12 +4,16 @@ from langgraph.graph import END
 from typing import Annotated
 from langgraph.graph import StateGraph, START
 from typing_extensions import TypedDict
+from typing import Optional
+
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
+
 
 class SimState(TypedDict):
     user_messages: Annotated[list, add_messages]
     chatbot_messages: Annotated[list, add_messages]
+    chatbot_args: Optional[dict]
 
 class Simulator:
     """
@@ -26,7 +30,7 @@ class Simulator:
         """
         self.user = user
         self.chatbot = chatbot
-        self.intermediate_processing = intermediate_processing #TODO: Add default function
+        self.intermediate_processing = intermediate_processing  # TODO: Add default function
         self.compile_graph()
 
     def get_end_condition(self):
@@ -36,25 +40,28 @@ class Simulator:
                 return END
             else:
                 return "chatbot"
+
         return should_end
 
     def get_user_node(self):
         def simulated_user_node(state):
             messages = state["user_messages"]
             # Call the simulated user
-            response = self.user.invoke({"messages": messages})
+            response = self.user.invoke(messages)
             # This response is an AI message - we need to flip this to be a human message
-            return {"chatbot_messages": [HumanMessage(content=response.content)],
-                    'user_messages': [AIMessage(content=response.content)]}
+            return {"chatbot_messages": [HumanMessage(content=response)],
+                    'user_messages': [AIMessage(content=response)]}
+
         return simulated_user_node
 
     def get_chatbot_node(self):
         def chat_bot_node(state):
             messages = state["chatbot_messages"]
             # Call the chatbot
-            response = self.chatbot.invoke({"messages": messages})
-            return {"chatbot_messages": [AIMessage(content=response.content)],
-                    'user_messages': [HumanMessage(content=response.content)]}
+            response = self.chatbot.invoke(messages=messages, additional_args=state['chatbot_args'])
+            return {"chatbot_messages": [AIMessage(content=response['messages'][-1].content)],
+                    'user_messages': [HumanMessage(content=response['messages'][-1].content)]}
+
         return chat_bot_node
 
     def compile_graph(self):
