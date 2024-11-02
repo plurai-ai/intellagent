@@ -69,3 +69,10 @@ class Simulator:
         )
         workflow.add_edge("chatbot", "user")
         self.graph = workflow.compile()
+
+    def invoke(self, **kwargs):
+        """
+        Invoke the agent with the messages
+        :return:
+        """
+        return self.graph.invoke(**kwargs)

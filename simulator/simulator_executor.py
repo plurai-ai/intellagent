@@ -39,3 +39,9 @@ class SimulatorExecutor:
         chatbot = AgentTools(llm=self.llm, tools=self.env_tools, tools_schema=self.env_tools_schema)
         self.simulator = Simulator(user, chatbot)
 
+    def run(self):
+        """
+        Run the simulation.
+        """
+        self.simulator.invoke(input= {"user_messages": [], "chatbot_messages": []})
+
