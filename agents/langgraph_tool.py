@@ -9,6 +9,8 @@ from langgraph.utils.runnable import RunnableCallable, RunnableConfig
 from langchain_core.runnables.base import Runnable
 from langgraph.graph.message import add_messages
 import inspect
+import copy
+
 
 from langchain_core.messages import (
     AIMessage,
@@ -53,7 +55,7 @@ class ToolNode(RunnableCallable):
         for tool_call in state["messages"][-1].tool_calls:
             tool = self.tools_by_name[tool_call["name"]]
             all_tool_args = list(inspect.signature(tool.func).parameters)
-            function_args = tool_call["args"]
+            function_args = copy.deepcopy(tool_call["args"])
             if state['args'] is not None:
                 function_args.update({k: v for k, v in state['args'].items()
                                       if (k in all_tool_args) and (k not in function_args)})
