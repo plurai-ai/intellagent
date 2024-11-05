@@ -89,10 +89,13 @@ class EventsGenerator:
 
     def get_insertion_function(self, table_name: str):
         def tool_function(json_row: str, dataset: Annotated[dict, InjectedState("dataset")]):
-            df = pd.DataFrame([json.loads(json_row)])
-            if not table_name in dataset:
-                dataset[table_name] = pd.DataFrame()
-            dataset[table_name] = pd.concat([dataset[table_name], df], ignore_index=True)
+            try:
+                df = pd.DataFrame([json.loads(json_row)])
+                if not table_name in dataset:
+                    dataset[table_name] = pd.DataFrame()
+                dataset[table_name] = pd.concat([dataset[table_name], df], ignore_index=True)
+            except Exception as e:
+                return f"Error: {e}"
             return f"Added row to {table_name} table"
 
         class add_row_input(BaseModel):
@@ -109,7 +112,7 @@ class EventsGenerator:
         Initialize the agent.
         """
         planner = set_llm_chain(self.llm, prompt=self.get_planner_prompt(), structure=Plan)
-        replanner = set_llm_chain(self.llm, prompt_hub_name="eladlev/replanner_event_generator", structure=Act)
+        replanner = set_llm_chain(self.llm, prompt_hub_name="eladlev/replanner_event_generator", structure=Plan)
         self.agent = PlanExecuteImplementation(planner= planner,
                                                replanner=replanner,
                                                executor=self.init_executors())

@@ -7,22 +7,21 @@ from langchain_core.runnables.base import Runnable
 from langgraph.graph import END
 from langchain import hub
 from langgraph.graph import StateGraph, START
-from typing import Union
 
 
 class SingleStep(BaseModel):
     """Single step in the plan"""
 
     content: str = Field(description="The step to execute")
-    executor: str = Field(description="The table to executor name")
-
+    executor: str = Field(description="Either the table name of the step or if the last step 'Response'")
 
 class Plan(BaseModel):
     """Plan to follow in future"""
 
     steps: List[SingleStep] = Field(
-        description="different steps to follow, should be in sorted order"
+        description="different steps to follow, should be in sorted order, if no steps are needed then the list should be empty"
     )
+    final_response: str = Field(description="The final response to the user")
 
 
 class PlanExecute(TypedDict):
@@ -49,7 +48,7 @@ class Act(BaseModel):
 
 
 def should_end(state: PlanExecute):
-    if "response" in state and state["response"]:
+    if not state["plan"]:
         return END
     else:
         return "agent"
@@ -75,17 +74,14 @@ class PlanExecuteImplementation:
     def get_replanner_function(self):
         def replan_step(state: PlanExecute):
             output = self.replanner.invoke(state)
-            if isinstance(output.action, Response):
-                return {"response": output.action.response}
-            else:
-                return {"plan": output.action.dict()['steps']}
-
+            output = output.dict()
+            return {"plan": output['steps'], 'response': output['final_response']}
         return replan_step
 
     def get_planner_function(self):
         def plan_step(state: PlanExecute):
             plan = self.planner.invoke(state['input'])
-            return {"plan": plan.dict()['steps']}
+            return {"plan": plan.dict()['steps'], 'response': plan.dict()['final_response']}
         return plan_step
 
     def get_executor_function(self):
@@ -95,12 +91,14 @@ class PlanExecuteImplementation:
             task = plan[0]
             task_formatted = f"""For the following plan:
         {plan_str}\n\nYou are tasked with executing step {1}, {task['content']}."""
-            agent_response = self.executor[task['executor']].invoke(task_formatted, additional_args=state['args'])
-            return {
-                "past_steps": [(task['content'], agent_response["messages"][-1].content)],
-                "args": agent_response["args"]
-            }
-
+            if task['executor']  == 'Response':
+                return { "past_steps": [(task['content'],task['content'] )]}
+            else:
+                agent_response = self.executor[task['executor']].invoke(task_formatted, additional_args=state['args'])
+                return {
+                    "past_steps": [(task['content'], agent_response["messages"][-1].content)],
+                    "args": agent_response["args"]
+                }
         return execute_step
 
     def compile_graph(self):
