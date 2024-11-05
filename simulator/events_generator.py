@@ -11,7 +11,7 @@ from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
 from langchain_core.language_models.chat_models import BaseChatModel
 from simulator.utils import dict_to_str, set_llm_chain
-from agents.plan_and_execute import Act, Plan
+from agents.plan_and_execute import Plan
 
 
 @tool
