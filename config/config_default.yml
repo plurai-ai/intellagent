@@ -1,0 +1,23 @@
+description_generator:
+    prompt_path: '/Users/eladl/Documents/Github/tau-bench/tau_bench/envs/airline/wiki.md'
+    flow_config:
+        prompt:
+            prompt_hub_name: 'eladlev/flows_extraction'
+    policies_config:
+        prompt:
+            prompt_hub_name: 'eladlev/policies_extraction'
+    edge_config:
+        prompt:
+            prompt_hub_name: 'eladlev/policies_graph'
+        num_workers: 5
+    llm_policy:
+        type: 'azure'
+        name: 'gpt-4o'
+    llm_edge:
+        type: 'azure'
+        name: 'gpt-4o-mini'
+
+
+
+
+
