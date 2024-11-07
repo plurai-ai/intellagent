@@ -4,8 +4,12 @@ from langchain_core.runnables.base import Runnable
 import importlib
 import os
 import sys
-from langchain_core.prompts import ChatPromptTemplate
+import logging
+from langchain_community.callbacks import get_openai_callback
 
+from langchain_core.prompts import ChatPromptTemplate
+from tqdm import trange, tqdm
+import concurrent.futures
 def get_prompt_template(args: dict) -> ChatPromptTemplate:
     if "prompt_hub_name" in args:
         hub_key = args.get("prompt_hub_key", None)
@@ -80,3 +84,64 @@ def load_tools(tools_path: str):
                 if hasattr(schema_parser, f'{attribute}_schema'):
                     tools_schema.append(getattr(schema_parser, f'{attribute}_schema'))
     return tools, tools_schema
+
+def append_line_to_file(file_path, text):
+    with open(file_path, 'a') as file:  # 'a' mode opens the file for appending
+        file.write(text + '\n')
+
+def batch_invoke(llm_function, inputs: list[dict], num_workers: int, callback) -> list[dict]:
+    """
+    Invoke a langchain runnable function in parallel
+    :param llm_function: The agent invoking function
+    :param inputs: The list of all inputs
+    :param num_workers: The number of workers
+    :param callback: Langchain callback
+    :return: A list of results
+    """
+
+    def sample_generator():
+        for i, sample in enumerate(inputs):
+            yield i, sample
+
+    def process_sample_with_progress(sample):
+        i, sample = sample
+        error = None
+        with callback() as cb:
+            try:
+                result = llm_function(sample)
+            except Exception as e:
+                logging.error('Error in chain invoke: {}'.format(e))
+                result = None
+                error = 'Error while running: ' + str(e)
+            accumulate_usage = cb.total_cost
+        pbar.update(1)  # Update the progress bar
+        return {'index': i, 'result': result, 'usage': accumulate_usage, 'error': error}
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+        with tqdm(total=len(inputs), desc="Processing samples") as pbar:
+            all_results = list(executor.map(process_sample_with_progress, sample_generator()))
+
+    all_results = [res for res in all_results if res is not None]
+    return all_results
+
+class DummyCallback:
+    """
+    A dummy callback for the LLM.
+    This is a trick to handle an empty callback.
+    """
+
+    def __enter__(self):
+        self.total_cost = 0
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+def get_dummy_callback():
+    return DummyCallback()
+
+def set_callbck(llm_type):
+    if llm_type.lower() == 'openai' or llm_type.lower() == 'azure':
+        callback = get_openai_callback
+    else:
+        callback = get_dummy_callback
+    return callback
