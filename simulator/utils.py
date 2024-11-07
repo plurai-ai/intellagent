@@ -6,10 +6,17 @@ import os
 import sys
 import logging
 from langchain_community.callbacks import get_openai_callback
+from langchain_openai import ChatOpenAI
+from langchain.llms.huggingface_pipeline import HuggingFacePipeline
+from langchain_openai.chat_models import AzureChatOpenAI
 
 from langchain_core.prompts import ChatPromptTemplate
 from tqdm import trange, tqdm
 import concurrent.futures
+import yaml
+
+LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
+
 def get_prompt_template(args: dict) -> ChatPromptTemplate:
     if "prompt_hub_name" in args:
         hub_key = args.get("prompt_hub_key", None)
@@ -145,3 +152,57 @@ def set_callbck(llm_type):
     else:
         callback = get_dummy_callback
     return callback
+
+def get_llm(config: dict):
+    """
+    Returns the LLM model
+    :param config: dictionary with the configuration
+    :return: The llm model
+    """
+    if 'temperature' not in config:
+        temperature = 0
+    else:
+        temperature = config['temperature']
+    if 'model_kwargs' in config:
+        model_kwargs = config['model_kwargs']
+    else:
+        model_kwargs = {}
+
+    if config['type'].lower() == 'openai':
+        if LLM_ENV['openai']['OPENAI_ORGANIZATION'] == '':
+            return ChatOpenAI(temperature=temperature, model_name=config['name'],
+                              openai_api_key=config.get('openai_api_key', LLM_ENV['openai']['OPENAI_API_KEY']),
+                              openai_api_base=config.get('openai_api_base', 'https://api.openai.com/v1'),
+                              model_kwargs=model_kwargs)
+        else:
+            return ChatOpenAI(temperature=temperature, model_name=config['name'],
+                              openai_api_key=config.get('openai_api_key', LLM_ENV['openai']['OPENAI_API_KEY']),
+                              openai_api_base=config.get('openai_api_base', 'https://api.openai.com/v1'),
+                              openai_organization=config.get('openai_organization', LLM_ENV['openai']['OPENAI_ORGANIZATION']),
+                              model_kwargs=model_kwargs)
+    elif config['type'].lower() == 'azure':
+        return AzureChatOpenAI(temperature=temperature, azure_deployment=config['name'],
+                        openai_api_key=config.get('openai_api_key', LLM_ENV['azure']['AZURE_OPENAI_API_KEY']),
+                        azure_endpoint=config.get('azure_endpoint', LLM_ENV['azure']['AZURE_OPENAI_ENDPOINT']),
+                        openai_api_version=config.get('openai_api_version', LLM_ENV['azure']['OPENAI_API_VERSION']))
+
+    elif config['type'].lower() == 'google':
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        return ChatGoogleGenerativeAI(temperature=temperature, model=config['name'],
+                              google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
+                              model_kwargs=model_kwargs)
+
+
+    elif config['type'].lower() == 'huggingfacepipeline':
+        device = config.get('gpu_device', -1)
+        device_map = config.get('device_map', None)
+
+        return HuggingFacePipeline.from_model_id(
+            model_id=config['name'],
+            task="text-generation",
+            pipeline_kwargs={"max_new_tokens": config['max_new_tokens']},
+            device=device,
+            device_map=device_map
+        )
+    else:
+        raise NotImplementedError("LLM not implemented")
