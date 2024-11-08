@@ -4,3 +4,4 @@ langchain_openai
 langgraph
 pandas
 langchain_community
+networkx

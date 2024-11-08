@@ -1,9 +1,12 @@
-import numpy as np
 from langchain import hub
 from typing import List
 from pydantic import BaseModel, Field
-from langchain_core.language_models.chat_models import BaseChatModel
+import yaml
 from simulator.utils import set_llm_chain, batch_invoke, set_callbck
+import pickle
+from simulator.utils import get_llm
+import networkx as nx
+
 
 class Rank(BaseModel):
     """The Rank"""
@@ -23,19 +26,18 @@ class PoliciesList(BaseModel):
     """The policies list"""
     policies: List[Policy] = Field(description="A list of policies and guidelines")
 
-class PoliciesGraphGenerator:
+class DescriptionGenerator:
     """
-    This class is responsible for generating policies
+    This class is responsible for generating descriptions
     """
 
-    def __init__(self, llm: BaseChatModel, config: dict):
+    def __init__(self, config: dict):
         """
         Initialize the descriptor generator.
         :param llm (BaseChatModel): The language model to use.
         :param config: The configuration of the class
         """
         self.config = config
-        self.llm = llm
         if 'prompt_path' in config:
             with open(config['prompt_path'], 'r') as file:
                 self.prompt = file.read().rstrip()
@@ -47,25 +49,23 @@ class PoliciesGraphGenerator:
         else:
             raise ValueError("The system prompt is missing, you must provide either prompt, prompt_path or prompt_hub_name")
 
-    def generate(self, override=False):
+    def generate_policies_graph(self, override=False):
         """
-        Generate the policies
+        Generate the policies graph
         """
-        if override or not  hasattr(self, 'flows'):
+        if override or not hasattr(self, 'flows'):
             self.flows = self.extract_flows()
         if override or not hasattr(self, 'policies'):
             self.policies = self.extract_policies()
         if override or not hasattr(self, 'relations'):
             self.relations = self.extract_graph()
-        #self.relations = ''
-        #self.init_graph()
 
     def extract_flows(self):
         """
         Extract the flows from the prompt
         """
-
-        flow_extractor = set_llm_chain(self.llm, structure=FlowsList, **self.config['flow_config']['prompt'])
+        llm = get_llm(self.config['llm_policy'])
+        flow_extractor = set_llm_chain(llm, structure=FlowsList, **self.config['flow_config']['prompt'])
         flows = flow_extractor.invoke({'user_prompt': self.prompt})
         return flows.dict()['sub_flows']
 
@@ -73,7 +73,8 @@ class PoliciesGraphGenerator:
         """
         Extract the policies from the prompt
         """
-        policy_extractor = set_llm_chain(self.llm, **self.config['policies_config']['prompt'], structure=PoliciesList)
+        llm = get_llm(self.config['llm_policy'])
+        policy_extractor = set_llm_chain(llm, **self.config['policies_config']['prompt'], structure=PoliciesList)
         flows_policies = {}
 
         for flow in self.flows:
@@ -85,36 +86,37 @@ class PoliciesGraphGenerator:
         """
         Extract the weighted relations between the policies
         """
-
+        llm = get_llm(self.config['llm_edge'])
+        self.graph_info = {'G': nx.Graph()}
         def policy_to_str(policy):
             return f"Flow: {policy['flow']}\npolicy: {policy['policy']}"
 
-        edge_llm = set_llm_chain(self.llm, prompt_hub_name="eladlev/policies_graph", structure=Rank) #TODO: read from config
+        edge_llm = set_llm_chain(llm, structure=Rank, **self.config['edge_config']['prompt'])
         callback = set_callbck('openai')
         samples_batch = []
         policies_list = []
         for flow, policies in self.policies.items():
-            policies_list += [{'flow': flow, 'policy': policy['policy']} for policy in policies]
-
+            policies_list += [{'flow': flow, 'policy': policy['policy'], 'score': policy['challenge_score']}
+                              for policy in policies]
         for i, first_policy in enumerate(policies_list):
             for j, second_policy in enumerate(policies_list[i + 1:]):
                 samples_batch.append({'policy1': policy_to_str(first_policy),
                                       'policy2': policy_to_str(second_policy),
                                       'ind1': i,
                                       'ind2': j+i+1})
+        self.graph_info['nodes'] = policies_list
         res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=5, callback=callback)
-        self.graph_nodes = policies_list
-        self.graph_edges = np.eye(len(policies_list))*10
         total_cost = 0
+        all_edges = []
         for result in res:
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
                 continue
             total_cost += result['usage']
             cur_sample = samples_batch[result['index']]
-            self.graph_edges[cur_sample['ind1'],cur_sample['ind2']] = result['result'].score
+            all_edges.append((cur_sample['ind1'], cur_sample['ind2'], {'weight': result['result'].score}))
 
-        AA = 2
+        self.graph_info['G'].add_edges_from(all_edges)
 
 
     def init_graph(self):
