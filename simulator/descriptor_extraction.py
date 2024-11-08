@@ -4,8 +4,10 @@ from pydantic import BaseModel, Field
 import yaml
 from simulator.utils import set_llm_chain, batch_invoke, set_callbck
 import pickle
+from typing import Tuple
 from simulator.utils import get_llm
 import networkx as nx
+import random
 
 
 class Rank(BaseModel):
@@ -58,7 +60,7 @@ class DescriptionGenerator:
         if override or not hasattr(self, 'policies'):
             self.policies = self.extract_policies()
         if override or not hasattr(self, 'relations'):
-            self.relations = self.extract_graph()
+            self.extract_graph()
 
     def extract_flows(self):
         """
@@ -118,23 +120,45 @@ class DescriptionGenerator:
 
         self.graph_info['G'].add_edges_from(all_edges)
 
+    def sample_from_graph(self, threshold) -> Tuple[list, int]:
+        """
+        Sample a path from the graph. Traverse the graph according to edge weight probability until the path sum exceeds the threshold.
+        :param threshold:
+        :return: list of nodes in the path and the path sum
+        """
+        # Start with a random node
+        current_node = random.choice(list(self.graph_info['G'].nodes))
+        path = [current_node]
+        path_sum = self.graph_info['nodes'][current_node]['score']
 
-    def init_graph(self):
+        # Traverse until the path sum exceeds the threshold
+        while path_sum <= threshold:
+            # Get neighbors and weights for current node
+            neighbors = list(self.graph_info['G'].neighbors(current_node))
+            weights = [self.graph_info['G'][current_node][neighbor]['weight'] for neighbor in neighbors]
+
+            # Weighted choice of the next node
+            next_node = random.choices(neighbors, weights=weights)[0]
+
+            # Add the chosen node to the path and update path sum
+            path.append(next_node)
+            path_sum += self.graph_info['nodes'][current_node]['score']
+
+            # Move to the next node
+            current_node = next_node
+        return [self.graph_info['nodes'][t] for t in path], path_sum
+
+    def sample_description(self, challenge_complexity) -> Tuple[str, dict, int]:
         """
-        Initialize the relation graphs between all the policies.
+        Sample a description of event
+        :param challenge_complexity: The complexity of the generated description (it will be at least the provided number)
+        :return: The description of the event, the list of policies that were used to generate the description and the actual complexity of the description
         """
-        def policy_to_str(policy):
-            return f"Flow: {policy['flow']}\npolicy: {policy['policy']}"
-        samples_batch = []
-        for i, first_policy in enumerate(self.policies):
-            for second_policy in self.policies[i + 1:]:
-                samples_batch.append({'policy1': policy_to_str(first_policy), 'policy2': policy_to_str(second_policy)})
-        edge_llm = set_llm_chain(self.llm, prompt_hub_name="eladlev/policies_graph", structure=Rank)
-        callback = set_callbck('openai')
-        samples_batch = samples_batch[:10]
-        res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=5, callback=callback)
-        all_res = [t['result'].score for t in res]
-        ind = [t['index'] for t in res if t['result'].score == 8]
+        policies, path_sum = self.sample_from_graph(challenge_complexity)
+        description = f"Challenge: {path_sum}\n"
+        for policy in policies:
+            description += f"Flow: {policy['flow']}\npolicy: {policy['policy']}\n"
+        return description, policies, path_sum
 
     def __getstate__(self):
         # Return a dictionary of picklable attributes
