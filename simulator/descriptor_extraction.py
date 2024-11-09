@@ -1,4 +1,3 @@
-from langchain import hub
 from typing import List
 from pydantic import BaseModel, Field
 import yaml
@@ -8,6 +7,7 @@ from typing import Tuple
 from simulator.utils import get_llm
 import networkx as nx
 import random
+from langchain import Env
 
 
 class Rank(BaseModel):
@@ -33,23 +33,17 @@ class DescriptionGenerator:
     This class is responsible for generating descriptions
     """
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, environment: Env):
         """
         Initialize the descriptor generator.
         :param llm (BaseChatModel): The language model to use.
         :param config: The configuration of the class
+        :param environment: The environment of the simulator
         """
         self.config = config
-        if 'prompt_path' in config:
-            with open(config['prompt_path'], 'r') as file:
-                self.prompt = file.read().rstrip()
-        elif 'prompt' in config:
-            self.prompt = config['prompt']
-        elif 'prompt_hub_name' in config:
-            hub_key = config.get("prompt_hub_key", None)
-            self.prompt = hub.pull(config['prompt_hub_name'], api_key=hub_key)
-        else:
-            raise ValueError("The system prompt is missing, you must provide either prompt, prompt_path or prompt_hub_name")
+        self.total_cost = 0
+        self.prompt = environment.prompt
+        self.task_description = environment.task_description
 
     def generate_policies_graph(self, override=False):
         """
@@ -108,13 +102,12 @@ class DescriptionGenerator:
                                       'ind2': j+i+1})
         self.graph_info['nodes'] = policies_list
         res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=5, callback=callback)
-        total_cost = 0
         all_edges = []
         for result in res:
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
                 continue
-            total_cost += result['usage']
+            self.total_cost += result['usage']
             cur_sample = samples_batch[result['index']]
             all_edges.append((cur_sample['ind1'], cur_sample['ind2'], {'weight': result['result'].score}))
 
@@ -148,7 +141,7 @@ class DescriptionGenerator:
             current_node = next_node
         return [self.graph_info['nodes'][t] for t in path], path_sum
 
-    def sample_description(self, challenge_complexity) -> Tuple[str, dict, int]:
+    def sample_description(self, challenge_complexity):
         """
         Sample a description of event
         :param challenge_complexity: The complexity of the generated description (it will be at least the provided number)
@@ -159,19 +152,3 @@ class DescriptionGenerator:
         for policy in policies:
             description += f"Flow: {policy['flow']}\npolicy: {policy['policy']}\n"
         return description, policies, path_sum
-
-    def __getstate__(self):
-        # Return a dictionary of picklable attributes
-        state = self.__dict__.copy()
-        # Remove the non-pickable attribute
-        del state['llm']
-        return state
-
-    # def __setstate__(self, state):
-    #     # Restore the object's state from the state dictionary
-    #     self.__dict__.update(state)
-    #     # Restore or reinitialize the non-picklable attribute
-    #     self.llm = MetaChain(self.config) #TODO: restore the llm
-
-
-

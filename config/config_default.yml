@@ -1,5 +1,15 @@
+environment:
+    prompt_path: ''
+    tools_folder: ''
+    database_folder: ''
+    task_description:  # If you don't want to infer you can simply provide it in the field 'content'
+        llm:
+            type: 'azure'
+            name: 'gpt-4o'
+        extraction_prompt:
+            prompt_hub_name: 'eladlev/task_extraction'
+
 description_generator:
-    prompt_path: '/Users/eladl/Documents/Github/tau-bench/tau_bench/envs/airline/wiki.md'
     flow_config:
         prompt:
             prompt_hub_name: 'eladlev/flows_extraction'
@@ -16,8 +26,6 @@ description_generator:
     llm_edge:
         type: 'azure'
         name: 'gpt-4o-mini'
-
-
 
 
 
