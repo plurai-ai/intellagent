@@ -10,14 +10,14 @@ from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
 
 
-class SimState(TypedDict):
+class DialogState(TypedDict):
     user_messages: Annotated[list, add_messages]
     chatbot_messages: Annotated[list, add_messages]
     chatbot_args: Optional[dict]
 
-class Simulator:
+class Dialog:
     """
-    Building the simulator graph that runs the chatbot and the user
+    Building the dialog graph that runs the convesration between the chatbot and the user
     """
 
     def __init__(self, user: Runnable, chatbot: Runnable, intermediate_processing: Callable = None):
@@ -34,7 +34,7 @@ class Simulator:
         self.compile_graph()
 
     def get_end_condition(self):
-        def should_end(state: SimState):
+        def should_end(state: DialogState):
             terminate = self.intermediate_processing(state)
             if terminate:
                 return END
@@ -65,7 +65,7 @@ class Simulator:
         return chat_bot_node
 
     def compile_graph(self):
-        workflow = StateGraph(SimState)
+        workflow = StateGraph(DialogState)
         workflow.add_node("user", self.get_user_node())
         workflow.add_node("chatbot", self.get_chatbot_node())
         workflow.add_edge(START, "user")
