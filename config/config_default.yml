@@ -24,6 +24,12 @@ description_generator:
         prompt:
             prompt_hub_name: 'eladlev/description_generation'
         num_workers: 5
+    refinement_config:
+        prompt_feedback:
+            prompt_hub_name: 'eladlev/description_refinement'
+        prompt_refinement:
+            prompt_hub_name: 'eladlev/refined_description2'
+        num_workers: 5
     llm_policy:
         type: 'azure'
         name: 'gpt-4o'
@@ -31,6 +37,9 @@ description_generator:
         type: 'azure'
         name: 'gpt-4o-mini'
     llm_description:
+        type: 'azure'
+        name: 'gpt-4o'
+    llm_refinement:
         type: 'azure'
         name: 'gpt-4o'
 

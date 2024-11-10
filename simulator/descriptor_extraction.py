@@ -1,13 +1,12 @@
 from typing import List
 from pydantic import BaseModel, Field
-import yaml
 from simulator.utils import set_llm_chain, batch_invoke, set_callbck
-import pickle
 from typing import Tuple
 from simulator.utils import get_llm
 import networkx as nx
 import random
 from simulator.env import Env
+from dataclasses import dataclass
 
 
 class Rank(BaseModel):
@@ -35,6 +34,17 @@ class PoliciesList(BaseModel):
 class EventDescription(BaseModel):
     event_description: str = Field(description="The event description")
     expected_behaviour: str = Field(description="The expected behaviour of the chatbot according to the policies")
+
+
+@dataclass
+class Description:
+    """
+    The description of the event
+    """
+    event_description: str
+    expected_behaviour: str
+    policies: List[str]
+    challenge_level: int
 
 
 class DescriptionGenerator:
@@ -156,7 +166,7 @@ class DescriptionGenerator:
             current_node = next_node
         return [self.graph_info['nodes'][t] for t in path], path_sum
 
-    def sample_description(self, challenge_complexity: int or list[int], num_samples: int = 1):
+    def sample_description(self, challenge_complexity: int or list[int], num_samples: int = 1) -> list[Description]:
         """
         Sample a description of event
         :param challenge_complexity: The complexity of the generated description (it will be at least the provided number), either list with size num_samples or a single number
@@ -171,7 +181,8 @@ class DescriptionGenerator:
         if isinstance(challenge_complexity, int):
             challenge_complexity = [challenge_complexity] * num_samples
         elif len(challenge_complexity) != num_samples:
-            raise ValueError("The challenge complexity should be either a single number or a list of numbers with the same length as num_samples")
+            raise ValueError(
+                "The challenge complexity should be either a single number or a list of numbers with the same length as num_samples")
 
         samples_batch = []
         all_policies = []
@@ -190,7 +201,55 @@ class DescriptionGenerator:
             self.total_cost += result['usage']
             all_policies[result['index']]['description'] = result['result'].event_description
             all_policies[result['index']]['expected_behaviour'] = result['result'].expected_behaviour
-        return all_policies
+        descriptions = [Description(event_description=policy['description'],
+                                    expected_behaviour=policy['expected_behaviour'],
+                                    policies=[p['policy'] for p in policy['policies']],
+                                    challenge_level=policy['path_sum']) for policy in all_policies]
+        return descriptions
+
+    def expected_behaviour_refinement(self, descriptions: list[Description], num_iterations=1) -> list[Description]:
+        """
+        Verify the expected behaviour of the chatbot according to each policy
+        :param descriptions:
+        :param num_iterations:
+        :return: new updated descriptions list
+        """
+        llm = get_llm(self.config['llm_refinement'])
+        feedback_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_feedback'])
+        refinement_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_refinement'])
+        iteration_indices = list(range(len(descriptions)))
+        num_workers = self.config['refinement_config'].get('num_workers', 5)
+        callback = set_callbck(self.config['llm_refinement']['type'])
+
+        for i in range(num_iterations):
+            batch_input = []
+            # Step 1: provide feedback
+            for ind in iteration_indices:
+                batch_input.append({'description': descriptions[ind].event_description,
+                                    'behaviour': descriptions[ind].expected_behaviour,
+                                    'prompt': self.prompt})
+            res = batch_invoke(feedback_chain.invoke, batch_input, num_workers=num_workers, callback=callback)
+            cur_refine_indices = []
+            improved_batch = []
+            # refine the behaviour
+            for j, result in enumerate(res):
+                if result['error'] is not None or 'None' in result['result'].content:
+                    continue
+                else:
+                    cur_refine_indices.append(iteration_indices[result['index']])
+                    cur_batch = batch_input[result['index']]
+                    cur_batch['feedback'] = result['result'].content
+                    improved_batch.append(cur_batch)
+                    self.total_cost += result['usage']
+            res = batch_invoke(refinement_chain.invoke, improved_batch, num_workers=num_workers, callback=callback)
+            for j, result in enumerate(res):
+                if result['error'] is not None or 'None' in result['result'].conent:
+                    continue
+                else:
+                    descriptions[cur_refine_indices[result['index']]].expected_behaviour = result['result'].content
+                    self.total_cost += result['usage']
+            iteration_indices = cur_refine_indices
+        return descriptions
 
     def __getstate__(self):
         # Return a dictionary of picklable attributes
