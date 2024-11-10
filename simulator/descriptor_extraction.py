@@ -7,16 +7,18 @@ from typing import Tuple
 from simulator.utils import get_llm
 import networkx as nx
 import random
-from langchain import Env
+from simulator.env import Env
 
 
 class Rank(BaseModel):
     """The Rank"""
     score: int = Field(description="The final score between 0-10")
 
+
 class FlowsList(BaseModel):
     """The list of flows"""
     sub_flows: List[str] = Field(description="A list of sub-flows")
+
 
 class Policy(BaseModel):
     """The policy"""
@@ -24,9 +26,16 @@ class Policy(BaseModel):
     category: str = Field(description="The category of the policy")
     challenge_score: int = Field(description="The challenge score of the policy")
 
+
 class PoliciesList(BaseModel):
     """The policies list"""
     policies: List[Policy] = Field(description="A list of policies and guidelines")
+
+
+class EventDescription(BaseModel):
+    event_description: str = Field(description="The event description")
+    expected_behaviour: str = Field(description="The expected behaviour of the chatbot according to the policies")
+
 
 class DescriptionGenerator:
     """
@@ -44,6 +53,9 @@ class DescriptionGenerator:
         self.total_cost = 0
         self.prompt = environment.prompt
         self.task_description = environment.task_description
+        llm = get_llm(self.config['llm_description'])
+        self.llm_description = set_llm_chain(llm, structure=EventDescription,
+                                             **self.config['description_config']['prompt'])
 
     def generate_policies_graph(self, override=False):
         """
@@ -84,11 +96,12 @@ class DescriptionGenerator:
         """
         llm = get_llm(self.config['llm_edge'])
         self.graph_info = {'G': nx.Graph()}
+
         def policy_to_str(policy):
             return f"Flow: {policy['flow']}\npolicy: {policy['policy']}"
 
         edge_llm = set_llm_chain(llm, structure=Rank, **self.config['edge_config']['prompt'])
-        callback = set_callbck('openai')
+        callback = set_callbck(self.config['llm_edge']['type'])
         samples_batch = []
         policies_list = []
         for flow, policies in self.policies.items():
@@ -99,9 +112,11 @@ class DescriptionGenerator:
                 samples_batch.append({'policy1': policy_to_str(first_policy),
                                       'policy2': policy_to_str(second_policy),
                                       'ind1': i,
-                                      'ind2': j+i+1})
+                                      'ind2': j + i + 1})
         self.graph_info['nodes'] = policies_list
-        res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=5, callback=callback)
+        num_workers = self.config['edge_config'].get('num_workers', 1)
+        res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=num_workers,
+                           callback=callback)
         all_edges = []
         for result in res:
             if result['error'] is not None:
@@ -141,14 +156,52 @@ class DescriptionGenerator:
             current_node = next_node
         return [self.graph_info['nodes'][t] for t in path], path_sum
 
-    def sample_description(self, challenge_complexity):
+    def sample_description(self, challenge_complexity: int or list[int], num_samples: int = 1):
         """
         Sample a description of event
-        :param challenge_complexity: The complexity of the generated description (it will be at least the provided number)
+        :param challenge_complexity: The complexity of the generated description (it will be at least the provided number), either list with size num_samples or a single number
+        :param num_samples: The number of samples to generate
         :return: The description of the event, the list of policies that were used to generate the description and the actual complexity of the description
         """
-        policies, path_sum = self.sample_from_graph(challenge_complexity)
-        description = f"Challenge: {path_sum}\n"
-        for policy in policies:
-            description += f"Flow: {policy['flow']}\npolicy: {policy['policy']}\n"
-        return description, policies, path_sum
+
+        def policies_list_to_str(policies):
+            return "\n".join([f"Policy {i} flow: {policy['flow']}\nPolicy {i} content: {policy['policy']}\n------" for
+                              i, policy in enumerate(policies)])
+
+        if isinstance(challenge_complexity, int):
+            challenge_complexity = [challenge_complexity] * num_samples
+        elif len(challenge_complexity) != num_samples:
+            raise ValueError("The challenge complexity should be either a single number or a list of numbers with the same length as num_samples")
+
+        samples_batch = []
+        all_policies = []
+        for i, cur_score in enumerate(challenge_complexity):
+            policies, path_sum = self.sample_from_graph(cur_score)
+            all_policies.append({'policies': policies, 'path_sum': path_sum})
+            samples_batch.append({'task_description': self.task_description,
+                                  'policies': policies_list_to_str(policies)})
+        num_workers = self.config['description_config'].get('num_workers', 1)
+        callback = set_callbck(self.config['llm_description']['type'])
+        res = batch_invoke(self.llm_description.invoke, samples_batch, num_workers=num_workers, callback=callback)
+        for result in res:
+            if result['error'] is not None:
+                print(f"Error in sample {result['index']}: {result['error']}")
+                continue
+            self.total_cost += result['usage']
+            all_policies[result['index']]['description'] = result['result'].event_description
+            all_policies[result['index']]['expected_behaviour'] = result['result'].expected_behaviour
+        return all_policies
+
+    def __getstate__(self):
+        # Return a dictionary of picklable attributes
+        state = self.__dict__.copy()
+        # Remove the non-picklable attribute
+        del state['llm_description']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        llm = get_llm(self.config['llm_description'])
+        self.llm_description = set_llm_chain(llm, structure=EventDescription,
+                                             **self.config['description_config']['prompt'])
+        return self
