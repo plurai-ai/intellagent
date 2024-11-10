@@ -1,34 +1,34 @@
-from langchain_core.language_models.chat_models import BaseChatModel
 from simulator.env import Env
 from simulator.utils import get_prompt_template
 from simulator.dialog_graph import Dialog
 from agents.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
+from simulator.utils import get_llm
 
 
-class DialogExecutor:
+class DialogManager:
     """
     This class is responsible for executing rollout of simulation.
     """
 
-    def __init__(self, llm: BaseChatModel, env: Env):
+    def __init__(self, config: dict, environment: Env):
         """
         Initialize the event generator.
-        :param llm (BaseChatModel): The language model to use.
-        :param env (Env): The environment of the dialog.
+        :param config: The config of the class
+        :param environment (Env): The environment of the dialog.
         """
-        self.llm = llm
-        self.user_llm = llm | self.get_user_parsing_function(
-            parsing_mode=env.user_prompt_args.get('parsing_mode', 'default'))
+        self.llm = get_llm(config['llm'])
+        self.user_llm = self.llm | self.get_user_parsing_function(
+            parsing_mode=config['user_parsing_mode'])  # The user language model
         self.data = {}
-        self.data_examples = env.data_examples
-        self.data_schema = env.data_schema
-        self.env_tools = env.tools
+        self.data_examples = environment.data_examples
+        self.data_schema = environment.data_schema
+        self.env_tools = environment.tools
         self.env_tools_schema = None
-        if env.tools_schema is not None and env.tools_schema:
-            self.env_tools_schema = env.tools_schema
-        self.init_dialog(chatbot_prompt_args=env.chatbot_prompt_args, user_prompt_args=env.user_prompt_args)
+        if environment.tools_schema is not None and environment.tools_schema:
+            self.env_tools_schema = environment.tools_schema
+        self.init_dialog(chatbot_prompt_args={'prompt': environment.prompt}, user_prompt_args=config['user_prompt'])
 
     def get_user_parsing_function(self, parsing_mode='default'):
         def parse_user_message(ai_message: AIMessage) -> str:
@@ -38,7 +38,8 @@ class DialogExecutor:
                 pattern = r"^(.*?)\s*User Response:\s*(.*)"  # The pattern to extract the user response
                 match = re.search(pattern, ai_message.content, re.DOTALL)
                 if match:
-                    extracted_text = match.group(1).strip()
+                    extracted_thought = match.group(1).strip()  # Text before "User Response:"
+                    extracted_text = match.group(2).strip()
                 else:
                     extracted_text = ai_message.content
             return extracted_text
@@ -63,6 +64,7 @@ class DialogExecutor:
         chatbot = AgentTools(llm=self.llm, tools=self.env_tools, tools_schema=self.env_tools_schema)
         self.dialog = Dialog(self.user_llm, chatbot,
                              intermediate_processing=self.get_intermediate_processing_function())
+        self.dialog.output_path = '/Users/eladl/Documents/Github/chatbot_simulator/output.log'
         self.user_prompt = get_prompt_template(user_prompt_args)
         self.chatbot_prompt = get_prompt_template(chatbot_prompt_args)
 

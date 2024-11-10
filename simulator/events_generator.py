@@ -12,6 +12,7 @@ from langchain_core.tools import tool
 from langchain_core.language_models.chat_models import BaseChatModel
 from simulator.utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Plan
+from simulator.utils import get_llm
 
 
 @tool
@@ -48,13 +49,13 @@ class EventsGenerator:
     This class is responsible for generating events for the simulator.
     """
 
-    def __init__(self, llm: BaseChatModel, env: Env):
+    def __init__(self, llm_config: dict, env: Env):
         """
         Initialize the event generator.
-        :param llm (BaseChatModel): The language model to use.
-        :param env (Env): The environment of the simulator.
+        :param llm_config: The language model config
+        :param environment (Env): The environment of the simulator.
         """
-        self.llm = llm
+        self.llm = get_llm(llm_config)
         self.data = {}
         self.data_examples = env.data_examples
         self.data_schema = env.data_schema
