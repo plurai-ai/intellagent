@@ -25,6 +25,7 @@ description_generator:
             prompt_hub_name: 'eladlev/description_generation'
         num_workers: 5
     refinement_config:
+        do_refinement: True # If you don't want to refine the expected behaviour of the descriptions, set this to False
         prompt_feedback:
             prompt_hub_name: 'eladlev/description_refinement'
         prompt_refinement:

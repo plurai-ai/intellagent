@@ -66,6 +66,10 @@ class DescriptionGenerator:
         llm = get_llm(self.config['llm_description'])
         self.llm_description = set_llm_chain(llm, structure=EventDescription,
                                              **self.config['description_config']['prompt'])
+        if self.config['refinement_config']['do_refinement']:
+            llm = get_llm(self.config['llm_refinement'])
+            self.feedback_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_feedback'])
+            self.refinement_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_refinement'])
 
     def generate_policies_graph(self, override=False):
         """
@@ -203,7 +207,7 @@ class DescriptionGenerator:
             all_policies[result['index']]['expected_behaviour'] = result['result'].expected_behaviour
         descriptions = [Description(event_description=policy['description'],
                                     expected_behaviour=policy['expected_behaviour'],
-                                    policies=[p['policy'] for p in policy['policies']],
+                                    policies= policy['policies'],
                                     challenge_level=policy['path_sum']) for policy in all_policies]
         return descriptions
 
@@ -214,9 +218,6 @@ class DescriptionGenerator:
         :param num_iterations:
         :return: new updated descriptions list
         """
-        llm = get_llm(self.config['llm_refinement'])
-        feedback_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_feedback'])
-        refinement_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_refinement'])
         iteration_indices = list(range(len(descriptions)))
         num_workers = self.config['refinement_config'].get('num_workers', 5)
         callback = set_callbck(self.config['llm_refinement']['type'])
@@ -228,7 +229,7 @@ class DescriptionGenerator:
                 batch_input.append({'description': descriptions[ind].event_description,
                                     'behaviour': descriptions[ind].expected_behaviour,
                                     'prompt': self.prompt})
-            res = batch_invoke(feedback_chain.invoke, batch_input, num_workers=num_workers, callback=callback)
+            res = batch_invoke(self.feedback_chain.invoke, batch_input, num_workers=num_workers, callback=callback)
             cur_refine_indices = []
             improved_batch = []
             # refine the behaviour
@@ -241,9 +242,9 @@ class DescriptionGenerator:
                     cur_batch['feedback'] = result['result'].content
                     improved_batch.append(cur_batch)
                     self.total_cost += result['usage']
-            res = batch_invoke(refinement_chain.invoke, improved_batch, num_workers=num_workers, callback=callback)
+            res = batch_invoke(self.refinement_chain.invoke, improved_batch, num_workers=num_workers, callback=callback)
             for j, result in enumerate(res):
-                if result['error'] is not None or 'None' in result['result'].conent:
+                if result['error'] is not None or 'None' in result['result'].content:
                     continue
                 else:
                     descriptions[cur_refine_indices[result['index']]].expected_behaviour = result['result'].content
@@ -256,6 +257,10 @@ class DescriptionGenerator:
         state = self.__dict__.copy()
         # Remove the non-picklable attribute
         del state['llm_description']
+        if 'feedback_chain' in state:
+            del state['feedback_chain']
+        if 'refinement_chain' in state:
+            del state['refinement_chain']
         return state
 
     def __setstate__(self, state):
@@ -263,4 +268,8 @@ class DescriptionGenerator:
         llm = get_llm(self.config['llm_description'])
         self.llm_description = set_llm_chain(llm, structure=EventDescription,
                                              **self.config['description_config']['prompt'])
+        if self.config['refinement_config']['do_refinement']:
+            llm = get_llm(self.config['llm_refinement'])
+            self.feedback_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_feedback'])
+            self.refinement_chain = set_llm_chain(llm, **self.config['refinement_config']['prompt_refinement'])
         return self
