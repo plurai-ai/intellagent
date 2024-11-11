@@ -9,10 +9,11 @@ from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
-from langchain_core.language_models.chat_models import BaseChatModel
 from simulator.utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Plan
 from simulator.utils import get_llm
+from dataclasses import dataclass
+from simulator.descriptor_generator import Description
 
 
 @tool
@@ -25,23 +26,21 @@ def calculate(expression: str) -> str:
     except Exception as e:
         return f"Error: {e}"
 
+
 @tool
 def think(thought: str) -> str:
     "Use the tool to think about something. It will not obtain new information or change the database, but just append the thought to the log. Use it when complex reasoning is needed."
     return ""
 
-class EventSample:
-    """
-    This class represents an event sample
-    """
-    def __init__(self, description: str, env: Env):
-        self.description = description
-        self.schema = env.schema
-        self.example = env.example
 
-
-    def __str__(self):
-        return self.event
+@dataclass
+class Event:
+    """
+    The event
+    """
+    description: Description
+    database: dict[pd.DataFrame]
+    scenario: str = None # The full scenario
 
 
 class EventsGenerator:
@@ -70,7 +69,6 @@ class EventsGenerator:
         table_insertion_tools = {}
         agent_executors = {}
         for table_name, example in rows_data.items():
-
             cur_tool, tool_schema = self.get_insertion_function(table_name)
             table_insertion_tools[table_name] = StructuredTool.from_function(
                 cur_tool,
@@ -114,12 +112,14 @@ class EventsGenerator:
         """
         planner = set_llm_chain(self.llm, prompt=self.get_planner_prompt(), structure=Plan)
         replanner = set_llm_chain(self.llm, prompt_hub_name="eladlev/replanner_event_generator", structure=Plan)
-        self.agent = PlanExecuteImplementation(planner= planner,
+        self.agent = PlanExecuteImplementation(planner=planner,
                                                replanner=replanner,
                                                executor=self.init_executors())
 
-    def description_to_event(self, event: str) -> str:
+    def description_to_event(self, description: Description) -> Event:
         """
-        Generate an event based on the given event.
+        Generate an event based on the given description.
         """
-        return self.agent.invoke(input= {'input':event,'args': {'dataset': {}}})
+        res = self.agent.invoke(input={'input': description.event_description, 'args': {'dataset': {}}})
+        event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
+        return event

@@ -27,7 +27,7 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_messages( [
                 (
                     "system",
-                    args['template'],
+                    args['from_str']['template'],
                 )
             ])
     elif 'path' in args:

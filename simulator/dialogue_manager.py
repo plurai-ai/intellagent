@@ -5,6 +5,7 @@ from agents.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
 from simulator.utils import get_llm
+from simulator.events_generator import Event
 
 
 class DialogManager:
@@ -28,7 +29,8 @@ class DialogManager:
         self.env_tools_schema = None
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
-        self.init_dialog(chatbot_prompt_args={'prompt': environment.prompt}, user_prompt_args=config['user_prompt'])
+        self.init_dialog(chatbot_prompt_args={'from_str': {'template': environment.prompt}},
+                         user_prompt_args=config['user_prompt'])
 
     def get_user_parsing_function(self, parsing_mode='default'):
         def parse_user_message(ai_message: AIMessage) -> str:
@@ -69,7 +71,7 @@ class DialogManager:
         self.chatbot_prompt = get_prompt_template(chatbot_prompt_args)
 
     def run(self, user_prompt_params=None, chatbot_prompt_params=None,
-            chatbot_env_args = None):
+            chatbot_env_args=None):
         """
         Run the simulation.
         :param user_prompt_params: The parameters for the user prompt.
@@ -82,6 +84,15 @@ class DialogManager:
         chatbot_messages = self.chatbot_prompt.format_messages(**chatbot_prompt_params)
         if len(chatbot_messages) == 1:
             chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
-        self.dialog.invoke(input={"user_messages": user_messages,
-                                     "chatbot_messages": chatbot_messages,
-                                     "chatbot_args": chatbot_env_args})
+        return self.dialog.invoke(input={"user_messages": user_messages,
+                                         "chatbot_messages": chatbot_messages,
+                                         "chatbot_args": chatbot_env_args})
+
+    def run_event(self, event: Event):
+        """
+        Run the dialogue between the user and the chatbot on the event.
+        :param event: The event to run.
+        """
+        return self.run(user_prompt_params={'scenario': event.scenario,
+                                            'expected_behaviour': event.description.expected_behaviour},
+                        chatbot_env_args={'data': event.database})

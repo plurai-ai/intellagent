@@ -209,6 +209,8 @@ class DescriptionGenerator:
                                     expected_behaviour=policy['expected_behaviour'],
                                     policies= policy['policies'],
                                     challenge_level=policy['path_sum']) for policy in all_policies]
+        if self.config['refinement_config']['do_refinement']:
+            descriptions = self.expected_behaviour_refinement(descriptions)
         return descriptions
 
     def expected_behaviour_refinement(self, descriptions: list[Description], num_iterations=1) -> list[Description]:
