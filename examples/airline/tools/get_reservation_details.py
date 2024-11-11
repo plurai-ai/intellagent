@@ -7,7 +7,7 @@ from typing import Any, Dict
 class GetReservationDetails():
     @staticmethod
     def invoke(data: Dict[str, Any], reservation_id: str) -> str:
-        reservations = data["reservations"]
+        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
         if reservation_id in reservations:
             return json.dumps(reservations[reservation_id])
         return "Error: user not found"

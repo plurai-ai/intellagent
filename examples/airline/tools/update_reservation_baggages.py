@@ -13,7 +13,8 @@ class UpdateReservationBaggages():
         nonfree_baggages: int,
         payment_id: str,
     ) -> str:
-        users, reservations = data["users"], data["reservations"]
+        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
+        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
         if reservation_id not in reservations:
             return "Error: reservation not found"
         reservation = reservations[reservation_id]

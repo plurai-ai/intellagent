@@ -10,7 +10,7 @@ class SendCertificate():
         user_id: str,
         amount: int,
     ) -> str:
-        users = data["users"]
+        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
         if user_id not in users:
             return "Error: user not found"
         user = users[user_id]

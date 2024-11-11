@@ -10,7 +10,7 @@ class CancelReservation():
         data: Dict[str, Any],
         reservation_id: str,
     ) -> str:
-        reservations = data["reservations"]
+        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
         if reservation_id not in reservations:
             return "Error: reservation not found"
         reservation = reservations[reservation_id]

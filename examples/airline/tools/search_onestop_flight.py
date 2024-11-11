@@ -7,7 +7,7 @@ from langchain.tools import StructuredTool
 class SearchOnestopFlight():
     @staticmethod
     def invoke(data: Dict[str, Any], origin: str, destination: str, date: str) -> str:
-        flights = data["flights"]
+        flights = data["flights"].set_index('flight_number', drop=False).to_dict(orient='index')
         results = []
         for flight1 in flights.values():
             if flight1["origin"] == origin:

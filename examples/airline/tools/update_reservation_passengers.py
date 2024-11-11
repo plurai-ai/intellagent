@@ -11,7 +11,7 @@ class UpdateReservationPassengers():
         reservation_id: str,
         passengers: List[Dict[str, Any]],
     ) -> str:
-        reservations = data["reservations"]
+        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
         if reservation_id not in reservations:
             return "Error: reservation not found"
         reservation = reservations[reservation_id]

@@ -7,7 +7,7 @@ from typing import Any, Dict
 class GetUserDetails():
     @staticmethod
     def invoke(data: Dict[str, Any], user_id: str) -> str:
-        users = data["users"]
+        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
         if user_id in users:
             return json.dumps(users[user_id])
         return "Error: user not found"
