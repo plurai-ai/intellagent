@@ -4,9 +4,10 @@ from simulator.dialog_graph import Dialog
 from agents.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
-from simulator.utils import append_line_to_file
 from simulator.utils import get_llm, set_callbck
 from simulator.events_generator import Event
+import uuid
+from simulator.memory.sqlite_handler import SqliteSaver
 
 
 class DialogManager:
@@ -30,15 +31,20 @@ class DialogManager:
         self.data_schema = environment.data_schema
         self.env_tools = environment.tools
         self.env_tools_schema = None
+        self.memory = None
+        if 'memory_path' in config and not config['memory_path'] == '':
+            self.memory = SqliteSaver(config['memory_path'])
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
         self.init_dialog(chatbot_prompt_args={'from_str': {'template': environment.prompt}},
                          user_prompt_args=config['user_prompt'])
 
+
     def get_user_parsing_function(self, parsing_mode='default'):
-        def parse_user_message(ai_message: AIMessage) -> str:
+        def parse_user_message(ai_message: AIMessage) -> dict[str, str]:
             """Parse the user message."""
             extracted_text = ai_message.content
+            extracted_thought = ''
             if parsing_mode == 'thought':
                 pattern = r"^(.*?)\s*User Response:\s*(.*)"  # The pattern to extract the user response
                 match = re.search(pattern, ai_message.content, re.DOTALL)
@@ -47,7 +53,7 @@ class DialogManager:
                     extracted_text = match.group(2).strip()
                 else:
                     extracted_text = ai_message.content
-            return extracted_text
+            return {'response': extracted_text, 'thought': extracted_thought}
 
         return parse_user_message
 
@@ -68,7 +74,8 @@ class DialogManager:
         """
         chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
         self.dialog = Dialog(self.llm_user, chatbot,
-                             intermediate_processing=self.get_intermediate_processing_function())
+                             intermediate_processing=self.get_intermediate_processing_function(),
+                             memory=self.memory)
         self.dialog.output_path = '/Users/eladl/Documents/Github/chatbot_simulator/output.log'
         self.user_prompt = get_prompt_template(user_prompt_args)
         self.chatbot_prompt = get_prompt_template(chatbot_prompt_args)
@@ -89,7 +96,8 @@ class DialogManager:
             chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
         return self.dialog.invoke(input={"user_messages": user_messages,
                                          "chatbot_messages": chatbot_messages,
-                                         "chatbot_args": chatbot_env_args})
+                                         "chatbot_args": chatbot_env_args,
+                                         "thread_id": str(uuid.uuid4())})
 
     def run_event(self, event: Event):
         """

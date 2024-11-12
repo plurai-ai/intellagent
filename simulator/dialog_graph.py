@@ -14,23 +14,28 @@ class DialogState(TypedDict):
     user_messages: Annotated[list, add_messages]
     chatbot_messages: Annotated[list, add_messages]
     chatbot_args: Optional[dict]
+    thread_id: str
+
 
 class Dialog:
     """
     Building the dialog graph that runs the convesration between the chatbot and the user
     """
 
-    def __init__(self, user: Runnable, chatbot: Runnable, intermediate_processing: Callable = None):
+    def __init__(self, user: Runnable, chatbot: Runnable, intermediate_processing: Callable = None,
+                 memory=None):
         """
         Initialize the event generator.]
         :param user (Runnable): The user model
         :param chatbot (Runnable): The chatbot model
         :param intermediate_processing (optional): A function between that processes the output of the user and the
         chatbot at each step
+        :param memory (optional): The memory to store the conversations artifacts
         """
         self.user = user
         self.chatbot = chatbot
         self.intermediate_processing = intermediate_processing  # TODO: Add default function
+        self.memory = memory
         self.compile_graph()
 
     def get_end_condition(self):
@@ -49,8 +54,12 @@ class Dialog:
             # Call the simulated user
             response = self.user.invoke(messages)
             # This response is an AI message - we need to flip this to be a human message
-            return {"chatbot_messages": [HumanMessage(content=response)],
-                    'user_messages': [AIMessage(content=response)]}
+            if self.memory is not None:
+                if response['thought'] is not None:
+                    self.memory.insert_thought(state['thread_id'], response['thought'])
+                self.memory.insert_dialog(state['thread_id'], 'Human', response['response'])
+            return {"chatbot_messages": [HumanMessage(content=response['response'])],
+                    'user_messages': [AIMessage(content=response['response'])]}
 
         return simulated_user_node
 
@@ -59,6 +68,20 @@ class Dialog:
             messages = state["chatbot_messages"]
             # Call the chatbot
             response = self.chatbot.invoke(messages=messages, additional_args=state['chatbot_args'])
+            last_human_message = max([i for i, v in enumerate(response['messages']) if v.type == 'human'])
+            all_tool_calls = {}
+            if self.memory is not None:
+                # Inserting tool calls into memory
+                for message in response['messages'][last_human_message + 1:]:
+                    if 'tool_calls' in message.additional_kwargs:
+                        for tool_call in message.additional_kwargs['tool_calls']:
+                            all_tool_calls[tool_call['id']] = tool_call['function']
+                    if message.type == 'tool':
+                        all_tool_calls[message.tool_call_id]['output'] = message.content
+                for v in all_tool_calls.values():
+                    self.memory.insert_tool(state['thread_id'], v['name'], v['arguments'], v['output'])
+                # inserting the chatbot messages into memory
+                self.memory.insert_dialog(state['thread_id'], 'AI', response['messages'][-1].content)
             return {"chatbot_messages": [AIMessage(content=response['messages'][-1].content)],
                     'user_messages': [HumanMessage(content=response['messages'][-1].content)]}
 

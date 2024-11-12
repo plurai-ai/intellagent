@@ -51,12 +51,17 @@ event_generator:
         name: 'gpt-4o'
 
 dialog_manager:
-    user_parsing_mode: 'default'
+    user_parsing_mode: 'thought' # 'thought' in case the user has thought part or 'default'
+    memory_path: "memory.db"
     user_prompt:
         prompt_hub_name: 'eladlev/user_sim'
-    llm:
+    llm_user:
         type: 'azure'
         name: 'gpt-4o'
+    llm_chat:
+        type: 'azure'
+        name: 'gpt-4o'
+
 
 
 
