@@ -5,11 +5,14 @@ import importlib
 import os
 import sys
 import logging
+from typing import Any
 from langchain_community.callbacks import get_openai_callback
+from langchain_community.callbacks.manager import get_bedrock_anthropic_callback
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_openai import ChatOpenAI
 from langchain.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_openai.chat_models import AzureChatOpenAI
-
+import contextlib
 from langchain_core.prompts import ChatPromptTemplate
 from tqdm import trange, tqdm
 import concurrent.futures
@@ -96,13 +99,13 @@ def append_line_to_file(file_path, text):
     with open(file_path, 'a') as file:  # 'a' mode opens the file for appending
         file.write(text + '\n')
 
-def batch_invoke(llm_function, inputs: list[dict], num_workers: int, callback) -> list[dict]:
+def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: list[BaseCallbackHandler]) -> list[Any]:
     """
     Invoke a langchain runnable function in parallel
     :param llm_function: The agent invoking function
     :param inputs: The list of all inputs
     :param num_workers: The number of workers
-    :param callback: Langchain callback
+    :param callbacks: Langchain callbacks list
     :return: A list of results
     """
 
@@ -113,14 +116,16 @@ def batch_invoke(llm_function, inputs: list[dict], num_workers: int, callback) -
     def process_sample_with_progress(sample):
         i, sample = sample
         error = None
-        with callback() as cb:
+        with contextlib.ExitStack() as stack:
+            CB = [stack.enter_context(callback()) for callback in callbacks]
             try:
                 result = llm_function(sample)
             except Exception as e:
                 logging.error('Error in chain invoke: {}'.format(e))
                 result = None
                 error = 'Error while running: ' + str(e)
-            accumulate_usage = cb.total_cost
+            for cb in CB:
+                accumulate_usage = cb.total_cost
         pbar.update(1)  # Update the progress bar
         return {'index': i, 'result': result, 'usage': accumulate_usage, 'error': error}
 
@@ -149,6 +154,8 @@ def get_dummy_callback():
 def set_callbck(llm_type):
     if llm_type.lower() == 'openai' or llm_type.lower() == 'azure':
         callback = get_openai_callback
+    elif llm_type.lower() == 'anthropic_bedrock':
+        callback = get_bedrock_anthropic_callback
     else:
         callback = get_dummy_callback
     return callback

@@ -16,6 +16,7 @@ description_generator:
     policies_config:
         prompt:
             prompt_hub_name: 'eladlev/policies_extraction'
+        num_workers: 3
     edge_config:
         prompt:
             prompt_hub_name: 'eladlev/policies_graph'
@@ -49,7 +50,7 @@ event_generator:
         type: 'azure'
         name: 'gpt-4o'
 
-dialogue_manager:
+dialog_manager:
     user_parsing_mode: 'default'
     user_prompt:
         prompt_hub_name: 'eladlev/user_sim'

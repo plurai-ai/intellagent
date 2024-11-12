@@ -11,7 +11,7 @@ from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
 from simulator.utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Plan
-from simulator.utils import get_llm
+from simulator.utils import get_llm, set_callbck
 from dataclasses import dataclass
 from simulator.descriptor_generator import Description
 
@@ -55,6 +55,7 @@ class EventsGenerator:
         :param environment (Env): The environment of the simulator.
         """
         self.llm = get_llm(llm_config)
+        self.callbacks = [set_callbck(llm_config['type'])]
         self.data = {}
         self.data_examples = env.data_examples
         self.data_schema = env.data_schema

@@ -4,7 +4,8 @@ from simulator.dialog_graph import Dialog
 from agents.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
-from simulator.utils import get_llm
+from simulator.utils import append_line_to_file
+from simulator.utils import get_llm, set_callbck
 from simulator.events_generator import Event
 
 
@@ -19,9 +20,11 @@ class DialogManager:
         :param config: The config of the class
         :param environment (Env): The environment of the dialog.
         """
-        self.llm = get_llm(config['llm'])
-        self.user_llm = self.llm | self.get_user_parsing_function(
+        self.llm_user = get_llm(config['llm_user'])
+        self.llm_chat = get_llm(config['llm_chat'])
+        self.llm_user = self.llm_user | self.get_user_parsing_function(
             parsing_mode=config['user_parsing_mode'])  # The user language model
+        self.callbacks = [set_callbck(t) for t in {config['llm_user']['type'], config['llm_chat']['type']}]  # The callbacks
         self.data = {}
         self.data_examples = environment.data_examples
         self.data_schema = environment.data_schema
@@ -63,8 +66,8 @@ class DialogManager:
         :param user_prompt_args (dict): Either a prompt or a dict with prompt_hub_name should be provided.
         :param chatbot_prompt (dict): Either a prompt or a dict with prompt_hub_name should be provided.
         """
-        chatbot = AgentTools(llm=self.llm, tools=self.env_tools, tools_schema=self.env_tools_schema)
-        self.dialog = Dialog(self.user_llm, chatbot,
+        chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
+        self.dialog = Dialog(self.llm_user, chatbot,
                              intermediate_processing=self.get_intermediate_processing_function())
         self.dialog.output_path = '/Users/eladl/Documents/Github/chatbot_simulator/output.log'
         self.user_prompt = get_prompt_template(user_prompt_args)
@@ -90,7 +93,7 @@ class DialogManager:
 
     def run_event(self, event: Event):
         """
-        Run the dialogue between the user and the chatbot on the event.
+        Run the dialog between the user and the chatbot on the event.
         :param event: The event to run.
         """
         return self.run(user_prompt_params={'scenario': event.scenario,

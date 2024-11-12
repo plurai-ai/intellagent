@@ -88,7 +88,11 @@ class DescriptionGenerator:
         """
         llm = get_llm(self.config['llm_policy'])
         flow_extractor = set_llm_chain(llm, structure=FlowsList, **self.config['flow_config']['prompt'])
-        flows = flow_extractor.invoke({'user_prompt': self.prompt})
+        result = batch_invoke(flow_extractor.invoke,
+                           [{'user_prompt': self.prompt}], num_workers=1,
+                              callbacks=[set_callbck(self.config['llm_policy']['type'])])[0]
+        self.total_cost += result['usage']
+        flows = result['result']
         return flows.dict()['sub_flows']
 
     def extract_policies(self):
@@ -98,10 +102,18 @@ class DescriptionGenerator:
         llm = get_llm(self.config['llm_policy'])
         policy_extractor = set_llm_chain(llm, **self.config['policies_config']['prompt'], structure=PoliciesList)
         flows_policies = {}
-
+        batch = []
         for flow in self.flows:
-            cur_polices = policy_extractor.invoke({'user_prompt': self.prompt, 'flow': flow})
-            flows_policies[flow] = cur_polices.dict()['policies']
+            batch.append({'user_prompt': self.prompt, 'flow': flow})
+        res = batch_invoke(policy_extractor.invoke, batch, num_workers=self.config['policies_config']['num_workers'],
+                           callbacks=[set_callbck(self.config['llm_policy']['type'])])
+
+        for i, result in enumerate(res):
+            if result['error'] is not None:
+                print(f"Error in sample {result['index']}: {result['error']}")
+                continue
+            self.total_cost += result['usage']
+            flows_policies[self.flows[result['index']]] = result['result'].dict()['policies']
         return flows_policies
 
     def extract_graph(self):
@@ -130,7 +142,7 @@ class DescriptionGenerator:
         self.graph_info['nodes'] = policies_list
         num_workers = self.config['edge_config'].get('num_workers', 1)
         res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=num_workers,
-                           callback=callback)
+                           callbacks=[callback])
         all_edges = []
         for result in res:
             if result['error'] is not None:
@@ -197,7 +209,7 @@ class DescriptionGenerator:
                                   'policies': policies_list_to_str(policies)})
         num_workers = self.config['description_config'].get('num_workers', 1)
         callback = set_callbck(self.config['llm_description']['type'])
-        res = batch_invoke(self.llm_description.invoke, samples_batch, num_workers=num_workers, callback=callback)
+        res = batch_invoke(self.llm_description.invoke, samples_batch, num_workers=num_workers, callbacks=[callback])
         for result in res:
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
@@ -231,7 +243,7 @@ class DescriptionGenerator:
                 batch_input.append({'description': descriptions[ind].event_description,
                                     'behaviour': descriptions[ind].expected_behaviour,
                                     'prompt': self.prompt})
-            res = batch_invoke(self.feedback_chain.invoke, batch_input, num_workers=num_workers, callback=callback)
+            res = batch_invoke(self.feedback_chain.invoke, batch_input, num_workers=num_workers, callbacks=[callback])
             cur_refine_indices = []
             improved_batch = []
             # refine the behaviour
@@ -244,7 +256,8 @@ class DescriptionGenerator:
                     cur_batch['feedback'] = result['result'].content
                     improved_batch.append(cur_batch)
                     self.total_cost += result['usage']
-            res = batch_invoke(self.refinement_chain.invoke, improved_batch, num_workers=num_workers, callback=callback)
+            res = batch_invoke(self.refinement_chain.invoke, improved_batch,
+                               num_workers=num_workers, callbacks=[callback])
             for j, result in enumerate(res):
                 if result['error'] is not None or 'None' in result['result'].content:
                     continue
