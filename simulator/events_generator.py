@@ -14,7 +14,7 @@ from agents.plan_and_execute import Plan
 from simulator.utils import get_llm, set_callbck
 from dataclasses import dataclass
 from simulator.descriptor_generator import Description
-
+from simulator.utils import batch_invoke
 
 @tool
 def calculate(expression: str) -> str:
@@ -48,18 +48,21 @@ class EventsGenerator:
     This class is responsible for generating events for the simulator.
     """
 
-    def __init__(self, llm_config: dict, env: Env):
+    def __init__(self, config: dict, env: Env):
         """
         Initialize the event generator.
-        :param llm_config: The language model config
+        :param config: The language model config
         :param environment (Env): The environment of the simulator.
         """
+        llm_config = config['llm']
         self.llm = get_llm(llm_config)
         self.callbacks = [set_callbck(llm_config['type'])]
         self.data = {}
         self.data_examples = env.data_examples
         self.data_schema = env.data_schema
         self.init_agent()
+        self.num_workers = config['num_workers']
+        self.total_cost = 0
 
     def init_executors(self) -> dict[AgentTools]:
         """
@@ -124,3 +127,13 @@ class EventsGenerator:
         res = self.agent.invoke(input={'input': description.event_description, 'args': {'dataset': {}}})
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
+
+    def descriptions_to_events(self, descriptions: list[Description]) -> list[Event]:
+        """
+        Generate events based on the given descriptions.
+        """
+        res = batch_invoke(self.description_to_event, descriptions, num_workers=self.num_workers,
+                           callbacks=self.callbacks)
+        all_events = [r['result'] for r in res if r['error'] is None]
+        self.total_cost += sum([r['usage'] for r in res if r['error'] is None])
+        return all_events

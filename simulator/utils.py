@@ -17,6 +17,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from tqdm import trange, tqdm
 import concurrent.futures
 import yaml
+from pathlib import Path
+
 
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
 
@@ -44,6 +46,23 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     else:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
+def get_latest_file(directory_path,extension = 'json') -> Path:
+    """
+    Get the most recently modified file in a directory with a specific extension
+    :param directory_path:
+    :param extension:
+    :return: The most recently modified file
+    """
+    # Convert the directory path to a Path object
+    directory_path = Path(directory_path)
+
+    # Get a list of all JSON files in the directory
+    json_files = [f for f in directory_path.glob(f"*.{extension}") if f.is_file()]
+
+    # Find the most recently modified JSON file
+    latest_json_file = max(json_files, key=lambda f: f.stat().st_mtime, default=None)
+
+    return latest_json_file
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''
     for key, value in d.items():
