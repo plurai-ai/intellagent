@@ -1,7 +1,8 @@
-langchain
-langchain_core
-langchain_openai
-langgraph
-pandas
-langchain_community
-networkx
+langchain==0.3.7
+langchain_core==0.3.15
+langchain_openai==0.2.5
+langgraph==0.2.44
+pandas==2.2.3
+langchain_community==0.3.5
+networkx==3.2.1
+streamlit==1.39.0
