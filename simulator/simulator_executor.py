@@ -53,7 +53,7 @@ class SimulatorExecutor:
             dataset_path = get_latest_file(datasets_dir)
         if dataset_path is None:
             dt_string = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-            dataset_path = 'dataset' + '__' + dt_string + '.json'
+            dataset_path = 'dataset' + '__' + dt_string + '.pickle'
         dataset_path = os.path.join(datasets_dir, dataset_path)
         self.dataset_handler.load_dataset(dataset_path)
 

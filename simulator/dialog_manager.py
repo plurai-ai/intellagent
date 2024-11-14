@@ -76,7 +76,6 @@ class DialogManager:
         :param experiment_path: The path of the experiment.
         """
         chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
-        self.dialog.output_path = experiment_path
         self.memory = SqliteSaver(os.path.join(experiment_path, 'memory.db'))
         chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
         self.dialog = Dialog(self.llm_user, chatbot,

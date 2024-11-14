@@ -32,7 +32,7 @@ class SqliteSaver:
                     role TEXT NOT NULL,
                     message TEXT NOT NULL,
                     time INTEGER NOT NULL,
-                    PRIMARY KEY (thread_id, message)
+                    PRIMARY KEY (thread_id, message, time)
                 )
             ''')
 
@@ -42,7 +42,7 @@ class SqliteSaver:
                     thread_id TEXT NOT NULL,
                     message TEXT NOT NULL,
                     time INTEGER NOT NULL,
-                    PRIMARY KEY (thread_id, message)
+                    PRIMARY KEY (thread_id, message, time)
                 )
             ''')
 
@@ -54,7 +54,7 @@ class SqliteSaver:
                     input TEXT,
                     output TEXT,
                     time INTEGER NOT NULL,
-                    PRIMARY KEY (thread_id, tool_name)
+                    PRIMARY KEY (thread_id, tool_name, time)
                 )
             ''')
 

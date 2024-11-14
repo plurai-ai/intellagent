@@ -46,7 +46,7 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     else:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
-def get_latest_file(directory_path,extension = 'json') -> Path:
+def get_latest_file(directory_path,extension = 'pickle') -> str:
     """
     Get the most recently modified file in a directory with a specific extension
     :param directory_path:
@@ -56,13 +56,13 @@ def get_latest_file(directory_path,extension = 'json') -> Path:
     # Convert the directory path to a Path object
     directory_path = Path(directory_path)
 
-    # Get a list of all JSON files in the directory
+    # Get a list of all the files in the directory with the extension
     json_files = [f for f in directory_path.glob(f"*.{extension}") if f.is_file()]
 
     # Find the most recently modified JSON file
-    latest_json_file = max(json_files, key=lambda f: f.stat().st_mtime, default=None)
+    latest_file = max(json_files, key=lambda f: f.stat().st_mtime, default=None)
 
-    return latest_json_file
+    return latest_file.name
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''
     for key, value in d.items():
