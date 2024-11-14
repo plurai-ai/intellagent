@@ -118,42 +118,6 @@ def append_line_to_file(file_path, text):
     with open(file_path, 'a') as file:  # 'a' mode opens the file for appending
         file.write(text + '\n')
 
-def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: list[BaseCallbackHandler]) -> list[Any]:
-    """
-    Invoke a langchain runnable function in parallel
-    :param llm_function: The agent invoking function
-    :param inputs: The list of all inputs
-    :param num_workers: The number of workers
-    :param callbacks: Langchain callbacks list
-    :return: A list of results
-    """
-
-    def sample_generator():
-        for i, sample in enumerate(inputs):
-            yield i, sample
-
-    def process_sample_with_progress(sample):
-        i, sample = sample
-        error = None
-        with contextlib.ExitStack() as stack:
-            CB = [stack.enter_context(callback()) for callback in callbacks]
-            try:
-                result = llm_function(sample)
-            except Exception as e:
-                logging.error('Error in chain invoke: {}'.format(e))
-                result = None
-                error = 'Error while running: ' + str(e)
-            for cb in CB:
-                accumulate_usage = cb.total_cost
-        pbar.update(1)  # Update the progress bar
-        return {'index': i, 'result': result, 'usage': accumulate_usage, 'error': error}
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
-        with tqdm(total=len(inputs), desc="Processing samples") as pbar:
-            all_results = list(executor.map(process_sample_with_progress, sample_generator()))
-
-    all_results = [res for res in all_results if res is not None]
-    return all_results
 
 class DummyCallback:
     """

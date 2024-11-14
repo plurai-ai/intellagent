@@ -1,6 +1,7 @@
 from typing import List
 from pydantic import BaseModel, Field
-from simulator.utils import set_llm_chain, batch_invoke, set_callbck
+from simulator.utils import set_llm_chain, set_callbck
+from simulator.parallelism import batch_invoke, async_batch_invoke
 from typing import Tuple
 from simulator.utils import get_llm
 import networkx as nx
@@ -105,9 +106,10 @@ class DescriptionGenerator:
         batch = []
         for flow in self.flows:
             batch.append({'user_prompt': self.prompt, 'flow': flow})
-        res = batch_invoke(policy_extractor.invoke, batch, num_workers=self.config['policies_config']['num_workers'],
-                           callbacks=[set_callbck(self.config['llm_policy']['type'])])
-
+        res = async_batch_invoke(policy_extractor.ainvoke, batch,
+                                 num_workers=self.config['policies_config']['num_workers'],
+                                 timeout=self.config['policies_config']['timeout'],
+                                 callbacks=[set_callbck(self.config['llm_policy']['type'])])
         for i, result in enumerate(res):
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
@@ -141,8 +143,9 @@ class DescriptionGenerator:
                                       'ind2': j + i + 1})
         self.graph_info['nodes'] = policies_list
         num_workers = self.config['edge_config'].get('num_workers', 1)
-        res = batch_invoke(edge_llm.invoke, samples_batch, num_workers=num_workers,
-                           callbacks=[callback])
+        timeout = self.config['edge_config'].get('timeout', 10)
+        res = async_batch_invoke(edge_llm.ainvoke, samples_batch, num_workers=num_workers,
+                                 callbacks=[callback], timeout=timeout)
         all_edges = []
         for result in res:
             if result['error'] is not None:
@@ -208,11 +211,12 @@ class DescriptionGenerator:
             samples_batch.append({'task_description': self.task_description,
                                   'policies': policies_list_to_str(policies)})
         num_workers = self.config['description_config'].get('num_workers', 1)
+        timeout = self.config['description_config'].get('timeout', 10)
         callback = set_callbck(self.config['llm_description']['type'])
-        res = batch_invoke(self.llm_description.invoke, samples_batch, num_workers=num_workers, callbacks=[callback])
+        res = async_batch_invoke(self.llm_description.ainvoke, samples_batch, num_workers=num_workers,
+                                 callbacks=[callback], timeout=timeout)
         for result in res:
             if result['error'] is not None:
-                print(f"Error in sample {result['index']}: {result['error']}")
                 continue
             self.total_cost += result['usage']
             all_policies[result['index']]['description'] = result['result'].event_description
@@ -234,6 +238,7 @@ class DescriptionGenerator:
         """
         iteration_indices = list(range(len(descriptions)))
         num_workers = self.config['refinement_config'].get('num_workers', 5)
+        timeout = self.config['refinement_config'].get('timeout', 10)
         callback = set_callbck(self.config['llm_refinement']['type'])
 
         for i in range(num_iterations):
@@ -243,7 +248,8 @@ class DescriptionGenerator:
                 batch_input.append({'description': descriptions[ind].event_description,
                                     'behaviour': descriptions[ind].expected_behaviour,
                                     'prompt': self.prompt})
-            res = batch_invoke(self.feedback_chain.invoke, batch_input, num_workers=num_workers, callbacks=[callback])
+            res = async_batch_invoke(self.feedback_chain.ainvoke, batch_input, num_workers=num_workers,
+                                     callbacks=[callback], timeout=timeout)
             cur_refine_indices = []
             improved_batch = []
             # refine the behaviour
@@ -256,8 +262,9 @@ class DescriptionGenerator:
                     cur_batch['feedback'] = result['result'].content
                     improved_batch.append(cur_batch)
                     self.total_cost += result['usage']
-            res = batch_invoke(self.refinement_chain.invoke, improved_batch,
-                               num_workers=num_workers, callbacks=[callback])
+
+            res = async_batch_invoke(self.refinement_chain.ainvoke, improved_batch, num_workers=num_workers,
+                                     callbacks=[callback], timeout=timeout)
             for j, result in enumerate(res):
                 if result['error'] is not None or 'None' in result['result'].content:
                     continue

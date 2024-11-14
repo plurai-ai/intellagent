@@ -106,3 +106,10 @@ class Dialog:
         :return:
         """
         return self.graph.invoke(**kwargs)
+
+    def ainvoke(self, **kwargs):
+        """
+        async Invoke the agent with the messages
+        :return:
+        """
+        return self.graph.ainvoke(**kwargs)

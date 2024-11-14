@@ -1,12 +1,15 @@
 from simulator.env import Env
+import os
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator
 from simulator.dialog_manager import DialogManager
-from simulator.utils import batch_invoke
 import pickle
 from simulator.utils import get_latest_file
 from datetime import datetime
 from simulator.dataset_handler import Dataset
+import warnings
+import yaml
+
 
 
 class SimulatorExecutor:
@@ -54,16 +57,28 @@ class SimulatorExecutor:
         dataset_path = os.path.join(datasets_dir, dataset_path)
         self.dataset_handler.load_dataset(dataset_path)
 
-    def run_simulation(self, num_samples=15):
+    def run_simulation(self):
         """
-        Run the simulation.
+        Run the simulation on the dataset.
         """
-        #descriptions = self.descriptions_generator.sample_description(5, num_samples=num_samples)
-        #pickle.dump(descriptions, open('res.pickle', 'wb'))
-        descriptions = pickle.load(open('res.pickle', 'rb'))
-        res = self.event_generator.description_to_event(descriptions[0])
-        res = self.dialog_manager.run_event(res)
+        if len(self.dataset_handler) == 0:
+            warnings.warn('The dataset is empty. Loading the last dataset...')
+            self.load_dataset()
+        experiments_dir = os.path.join(self.output_path, 'experiments')
+        experiment_name = self.dataset_handler.dataset_name + '__' + datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+        experiments_dir = os.path.join(experiments_dir, experiment_name)
+        os.mkdir(experiments_dir)
+        ## Save the prompt and the config in the experiment folder
+        with open(os.path.join(experiments_dir, 'prompt.txt'), "w") as file:
+            file.write(self.environment.prompt)
+        with open(os.path.join(experiments_dir, 'config.yaml'), "w") as file:
+            yaml.dump(self.config, file)
 
+        # init the dialog
+        self.dialog_manager.init_dialog(experiments_dir)
+        # Run the dialog
+        res = self.dialog_manager.run_events(self.dataset_handler.records)
+        return res
 
 
     @staticmethod

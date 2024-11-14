@@ -22,6 +22,7 @@ class Dataset:
         self.records = []
         self.event_generator = event_generator
         self.descriptions_generator = descriptions_generator
+        self.dataset_name = None
 
     def __len__(self):
         """
@@ -32,12 +33,13 @@ class Dataset:
     def load_dataset(self, path: str):
         """
         Loading dataset
-        :param path: path for the csv
+        :param path: path for the records
         """
         if os.path.isfile(path):
             self.records = pickle.load(open(path, 'rb'))
         else:
             logging.warning('Dataset dump not found, initializing from zero')
+        self.dataset_name = os.path.splitext(os.path.basename(path))[0]
         n_samples = self.config['num_samples'] - len(self.records)  # Number of samples to generate
         if n_samples == 0:
             return

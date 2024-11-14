@@ -129,3 +129,10 @@ class PlanExecuteImplementation:
         :return:
         """
         return self.graph.invoke(**kwargs)
+
+    async def ainvoke(self, **kwargs):
+        """
+        Invoke the agent with the messages
+        :return:
+        """
+        return await self.graph.ainvoke(**kwargs)

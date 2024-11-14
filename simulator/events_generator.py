@@ -14,7 +14,8 @@ from agents.plan_and_execute import Plan
 from simulator.utils import get_llm, set_callbck
 from dataclasses import dataclass
 from simulator.descriptor_generator import Description
-from simulator.utils import batch_invoke
+from simulator.parallelism import batch_invoke, async_batch_invoke
+
 
 @tool
 def calculate(expression: str) -> str:
@@ -62,6 +63,7 @@ class EventsGenerator:
         self.data_schema = env.data_schema
         self.init_agent()
         self.num_workers = config['num_workers']
+        self.timeout = config['timeout']
         self.total_cost = 0
 
     def init_executors(self) -> dict[AgentTools]:
@@ -128,12 +130,20 @@ class EventsGenerator:
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
 
+    async def adescription_to_event(self, description: Description) -> Event:
+        """
+        Generate an event based on the given description.
+        """
+        res = await self.agent.ainvoke(input={'input': description.event_description, 'args': {'dataset': {}}})
+        event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
+        return event
+
     def descriptions_to_events(self, descriptions: list[Description]) -> list[Event]:
         """
         Generate events based on the given descriptions.
         """
-        res = batch_invoke(self.description_to_event, descriptions, num_workers=self.num_workers,
-                           callbacks=self.callbacks)
+        res = async_batch_invoke(self.adescription_to_event, descriptions, num_workers=self.num_workers,
+                                 callbacks=self.callbacks, timeout=self.timeout)
         all_events = [r['result'] for r in res if r['error'] is None]
         self.total_cost += sum([r['usage'] for r in res if r['error'] is None])
         return all_events
