@@ -24,7 +24,7 @@ def get_last_db():
     last_dir = get_last_created_directory("./results")
     if last_dir is None:
         return None
-
+    last_dir = last_dir/'experiments'
     # Get the last created database file in the last created directory
     last_exp = get_last_created_directory(last_dir)
     if os.path.isfile(last_exp / "memory.db"):
