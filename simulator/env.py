@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 from simulator.utils.llm_utils import load_tools
 from langchain import hub
-import logging
+from simulator.utils.logger_config import logger, ConsoleColor
 from simulator.utils.llm_utils import set_llm_chain
 from simulator.utils.llm_utils import get_llm
 
@@ -22,8 +22,8 @@ class Env:
         """
         self.tools, self.tools_schema = load_tools(self.config['tools_folder'])
         if self.tools_schema and not(len(self.tools) == len(self.tools_schema)):
-            logging.warning(f"If providing a schema, make sure to provide a schema for each tool. Found {len(self.tools)} tools and {len(self.tools_schema)} schemas."
-                            f"Using the default tools schema for all tools.")
+            logger.warning(f"{ConsoleColor.RED}If providing a schema, make sure to provide a schema for each tool. Found {len(self.tools)} tools and {len(self.tools_schema)} schemas."
+                            f"Using the default tools schema for all tools.{ConsoleColor.RESET}")
             self.tools_schema = []
 
     def load_prompt(self):

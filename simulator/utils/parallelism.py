@@ -1,4 +1,4 @@
-import logging
+from simulator.utils.logger_config import logger, ConsoleColor
 from typing import Any
 from langchain_core.callbacks import BaseCallbackHandler
 import contextlib
@@ -29,7 +29,7 @@ def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: l
             try:
                 result = llm_function(sample)
             except Exception as e:
-                logging.error('Error in chain invoke: {}'.format(e))
+                logger.error('Error in chain invoke: {}'.format(e))
                 result = None
                 error = 'Error while running: ' + str(e)
             for cb in CB:
@@ -69,7 +69,7 @@ async def batch_ainvoke(llm_async_function, inputs: list[Any], num_workers: int,
             try:
                 result = await llm_async_function(sample)
             except Exception as e:
-                logging.error('Error in chain invoke: {}'.format(e))
+                logger.error('Error in chain invoke: {}'.format(e))
                 result = None
                 error = 'Error while running: ' + str(e)
             for cb in CB:

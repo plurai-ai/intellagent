@@ -1,7 +1,6 @@
 import argparse
-from simulator.utils import override_config
+from simulator.utils.file_reading import override_config
 from simulator.simulator_executor import SimulatorExecutor
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Process some integers.")

@@ -3,6 +3,17 @@ import logging
 # Shared logger instance
 logger = None
 
+
+class ConsoleColor:
+    RESET = "\033[0m"
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
+    CYAN = "\033[36m"
+    WHITE = "\033[97m"  # Bright white
+    GREY = "\033[37m"   # Light gray
+
 def setup_logger(log_file="app.log"):
     """
     Initializes the shared logger instance with the specified log file.
@@ -23,10 +34,28 @@ def setup_logger(log_file="app.log"):
         # Formatter
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
-        console_handler.setFormatter(formatter)
+        console_formatter = logging.Formatter('%(message)s')
+        console_handler.setFormatter(console_formatter)
 
         # Add handlers to the logger
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
 
     return logger
+
+def update_file_handler(log_file):
+    """
+    Updates the log file for the shared logger by replacing the file handler.
+    """
+    global logger
+
+    # Remove existing file handlers
+    for handler in logger.handlers[:]:
+        if isinstance(handler, logging.FileHandler):
+            logger.removeHandler(handler)
+
+    # Add a new file handler
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    logger.addHandler(file_handler)

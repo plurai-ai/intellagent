@@ -1,5 +1,5 @@
 import os.path
-import logging
+from simulator.utils.logger_config import logger, ConsoleColor
 import numpy as np
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator, Event
@@ -60,7 +60,7 @@ class Dataset:
         if os.path.isfile(path):
             self.records, iteration_num, dataset_cost = pickle.load(open(path, 'rb'))
         else:
-            logging.warning('Dataset dump not found, initializing from zero')
+            logger.warning(f"{ConsoleColor.RED}Dataset dump not found, initializing from zero{ConsoleColor.RESET}")
             iteration_num = 0
             dataset_cost = self.descriptions_generator.total_cost
         self.dataset_name = os.path.splitext(os.path.basename(path))[0]
@@ -70,10 +70,10 @@ class Dataset:
 
         while n_samples > 0 or iteration_num < self.max_iterations:
             if dataset_cost > self.config['max_cost']:
-                logging.warning('Cost is over the limit, stopping the generation. '
-                                'Increase the limit in the config file to generate more samples.')
+                logger.warning(f"{ConsoleColor.RED}Cost is over the limit, stopping the generation. "
+                               f"Increase the limit in the config file to generate more samples.{ConsoleColor.RESET}")
                 return
-            logging.info(f'Iteration {iteration_num} started')
+            logger.info(f'{ConsoleColor.WHITE}Iteration {iteration_num} started{ConsoleColor.RESET}')
             cur_iteration_sample_size = min(self.config['mini_batch_size'], n_samples)
             events, minibatch_cost = self.generate_mini_batch(cur_iteration_sample_size)
             self.records.extend(events)

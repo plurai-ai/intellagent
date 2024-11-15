@@ -3,14 +3,12 @@ import os
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator
 from simulator.dialog_manager import DialogManager
+from simulator.utils.logger_config import update_file_handler, setup_logger, ConsoleColor
 import pickle
 from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
 from simulator.dataset_handler import Dataset
-import warnings
 import yaml
-import logging
-
 
 class SimulatorExecutor:
     """
@@ -27,9 +25,13 @@ class SimulatorExecutor:
         self.environment = Env(config['environment'])
         description_generator_path = self.set_output_folder(output_path)
         if description_generator_path is None:
+            global logger
+            logger = setup_logger(os.path.join(output_path, 'policies_graph', 'graph.log'))
+            logger.info(f"{ConsoleColor.CYAN}Start Building the policies graph:{ConsoleColor.RESET}")
             descriptions_generator = DescriptionGenerator(environment=self.environment,
                                                           config=config['description_generator'])
             descriptions_generator.generate_policies_graph()
+            logger.info(f"{ConsoleColor.CYAN}Finish Building the policies graph{ConsoleColor.RESET}")
             pickle.dump(descriptions_generator,
                         open(os.path.join(output_path, 'policies_graph', 'descriptions_generator.pickle'), 'wb'))
         else:
@@ -62,7 +64,7 @@ class SimulatorExecutor:
         Run the simulation on the dataset.
         """
         if len(self.dataset_handler) == 0:
-            warnings.warn('The dataset is empty. Loading the last dataset...')
+            logger.warning(f"{ConsoleColor.RED}The dataset is empty. Loading the last dataset...{ConsoleColor.RESET}")
             self.load_dataset()
         experiments_dir = os.path.join(self.output_path, 'experiments')
         experiment_name = self.dataset_handler.dataset_name + '__' + datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
