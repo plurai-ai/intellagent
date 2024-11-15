@@ -10,11 +10,10 @@ from langchain_openai import ChatOpenAI
 from langchain.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_openai.chat_models import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from pathlib import Path
 import yaml
 
-
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
+
 
 def get_prompt_template(args: dict) -> ChatPromptTemplate:
     if "prompt_hub_name" in args:
@@ -23,15 +22,15 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     elif "prompt" in args:
         return args["prompt"]
     elif 'from_str' in args:
-        return ChatPromptTemplate.from_messages( [
-                (
-                    "system",
-                    args['from_str']['template'],
-                )
-            ])
+        return ChatPromptTemplate.from_messages([
+            (
+                "system",
+                args['from_str']['template'],
+            )
+        ])
     elif 'path' in args:
         with open(args['path'], 'r') as file:
-            return ChatPromptTemplate.from_messages( [
+            return ChatPromptTemplate.from_messages([
                 (
                     "system",
                     file.read(),
@@ -40,31 +39,15 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     else:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
-def get_latest_file(directory_path,extension = 'pickle') -> str:
-    """
-    Get the most recently modified file in a directory with a specific extension
-    :param directory_path:
-    :param extension:
-    :return: The most recently modified file
-    """
-    # Convert the directory path to a Path object
-    directory_path = Path(directory_path)
-
-    # Get a list of all the files in the directory with the extension
-    json_files = [f for f in directory_path.glob(f"*.{extension}") if f.is_file()]
-
-    # Find the most recently modified JSON file
-    latest_file = max(json_files, key=lambda f: f.stat().st_mtime, default=None)
-
-    return latest_file.name
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''
     for key, value in d.items():
         if mode == 'items':
-            final_str+=f'- {key}: {value}\n'
+            final_str += f'- {key}: {value}\n'
         elif mode == 'rows':
-            final_str+=f'# {key}: \n{value}\n----------------\n'
+            final_str += f'# {key}: \n{value}\n----------------\n'
     return final_str
+
 
 def set_llm_chain(llm: BaseChatModel, **kwargs) -> Runnable:
     """
@@ -75,6 +58,7 @@ def set_llm_chain(llm: BaseChatModel, **kwargs) -> Runnable:
         return system_prompt_template | llm.with_structured_output(kwargs["structure"])
     else:
         return system_prompt_template | llm
+
 
 def load_tools(tools_path: str):
     """
@@ -108,10 +92,6 @@ def load_tools(tools_path: str):
                     tools_schema.append(getattr(schema_parser, f'{attribute}_schema'))
     return tools, tools_schema
 
-def append_line_to_file(file_path, text):
-    with open(file_path, 'a') as file:  # 'a' mode opens the file for appending
-        file.write(text + '\n')
-
 
 class DummyCallback:
     """
@@ -125,8 +105,11 @@ class DummyCallback:
 
     def __exit__(self, exc_type, exc_value, traceback):
         pass
+
+
 def get_dummy_callback():
     return DummyCallback()
+
 
 def set_callbck(llm_type):
     if llm_type.lower() == 'openai' or llm_type.lower() == 'azure':
@@ -136,6 +119,7 @@ def set_callbck(llm_type):
     else:
         callback = get_dummy_callback
     return callback
+
 
 def get_llm(config: dict):
     """
@@ -162,19 +146,21 @@ def get_llm(config: dict):
             return ChatOpenAI(temperature=temperature, model_name=config['name'],
                               openai_api_key=config.get('openai_api_key', LLM_ENV['openai']['OPENAI_API_KEY']),
                               openai_api_base=config.get('openai_api_base', 'https://api.openai.com/v1'),
-                              openai_organization=config.get('openai_organization', LLM_ENV['openai']['OPENAI_ORGANIZATION']),
+                              openai_organization=config.get('openai_organization',
+                                                             LLM_ENV['openai']['OPENAI_ORGANIZATION']),
                               model_kwargs=model_kwargs)
     elif config['type'].lower() == 'azure':
         return AzureChatOpenAI(temperature=temperature, azure_deployment=config['name'],
-                        openai_api_key=config.get('openai_api_key', LLM_ENV['azure']['AZURE_OPENAI_API_KEY']),
-                        azure_endpoint=config.get('azure_endpoint', LLM_ENV['azure']['AZURE_OPENAI_ENDPOINT']),
-                        openai_api_version=config.get('openai_api_version', LLM_ENV['azure']['OPENAI_API_VERSION']))
+                               openai_api_key=config.get('openai_api_key', LLM_ENV['azure']['AZURE_OPENAI_API_KEY']),
+                               azure_endpoint=config.get('azure_endpoint', LLM_ENV['azure']['AZURE_OPENAI_ENDPOINT']),
+                               openai_api_version=config.get('openai_api_version',
+                                                             LLM_ENV['azure']['OPENAI_API_VERSION']))
 
     elif config['type'].lower() == 'google':
         from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(temperature=temperature, model=config['name'],
-                              google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
-                              model_kwargs=model_kwargs)
+                                      google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
+                                      model_kwargs=model_kwargs)
 
 
     elif config['type'].lower() == 'huggingfacepipeline':
@@ -190,26 +176,3 @@ def get_llm(config: dict):
         )
     else:
         raise NotImplementedError("LLM not implemented")
-def override_config(override_config_file, config_file='config/config_default.yml'):
-    """
-    Override the default configuration file with the override configuration file
-    :param config_file: The default configuration file
-    :param override_config_file: The override configuration file
-    """
-
-    def override_dict(config_dict, override_config_dict):
-        for key, value in override_config_dict.items():
-            if isinstance(value, dict):
-                if key not in config_dict:
-                    config_dict[key] = value
-                else:
-                    override_dict(config_dict[key], value)
-            else:
-                config_dict[key] = value
-        return config_dict
-    with open(config_file, 'r') as file:
-        default_config_dict = yaml.safe_load(file)
-    with open(override_config_file, 'r') as file:
-        override_config_dict = yaml.safe_load(file)
-    config_dict = override_dict(default_config_dict, override_config_dict)
-    return config_dict

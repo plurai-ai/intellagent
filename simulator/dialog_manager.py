@@ -1,16 +1,16 @@
 import os.path
 
 from simulator.env import Env
-from simulator.utils import get_prompt_template
+from simulator.utils.llm_utils import get_prompt_template
 from simulator.dialog_graph import Dialog
 from agents.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
-from simulator.utils import get_llm, set_callbck
+from simulator.utils.llm_utils import get_llm, set_callbck
 from simulator.events_generator import Event
 import uuid
-from simulator.memory.sqlite_handler import SqliteSaver
-from simulator.parallelism import batch_invoke, async_batch_invoke
+from simulator.utils.sqlite_handler import SqliteSaver
+from simulator.utils.parallelism import async_batch_invoke
 
 
 class DialogManager:

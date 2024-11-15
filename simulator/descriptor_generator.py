@@ -1,9 +1,9 @@
 from typing import List
 from pydantic import BaseModel, Field
-from simulator.utils import set_llm_chain, set_callbck
-from simulator.parallelism import batch_invoke, async_batch_invoke
+from simulator.utils.llm_utils import set_llm_chain, set_callbck
+from simulator.utils.parallelism import batch_invoke, async_batch_invoke
 from typing import Tuple
-from simulator.utils import get_llm
+from simulator.utils.llm_utils import get_llm
 import networkx as nx
 import random
 from simulator.env import Env

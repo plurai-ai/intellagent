@@ -4,7 +4,7 @@ from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator
 from simulator.dialog_manager import DialogManager
 import pickle
-from simulator.utils import get_latest_file
+from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
 from simulator.dataset_handler import Dataset
 import warnings

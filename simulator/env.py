@@ -1,11 +1,11 @@
 import os
 import pandas as pd
 from pathlib import Path
-from simulator.utils import load_tools
+from simulator.utils.llm_utils import load_tools
 from langchain import hub
 import logging
-from simulator.utils import set_llm_chain
-from simulator.utils import get_llm
+from simulator.utils.llm_utils import set_llm_chain
+from simulator.utils.llm_utils import get_llm
 
 
 class Env:

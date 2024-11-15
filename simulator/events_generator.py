@@ -9,13 +9,13 @@ from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
-from simulator.utils import dict_to_str, set_llm_chain
+from simulator.utils.llm_utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Plan
-from simulator.utils import get_llm, set_callbck
+from simulator.utils.llm_utils import get_llm, set_callbck
 from dataclasses import dataclass
 from simulator.descriptor_generator import Description
-from simulator.parallelism import batch_invoke, async_batch_invoke
-from typing import List, Tuple
+from simulator.utils.parallelism import async_batch_invoke
+from typing import Tuple
 
 @tool
 def calculate(expression: str) -> str:
