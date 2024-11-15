@@ -4,20 +4,14 @@ from langchain_core.runnables.base import Runnable
 import importlib
 import os
 import sys
-import logging
-from typing import Any
 from langchain_community.callbacks import get_openai_callback
 from langchain_community.callbacks.manager import get_bedrock_anthropic_callback
-from langchain_core.callbacks import BaseCallbackHandler
 from langchain_openai import ChatOpenAI
 from langchain.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_openai.chat_models import AzureChatOpenAI
-import contextlib
 from langchain_core.prompts import ChatPromptTemplate
-from tqdm import trange, tqdm
-import concurrent.futures
-import yaml
 from pathlib import Path
+import yaml
 
 
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
@@ -196,3 +190,26 @@ def get_llm(config: dict):
         )
     else:
         raise NotImplementedError("LLM not implemented")
+def override_config(override_config_file, config_file='config/config_default.yml'):
+    """
+    Override the default configuration file with the override configuration file
+    :param config_file: The default configuration file
+    :param override_config_file: The override configuration file
+    """
+
+    def override_dict(config_dict, override_config_dict):
+        for key, value in override_config_dict.items():
+            if isinstance(value, dict):
+                if key not in config_dict:
+                    config_dict[key] = value
+                else:
+                    override_dict(config_dict[key], value)
+            else:
+                config_dict[key] = value
+        return config_dict
+    with open(config_file, 'r') as file:
+        default_config_dict = yaml.safe_load(file)
+    with open(override_config_file, 'r') as file:
+        override_config_dict = yaml.safe_load(file)
+    config_dict = override_dict(default_config_dict, override_config_dict)
+    return config_dict
