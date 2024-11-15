@@ -3,7 +3,7 @@ import os
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator
 from simulator.dialog_manager import DialogManager
-from simulator.utils.logger_config import update_file_handler, setup_logger, ConsoleColor, logger
+from simulator.utils.logger_config import update_logger_file, setup_logger, ConsoleColor, logger
 import pickle
 from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
@@ -56,6 +56,7 @@ class SimulatorExecutor:
             dt_string = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
             dataset_path = 'dataset' + '__' + dt_string + '.pickle'
         dataset_path = os.path.join(datasets_dir, dataset_path)
+        update_logger_file(os.path.join(dataset_path, 'dataset.log'))
         self.dataset_handler.load_dataset(dataset_path)
 
     def run_simulation(self):
@@ -63,12 +64,13 @@ class SimulatorExecutor:
         Run the simulation on the dataset.
         """
         if len(self.dataset_handler) == 0:
-            logger.warning(f"{ConsoleColor.RED}The dataset is empty. Loading the last dataset...{ConsoleColor.RESET}")
+            print(f"{ConsoleColor.BLUE}The dataset is empty. Loading the last dataset...{ConsoleColor.RESET}")
             self.load_dataset()
         experiments_dir = os.path.join(self.output_path, 'experiments')
         experiment_name = self.dataset_handler.dataset_name + '__' + datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
         experiments_dir = os.path.join(experiments_dir, experiment_name)
         os.mkdir(experiments_dir)
+        update_logger_file(os.path.join(experiments_dir, 'experiment.log'))
         ## Save the prompt and the config in the experiment folder
         with open(os.path.join(experiments_dir, 'prompt.txt'), "w") as file:
             file.write(self.environment.prompt)
@@ -82,6 +84,7 @@ class SimulatorExecutor:
         num_batch = len(records) // self.config['batch_size']
         all_res = []
         total_cost = 0
+        logger.info(f"{ConsoleColor.CYAN}Start running the simulator{ConsoleColor.RESET}")
         for i in range(num_batch):
             if total_cost > self.config['max_cost']:
                 logger.warning(
@@ -93,6 +96,7 @@ class SimulatorExecutor:
                                                                (i + 1) * self.config['batch_size']])
             all_res.extend(res)
             total_cost += cost
+        logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")
         return all_res
 
 

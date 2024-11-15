@@ -67,7 +67,7 @@ class Dataset:
         n_samples = self.config['num_samples'] - len(self.records)  # Number of samples to generate
         if n_samples == 0:
             return
-
+        logger.info(f'{ConsoleColor.CYAN}Start building the dataset{ConsoleColor.RESET}')
         while n_samples > 0 or iteration_num < self.max_iterations:
             if dataset_cost > self.config['max_cost']:
                 logger.warning(f"{ConsoleColor.RED}Cost is over the limit, stopping the generation. "
@@ -80,3 +80,4 @@ class Dataset:
             n_samples -= len(events)
             iteration_num += 1
             pickle.dump((self.records, iteration_num, dataset_cost), open(path, 'wb'))
+        logger.info(f'{ConsoleColor.CYAN}Finish building the dataset{ConsoleColor.RESET}')
