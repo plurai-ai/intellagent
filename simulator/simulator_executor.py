@@ -9,7 +9,7 @@ from datetime import datetime
 from simulator.dataset_handler import Dataset
 import warnings
 import yaml
-
+import logging
 
 
 class SimulatorExecutor:
@@ -77,8 +77,20 @@ class SimulatorExecutor:
         # init the dialog
         self.dialog_manager.init_dialog(experiments_dir)
         # Run the dialog
-        res = self.dialog_manager.run_events(self.dataset_handler.records)
-        return res
+        records = self.dataset_handler.records
+        num_batch = len(records) // self.config['batch_size']
+        all_res = []
+        total_cost = 0
+        for i in range(num_batch):
+            if total_cost > self.config['max_cost']:
+                logging.info(f'The cost limit for the experiment is reached. Stopping the simulation.')
+                break
+            logging.info(f'Running batch {i}...')
+            res, cost = self.dialog_manager.run_events(records[i * self.config['batch_size']:
+                                                               (i + 1) * self.config['batch_size']])
+            all_res.extend(res)
+            total_cost += cost
+        return all_res
 
 
     @staticmethod

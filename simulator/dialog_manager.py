@@ -39,7 +39,6 @@ class DialogManager:
         self.environment_prompt = environment.prompt
         self.user_prompt = config['user_prompt']
         self.num_workers = config['num_workers']
-        self.total_cost = 0
         self.timeout = config['timeout']
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
@@ -152,5 +151,5 @@ class DialogManager:
         res = async_batch_invoke(self.arun_event, events, num_workers=self.num_workers,
                                  callbacks=self.callbacks, timeout=self.timeout)
         final_result = [r['result'] for r in res if r['error'] is None]
-        self.total_cost += sum([r['usage'] for r in res if r['error'] is None])
-        return final_result
+        cost = sum([r['usage'] for r in res if r['error'] is None])
+        return final_result, cost

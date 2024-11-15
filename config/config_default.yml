@@ -69,6 +69,8 @@ dialog_manager:
         name: 'gpt-4o'
     num_workers: 5
     timeout: 30 # in seconds
+    mini_batch_size: 10
+    cost_limit: 30 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dialog manager part
 
 dataset:
     name: 'dataset'
