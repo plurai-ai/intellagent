@@ -23,6 +23,7 @@ class Dataset:
         self.event_generator = event_generator
         self.descriptions_generator = descriptions_generator
         self.dataset_name = None
+        self.max_iterations = config['max_iterations']
 
     def __len__(self):
         """
@@ -30,34 +31,44 @@ class Dataset:
         """
         return len(self.records)
 
-    def load_dataset(self, path: str):
-        """
-        Loading dataset
-        :param path: path for the records
-        """
-        if os.path.isfile(path):
-            self.records = pickle.load(open(path, 'rb'))
-        else:
-            logging.warning('Dataset dump not found, initializing from zero')
-        self.dataset_name = os.path.splitext(os.path.basename(path))[0]
-        n_samples = self.config['num_samples'] - len(self.records)  # Number of samples to generate
-        if n_samples == 0:
-            return
-
+    def generate_mini_batch(self, batch_size: int):
         # Equalizing the distribution of difficulty levels according to the gap between the target frequency and the actual frequency
         difficulty_distribution, _ = np.histogram([r.description.challenge_level for r in self.records],
                                                   bins=np.arange(self.config['min_difficult_level'] - 0.5,
                                                                  self.config['max_difficult_level'] + 1.5, 1))
         bins = list(range(self.config['min_difficult_level'], self.config['max_difficult_level'] + 1))
 
-        target_frequency = (len(self.records) + n_samples) / len(difficulty_distribution)
+        target_frequency = (len(self.records) + batch_size) / len(difficulty_distribution)
         deficits = np.maximum(target_frequency - difficulty_distribution,
                               0)  # Only consider bins that are underrepresented
         total_deficit = deficits.sum()
         weights = deficits / total_deficit if total_deficit > 0 else np.zeros_like(deficits)
 
-        challenge_complexity = np.random.choice(bins, size=n_samples, p=weights)
-        descriptions = self.descriptions_generator.sample_description(challenge_complexity, num_samples=n_samples)
+        challenge_complexity = np.random.choice(bins, size=batch_size, p=weights)
+        descriptions = self.descriptions_generator.sample_description(challenge_complexity, num_samples=batch_size)
         events = self.event_generator.descriptions_to_events(descriptions)
-        self.records.extend(events)
-        pickle.dump(self.records, open(path, 'wb'))
+        return events
+
+
+    def load_dataset(self, path: str):
+        """
+        Loading dataset
+        :param path: path for the records
+        """
+        if os.path.isfile(path):
+            self.records, iteration_num = pickle.load(open(path, 'rb'))
+        else:
+            logging.warning('Dataset dump not found, initializing from zero')
+            iteration_num = 0
+        self.dataset_name = os.path.splitext(os.path.basename(path))[0]
+        n_samples = self.config['num_samples'] - len(self.records)  # Number of samples to generate
+        if n_samples == 0:
+            return
+
+        while n_samples > 0 or iteration_num < self.max_iterations:
+            #TODO: add logger start iteration!
+            cur_iteration_sample_size = min(self.config['mini_batch_size'], n_samples)
+            events = self.generate_mini_batch(cur_iteration_sample_size)
+            self.records.extend(events)
+            n_samples -= len(events)
+            pickle.dump((self.records, iteration_num), open(path, 'wb'))
