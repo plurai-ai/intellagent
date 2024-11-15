@@ -2,8 +2,9 @@ import os.path
 import logging
 import numpy as np
 from simulator.descriptor_generator import DescriptionGenerator
-from simulator.events_generator import EventsGenerator
+from simulator.events_generator import EventsGenerator, Event
 import pickle
+from typing import List, Tuple
 
 
 class Dataset:
@@ -31,7 +32,7 @@ class Dataset:
         """
         return len(self.records)
 
-    def generate_mini_batch(self, batch_size: int):
+    def generate_mini_batch(self, batch_size: int) -> Tuple[List[Event], float]:
         # Equalizing the distribution of difficulty levels according to the gap between the target frequency and the actual frequency
         difficulty_distribution, _ = np.histogram([r.description.challenge_level for r in self.records],
                                                   bins=np.arange(self.config['min_difficult_level'] - 0.5,
@@ -45,10 +46,11 @@ class Dataset:
         weights = deficits / total_deficit if total_deficit > 0 else np.zeros_like(deficits)
 
         challenge_complexity = np.random.choice(bins, size=batch_size, p=weights)
-        descriptions = self.descriptions_generator.sample_description(challenge_complexity, num_samples=batch_size)
-        events = self.event_generator.descriptions_to_events(descriptions)
-        return events
-
+        descriptions, description_cost = self.descriptions_generator.sample_description(challenge_complexity,
+                                                                                        num_samples=batch_size)
+        events, events_cost = self.event_generator.descriptions_to_events(descriptions)
+        minibatch_cost = description_cost + events_cost
+        return events, minibatch_cost
 
     def load_dataset(self, path: str):
         """
@@ -56,19 +58,25 @@ class Dataset:
         :param path: path for the records
         """
         if os.path.isfile(path):
-            self.records, iteration_num = pickle.load(open(path, 'rb'))
+            self.records, iteration_num, dataset_cost = pickle.load(open(path, 'rb'))
         else:
             logging.warning('Dataset dump not found, initializing from zero')
             iteration_num = 0
+            dataset_cost = self.descriptions_generator.total_cost
         self.dataset_name = os.path.splitext(os.path.basename(path))[0]
         n_samples = self.config['num_samples'] - len(self.records)  # Number of samples to generate
         if n_samples == 0:
             return
 
         while n_samples > 0 or iteration_num < self.max_iterations:
-            #TODO: add logger start iteration!
+            if dataset_cost > self.config['max_cost']:
+                logging.warning('Cost is over the limit, stopping the generation. '
+                                'Increase the limit in the config file to generate more samples.')
+                return
+            logging.info(f'Iteration {iteration_num} started')
             cur_iteration_sample_size = min(self.config['mini_batch_size'], n_samples)
-            events = self.generate_mini_batch(cur_iteration_sample_size)
+            events, minibatch_cost = self.generate_mini_batch(cur_iteration_sample_size)
             self.records.extend(events)
             n_samples -= len(events)
+            iteration_num += 1
             pickle.dump((self.records, iteration_num), open(path, 'wb'))

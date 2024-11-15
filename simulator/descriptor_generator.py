@@ -185,12 +185,14 @@ class DescriptionGenerator:
             current_node = next_node
         return [self.graph_info['nodes'][t] for t in path], path_sum
 
-    def sample_description(self, challenge_complexity: int or list[int], num_samples: int = 1) -> list[Description]:
+    def sample_description(self, challenge_complexity: int or list[int], num_samples: int = 1) -> Tuple[list[Description], float]:
         """
         Sample a description of event
-        :param challenge_complexity: The complexity of the generated description (it will be at least the provided number), either list with size num_samples or a single number
+        :param challenge_complexity: The complexity of the generated description
+        (it will be at least the provided number), either list with size num_samples or a single number
         :param num_samples: The number of samples to generate
-        :return: The description of the event, the list of policies that were used to generate the description and the actual complexity of the description
+        :return: The description of the event, the list of policies that were used to generate the description and the
+        actual complexity of the description + the cost
         """
 
         def policies_list_to_str(policies):
@@ -205,6 +207,7 @@ class DescriptionGenerator:
 
         samples_batch = []
         all_policies = []
+        cost = 0
         for i, cur_score in enumerate(challenge_complexity):
             policies, path_sum = self.sample_from_graph(cur_score)
             all_policies.append({'policies': policies, 'path_sum': path_sum})
@@ -218,28 +221,31 @@ class DescriptionGenerator:
         for result in res:
             if result['error'] is not None:
                 continue
-            self.total_cost += result['usage']
+            cost += result['usage']
             all_policies[result['index']]['description'] = result['result'].event_description
             all_policies[result['index']]['expected_behaviour'] = result['result'].expected_behaviour
         descriptions = [Description(event_description=policy['description'],
                                     expected_behaviour=policy['expected_behaviour'],
                                     policies= policy['policies'],
                                     challenge_level=policy['path_sum']) for policy in all_policies]
+        refinement_cost = 0
         if self.config['refinement_config']['do_refinement']:
-            descriptions = self.expected_behaviour_refinement(descriptions)
-        return descriptions
+            descriptions, refinement_cost = self.expected_behaviour_refinement(descriptions)
+        cost += refinement_cost
+        return descriptions, cost
 
-    def expected_behaviour_refinement(self, descriptions: list[Description], num_iterations=1) -> list[Description]:
+    def expected_behaviour_refinement(self, descriptions: list[Description], num_iterations=1) -> Tuple[list[Description], float]:
         """
         Verify the expected behaviour of the chatbot according to each policy
         :param descriptions:
         :param num_iterations:
-        :return: new updated descriptions list
+        :return: new updated descriptions list, and cost
         """
         iteration_indices = list(range(len(descriptions)))
         num_workers = self.config['refinement_config'].get('num_workers', 5)
         timeout = self.config['refinement_config'].get('timeout', 10)
         callback = set_callbck(self.config['llm_refinement']['type'])
+        cost = 0
 
         for i in range(num_iterations):
             batch_input = []
@@ -261,7 +267,7 @@ class DescriptionGenerator:
                     cur_batch = batch_input[result['index']]
                     cur_batch['feedback'] = result['result'].content
                     improved_batch.append(cur_batch)
-                    self.total_cost += result['usage']
+                    cost += result['usage']
 
             res = async_batch_invoke(self.refinement_chain.ainvoke, improved_batch, num_workers=num_workers,
                                      callbacks=[callback], timeout=timeout)
@@ -270,9 +276,9 @@ class DescriptionGenerator:
                     continue
                 else:
                     descriptions[cur_refine_indices[result['index']]].expected_behaviour = result['result'].content
-                    self.total_cost += result['usage']
+                    cost += result['usage']
             iteration_indices = cur_refine_indices
-        return descriptions
+        return descriptions, cost
 
     def __getstate__(self):
         # Return a dictionary of picklable attributes

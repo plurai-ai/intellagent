@@ -15,7 +15,7 @@ from simulator.utils import get_llm, set_callbck
 from dataclasses import dataclass
 from simulator.descriptor_generator import Description
 from simulator.parallelism import batch_invoke, async_batch_invoke
-
+from typing import List, Tuple
 
 @tool
 def calculate(expression: str) -> str:
@@ -64,7 +64,6 @@ class EventsGenerator:
         self.init_agent()
         self.num_workers = config['num_workers']
         self.timeout = config['timeout']
-        self.total_cost = 0
 
     def init_executors(self) -> dict[AgentTools]:
         """
@@ -138,12 +137,12 @@ class EventsGenerator:
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
 
-    def descriptions_to_events(self, descriptions: list[Description]) -> list[Event]:
+    def descriptions_to_events(self, descriptions: list[Description]) -> Tuple[list[Event], float]:
         """
         Generate events based on the given descriptions.
         """
         res = async_batch_invoke(self.adescription_to_event, descriptions, num_workers=self.num_workers,
                                  callbacks=self.callbacks, timeout=self.timeout)
         all_events = [r['result'] for r in res if r['error'] is None]
-        self.total_cost += sum([r['usage'] for r in res if r['error'] is None])
-        return all_events
+        total_cost = sum([r['usage'] for r in res if r['error'] is None])
+        return all_events, total_cost
