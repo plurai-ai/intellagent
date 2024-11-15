@@ -41,8 +41,6 @@ def setup_logger(log_file="app.log"):
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
 
-    return logger
-
 def update_file_handler(log_file):
     """
     Updates the log file for the shared logger by replacing the file handler.

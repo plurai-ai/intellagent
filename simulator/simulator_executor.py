@@ -3,7 +3,7 @@ import os
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator
 from simulator.dialog_manager import DialogManager
-from simulator.utils.logger_config import update_file_handler, setup_logger, ConsoleColor
+from simulator.utils.logger_config import update_file_handler, setup_logger, ConsoleColor, logger
 import pickle
 from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
@@ -25,8 +25,7 @@ class SimulatorExecutor:
         self.environment = Env(config['environment'])
         description_generator_path = self.set_output_folder(output_path)
         if description_generator_path is None:
-            global logger
-            logger = setup_logger(os.path.join(output_path, 'policies_graph', 'graph.log'))
+            setup_logger(os.path.join(output_path, 'policies_graph', 'graph.log'))
             logger.info(f"{ConsoleColor.CYAN}Start Building the policies graph:{ConsoleColor.RESET}")
             descriptions_generator = DescriptionGenerator(environment=self.environment,
                                                           config=config['description_generator'])
@@ -85,9 +84,11 @@ class SimulatorExecutor:
         total_cost = 0
         for i in range(num_batch):
             if total_cost > self.config['max_cost']:
-                logging.info(f'The cost limit for the experiment is reached. Stopping the simulation.')
+                logger.warning(
+                    f"{ConsoleColor.RED}The cost limit for the experiment is reached. "
+                    f"Stopping the simulation.{ConsoleColor.RESET}")
                 break
-            logging.info(f'Running batch {i}...')
+            logger.info(f"{ConsoleColor.WHITE}Running batch {i}...{ConsoleColor.RESET}")
             res, cost = self.dialog_manager.run_events(records[i * self.config['batch_size']:
                                                                (i + 1) * self.config['batch_size']])
             all_res.extend(res)
