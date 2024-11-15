@@ -1,5 +1,5 @@
 import os.path
-from simulator.utils.logger_config import logger, ConsoleColor
+from simulator.utils.logger_config import get_logger, ConsoleColor
 import numpy as np
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator, Event
@@ -57,6 +57,7 @@ class Dataset:
         Loading dataset
         :param path: path for the records
         """
+        logger = get_logger()
         if os.path.isfile(path):
             self.records, iteration_num, dataset_cost = pickle.load(open(path, 'rb'))
         else:
@@ -68,8 +69,8 @@ class Dataset:
         if n_samples == 0:
             return
         logger.info(f'{ConsoleColor.CYAN}Start building the dataset{ConsoleColor.RESET}')
-        while n_samples > 0 or iteration_num < self.max_iterations:
-            if dataset_cost > self.config['max_cost']:
+        while n_samples > 0 and iteration_num < self.max_iterations:
+            if dataset_cost > self.config['cost_limit']:
                 logger.warning(f"{ConsoleColor.RED}Cost is over the limit, stopping the generation. "
                                f"Increase the limit in the config file to generate more samples.{ConsoleColor.RESET}")
                 return

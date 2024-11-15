@@ -16,7 +16,8 @@ def get_latest_file(directory_path, extension='pickle') -> str:
 
     # Find the most recently modified JSON file
     latest_file = max(json_files, key=lambda f: f.stat().st_mtime, default=None)
-
+    if latest_file is None:
+        return None
     return latest_file.name
 
 

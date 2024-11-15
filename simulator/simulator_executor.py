@@ -3,13 +3,13 @@ import os
 from simulator.descriptor_generator import DescriptionGenerator
 from simulator.events_generator import EventsGenerator
 from simulator.dialog_manager import DialogManager
-from simulator.utils.logger_config import update_logger_file, setup_logger, ConsoleColor, logger
+from simulator.utils.logger_config import update_logger_file, setup_logger, ConsoleColor
 import pickle
 from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
 from simulator.dataset_handler import Dataset
 import yaml
-
+logger = None
 class SimulatorExecutor:
     """
     This class is responsible for executing simulation.
@@ -24,8 +24,9 @@ class SimulatorExecutor:
         self.config = config
         self.environment = Env(config['environment'])
         description_generator_path = self.set_output_folder(output_path)
+        global logger
+        logger = setup_logger(os.path.join(output_path, 'policies_graph', 'graph.log'))
         if description_generator_path is None:
-            setup_logger(os.path.join(output_path, 'policies_graph', 'graph.log'))
             logger.info(f"{ConsoleColor.CYAN}Start Building the policies graph:{ConsoleColor.RESET}")
             descriptions_generator = DescriptionGenerator(environment=self.environment,
                                                           config=config['description_generator'])
@@ -56,7 +57,7 @@ class SimulatorExecutor:
             dt_string = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
             dataset_path = 'dataset' + '__' + dt_string + '.pickle'
         dataset_path = os.path.join(datasets_dir, dataset_path)
-        update_logger_file(os.path.join(dataset_path, 'dataset.log'))
+        update_logger_file(os.path.join(datasets_dir, 'dataset.log'))
         self.dataset_handler.load_dataset(dataset_path)
 
     def run_simulation(self):
@@ -80,20 +81,21 @@ class SimulatorExecutor:
         # init the dialog
         self.dialog_manager.init_dialog(experiments_dir)
         # Run the dialog
+        mini_batch_size = self.config['dialog_manager']['mini_batch_size']
         records = self.dataset_handler.records
-        num_batch = len(records) // self.config['batch_size']
+        num_batch = len(records) //mini_batch_size
         all_res = []
         total_cost = 0
         logger.info(f"{ConsoleColor.CYAN}Start running the simulator{ConsoleColor.RESET}")
         for i in range(num_batch):
-            if total_cost > self.config['max_cost']:
+            if total_cost > self.config['dialog_manager']['cost_limit']:
                 logger.warning(
                     f"{ConsoleColor.RED}The cost limit for the experiment is reached. "
                     f"Stopping the simulation.{ConsoleColor.RESET}")
                 break
             logger.info(f"{ConsoleColor.WHITE}Running batch {i}...{ConsoleColor.RESET}")
-            res, cost = self.dialog_manager.run_events(records[i * self.config['batch_size']:
-                                                               (i + 1) * self.config['batch_size']])
+            res, cost = self.dialog_manager.run_events(records[i * mini_batch_size:
+                                                               (i + 1) * mini_batch_size])
             all_res.extend(res)
             total_cost += cost
         logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")

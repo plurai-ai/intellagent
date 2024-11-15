@@ -8,7 +8,7 @@ import networkx as nx
 import random
 from simulator.env import Env
 from dataclasses import dataclass
-from simulator.utils.logger_config import logger, ConsoleColor
+from simulator.utils.logger_config import ConsoleColor, get_logger
 
 
 class Rank(BaseModel):
@@ -77,18 +77,19 @@ class DescriptionGenerator:
         """
         Generate the policies graph
         """
+        logger = get_logger()
         if override or not hasattr(self, 'flows'):
-            logger.info(f"{ConsoleColor.White}Step 1: Breaking prompt to flows{ConsoleColor.RESET}")
+            logger.info(f"{ConsoleColor.WHITE}Step 1: Breaking prompt to flows{ConsoleColor.RESET}")
             self.flows = self.extract_flows()
-            logger.info(f"{ConsoleColor.White}Finish step 1{ConsoleColor.RESET}")
+            logger.info(f"{ConsoleColor.WHITE}Finish step 1{ConsoleColor.RESET}")
         if override or not hasattr(self, 'policies'):
-            logger.info(f"{ConsoleColor.White}Step 2: Breaking each flow to policies{ConsoleColor.RESET}")
+            logger.info(f"{ConsoleColor.WHITE}Step 2: Breaking each flow to policies{ConsoleColor.RESET}")
             self.policies = self.extract_policies()
-            logger.info(f"{ConsoleColor.White}Finish step 2{ConsoleColor.RESET}")
+            logger.info(f"{ConsoleColor.WHITE}Finish step 2{ConsoleColor.RESET}")
         if override or not hasattr(self, 'relations'):
-            logger.info(f"{ConsoleColor.White}Step 3: Building the relations graph{ConsoleColor.RESET}")
+            logger.info(f"{ConsoleColor.WHITE}Step 3: Building the relations graph{ConsoleColor.RESET}")
             self.extract_graph()
-            logger.info(f"{ConsoleColor.White}Finish step 3{ConsoleColor.RESET}")
+            logger.info(f"{ConsoleColor.WHITE}Finish step 3{ConsoleColor.RESET}")
 
     def extract_flows(self):
         """

@@ -14,6 +14,22 @@ class ConsoleColor:
     WHITE = "\033[97m"  # Bright white
     GREY = "\033[37m"   # Light gray
 
+def get_logger():
+    """
+    Returns the shared logger instance. If not initialized, raises an error.
+    """
+    global logger
+    if logger is None:
+        # Return a basic Python logger with default configuration
+        default_logger = logging.getLogger("default_logger")
+        if not default_logger.handlers:  # Prevent adding multiple handlers
+            default_logger.setLevel(logging.WARNING)
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+            default_logger.addHandler(console_handler)
+        return default_logger
+    return logger
+
 def setup_logger(log_file="app.log"):
     """
     Initializes the shared logger instance with the specified log file.
@@ -40,6 +56,7 @@ def setup_logger(log_file="app.log"):
         # Add handlers to the logger
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
+        return logger
 
 def update_logger_file(log_file):
     """

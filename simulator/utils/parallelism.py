@@ -1,4 +1,4 @@
-from simulator.utils.logger_config import logger, ConsoleColor
+from simulator.utils.logger_config import get_logger, ConsoleColor
 from typing import Any
 from langchain_core.callbacks import BaseCallbackHandler
 import contextlib
@@ -16,6 +16,7 @@ def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: l
     :param callbacks: Langchain callbacks list
     :return: A list of results
     """
+    logger = get_logger()
 
     def sample_generator():
         for i, sample in enumerate(inputs):
@@ -56,7 +57,7 @@ async def batch_ainvoke(llm_async_function, inputs: list[Any], num_workers: int,
     :param timeout: The timeout for each task (in seconds)
     :return: A list of results
     """
-
+    logger = get_logger()
     def sample_generator():
         for i, sample in enumerate(inputs):
             yield i, sample

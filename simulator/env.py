@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 from simulator.utils.llm_utils import load_tools
 from langchain import hub
-from simulator.utils.logger_config import logger, ConsoleColor
+from simulator.utils.logger_config import get_logger, ConsoleColor
 from simulator.utils.llm_utils import set_llm_chain
 from simulator.utils.llm_utils import get_llm
 
@@ -20,6 +20,7 @@ class Env:
         Load the tools from the tools folder
         :return:
         """
+        logger = get_logger()
         self.tools, self.tools_schema = load_tools(self.config['tools_folder'])
         if self.tools_schema and not(len(self.tools) == len(self.tools_schema)):
             logger.warning(f"{ConsoleColor.RED}If providing a schema, make sure to provide a schema for each tool. Found {len(self.tools)} tools and {len(self.tools_schema)} schemas."
