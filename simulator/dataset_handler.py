@@ -79,4 +79,4 @@ class Dataset:
             self.records.extend(events)
             n_samples -= len(events)
             iteration_num += 1
-            pickle.dump((self.records, iteration_num), open(path, 'wb'))
+            pickle.dump((self.records, iteration_num, dataset_cost), open(path, 'wb'))
