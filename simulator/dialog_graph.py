@@ -15,6 +15,7 @@ class DialogState(TypedDict):
     chatbot_messages: Annotated[list, add_messages]
     chatbot_args: Optional[dict]
     thread_id: str
+    user_thoughts: Optional[list]
 
 
 class Dialog:
@@ -54,12 +55,15 @@ class Dialog:
             # Call the simulated user
             response = self.user.invoke(messages)
             # This response is an AI message - we need to flip this to be a human message
+            user_thoughts = state['user_thoughts']
             if self.memory is not None:
                 if response['thought'] is not None:
                     self.memory.insert_thought(state['thread_id'], response['thought'])
+                    user_thoughts.append(response['thought'])
                 self.memory.insert_dialog(state['thread_id'], 'Human', response['response'])
             return {"chatbot_messages": [HumanMessage(content=response['response'])],
-                    'user_messages': [AIMessage(content=response['response'])]}
+                    'user_messages': [AIMessage(content=response['response'])],
+                    'user_thoughts': user_thoughts}
 
         return simulated_user_node
 

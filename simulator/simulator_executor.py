@@ -9,6 +9,7 @@ from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
 from simulator.dataset_handler import Dataset
 import yaml
+import pandas as pd
 
 logger = None
 
@@ -47,6 +48,7 @@ class SimulatorExecutor:
         self.dataset_handler = Dataset(config['dataset'], event_generator=event_generator,
                                        descriptions_generator=descriptions_generator)
         self.output_path = output_path
+        self.simulator_results = None
 
     def load_dataset(self, dataset_path='latest'):
         """
@@ -72,17 +74,17 @@ class SimulatorExecutor:
             self.load_dataset()
         experiments_dir = os.path.join(self.output_path, 'experiments')
         experiment_name = self.dataset_handler.dataset_name + '__' + datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-        experiments_dir = os.path.join(experiments_dir, experiment_name)
-        os.mkdir(experiments_dir)
-        update_logger_file(os.path.join(experiments_dir, 'experiment.log'))
+        experiment_dir = os.path.join(experiments_dir, experiment_name)
+        os.mkdir(experiment_dir)
+        update_logger_file(os.path.join(experiment_dir, 'experiment.log'))
         ## Save the prompt and the config in the experiment folder
-        with open(os.path.join(experiments_dir, 'prompt.txt'), "w") as file:
+        with open(os.path.join(experiment_dir, 'prompt.txt'), "w") as file:
             file.write(self.environment.prompt)
-        with open(os.path.join(experiments_dir, 'config.yaml'), "w") as file:
+        with open(os.path.join(experiment_dir, 'config.yaml'), "w") as file:
             yaml.dump(self.config, file)
 
         # init the dialog
-        self.dialog_manager.init_dialog(experiments_dir)
+        self.dialog_manager.init_dialog(experiment_dir)
         # Run the dialog
         mini_batch_size = self.config['dialog_manager']['mini_batch_size']
         records = self.dataset_handler.records
@@ -102,7 +104,27 @@ class SimulatorExecutor:
             all_res.extend(res)
             total_cost += cost
         logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")
-        return all_res
+        self.analyze_results(all_res,experiment_dir)
+
+    def analyze_results(self, results, experiment_dir):
+        """
+        Analyze the results of the simulation.
+        """
+        all_rows = []
+        for r in results:
+            cur_event = self.dataset_handler.records[r['event_id'] - 1]
+            score = False if 'FAILURE' in r['res']['user_messages'][-1] else True
+            cur_row = {'id': r['event_id'], 'thread_id': r['res']['thread_id'],
+                       'score': score,
+                       'reason': r['res']['user_thoughts'][-1],
+                       'scenario': cur_event.scenario,
+                       'expected_behaviour': cur_event.description.expected_behaviour,
+                       'challenge_level': cur_event.description.challenge_level,
+                       'policies': cur_event.description.policies}
+            all_rows.append(cur_row)
+        df = pd.DataFrame(all_rows)
+        df.to_csv(os.path.join(experiment_dir,'results.csv'), index=False)
+
 
     @staticmethod
     def set_output_folder(output_path):

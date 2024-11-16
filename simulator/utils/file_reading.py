@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
 
+
 def get_latest_file(directory_path, extension='pickle') -> str:
     """
     Get the most recently modified file in a directory with a specific extension

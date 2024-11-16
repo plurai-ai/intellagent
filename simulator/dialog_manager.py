@@ -10,7 +10,7 @@ from simulator.utils.llm_utils import get_llm, set_callbck
 from simulator.events_generator import Event
 import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
-from simulator.utils.parallelism import async_batch_invoke
+from simulator.utils.parallelism import async_batch_invoke, batch_invoke
 
 
 class DialogManager:
@@ -102,7 +102,8 @@ class DialogManager:
         return self.dialog.invoke(input={"user_messages": user_messages,
                                          "chatbot_messages": chatbot_messages,
                                          "chatbot_args": chatbot_env_args,
-                                         "thread_id": str(uuid.uuid4())})
+                                         "thread_id": str(uuid.uuid4()),
+                                         "user_thoughts": []})
     async def arun(self, user_prompt_params=None, chatbot_prompt_params=None,
             chatbot_env_args=None):
         """
@@ -123,7 +124,8 @@ class DialogManager:
         return await self.dialog.ainvoke(input={"user_messages": user_messages,
                                          "chatbot_messages": chatbot_messages,
                                          "chatbot_args": chatbot_env_args,
-                                         "thread_id": str(uuid.uuid4())})
+                                         "thread_id": str(uuid.uuid4()),
+                                         "user_thoughts": []})
 
     def run_event(self, event: Event):
         """
