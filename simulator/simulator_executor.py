@@ -9,7 +9,10 @@ from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
 from simulator.dataset_handler import Dataset
 import yaml
+
 logger = None
+
+
 class SimulatorExecutor:
     """
     This class is responsible for executing simulation.
@@ -83,7 +86,7 @@ class SimulatorExecutor:
         # Run the dialog
         mini_batch_size = self.config['dialog_manager']['mini_batch_size']
         records = self.dataset_handler.records
-        num_batch = len(records) //mini_batch_size
+        num_batch = len(records) // mini_batch_size
         all_res = []
         total_cost = 0
         logger.info(f"{ConsoleColor.CYAN}Start running the simulator{ConsoleColor.RESET}")
@@ -100,7 +103,6 @@ class SimulatorExecutor:
             total_cost += cost
         logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")
         return all_res
-
 
     @staticmethod
     def set_output_folder(output_path):

@@ -41,7 +41,8 @@ class Event:
     """
     description: Description
     database: dict[pd.DataFrame]
-    scenario: str = None # The full scenario
+    scenario: str = None  # The full scenario
+    id: int = -1  # The id of the event
 
 
 class EventsGenerator:

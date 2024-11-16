@@ -150,6 +150,6 @@ class DialogManager:
         """
         res = async_batch_invoke(self.arun_event, events, num_workers=self.num_workers,
                                  callbacks=self.callbacks, timeout=self.timeout)
-        final_result = [r['result'] for r in res if r['error'] is None]
+        final_result = [{'res': r['result'], 'event_id':events[r['index']].id} for r in res if r['error'] is None]
         cost = sum([r['usage'] for r in res if r['error'] is None])
         return final_result, cost

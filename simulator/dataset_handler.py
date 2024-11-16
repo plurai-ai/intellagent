@@ -77,6 +77,8 @@ class Dataset:
             logger.info(f'{ConsoleColor.WHITE}Iteration {iteration_num} started{ConsoleColor.RESET}')
             cur_iteration_sample_size = min(self.config['mini_batch_size'], n_samples)
             events, minibatch_cost = self.generate_mini_batch(cur_iteration_sample_size)
+            for i, e in enumerate(events):
+                e.id = len(self.records) + i + 1
             self.records.extend(events)
             n_samples -= len(events)
             iteration_num += 1
