@@ -3,6 +3,7 @@ import pandas as pd
 import sqlite3
 import sys
 from pathlib import Path
+import os
 project_root = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.append(str(project_root))
 from simulator.utils.file_reading import get_last_db
@@ -46,23 +47,29 @@ class Logger:
 
 def extract_threads(memory_path):
     # Extract unique thread ids from the database
-    conn = sqlite3.connect(memory_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT DISTINCT thread_id FROM Dialog")
-    unique_values = [row[0] for row in cursor.fetchall()]
-    conn.close()
-    return unique_values
+    dir_name = os.path.dirname(memory_path)
+    results_path = os.path.join(dir_name, 'results.csv')
+    if not os.path.isfile(results_path):
+        raise FileNotFoundError(f"Results file not found at {results_path}")
+    df = pd.read_csv(results_path)
+    df = df.sort_values(by='id', ascending=True, inplace=False)
+    event_list = df['id'].tolist()
+    event_list = [str(event) for event in event_list]
+    thread_list = df['thread_id'].tolist()
+    return event_list, thread_list
 
 def update_thread_list():
     # Update the thread list in the session state
-    thread_list = extract_threads(st.session_state["memory_path"])
+    event_id, thread_list = extract_threads(st.session_state["memory_path"])
     st.session_state["threads"] = thread_list
+    st.session_state["event_id"] = event_id
 
 
 def on_select_thread():
     conn = sqlite3.connect(st.session_state["memory_path"])
     cursor = conn.cursor()
-    thread_id = st.session_state["selected_thread"]
+    event_id = st.session_state["selected_event"]
+    thread_id = st.session_state["threads"][st.session_state["event_id"].index(event_id)]
 
     st.session_state["chatbot_log"] = "Updated Content for Selected Thread"
 
@@ -136,6 +143,7 @@ with col3:
 
 if "threads" not in st.session_state:
     st.session_state["threads"] = []
+    st.session_state["event_id"] = []
 
 def main():
     # Set the initial db path to the last run in the default results path
@@ -143,9 +151,9 @@ def main():
 
     st.sidebar.text_input('Memory path', key='memory_path', on_change=update_thread_list,
                   value=last_db_path)
-    st.session_state["threads"] = extract_threads(last_db_path)
-    st.sidebar.selectbox("Select a thread to visualized:", st.session_state["threads"],
-                                  key="selected_thread",
+    st.session_state["event_id"], st.session_state['threads'] = extract_threads(last_db_path)
+    st.sidebar.selectbox("Select an event to visualized:", st.session_state["event_id"],
+                                  key="selected_event",
                                   on_change=on_select_thread
                                   )
     # Store chat history in session state
