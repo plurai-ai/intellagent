@@ -87,7 +87,6 @@ def load_data():
         merged_df = pd.merge(merged_df, df, on="policy", how="outer")
 
     score_columns = [col for col in merged_df.columns if "success_rate" in col]
-    print(score_columns)
     score_columns = sorted(score_columns, key=lambda x: int(x.split('_')[1]))
     mean_scores = merged_df[score_columns].apply(lambda row: row[row >= 0].mean(), axis=1)
     styled_col = []
@@ -107,7 +106,14 @@ def load_data():
             axis=1
         )
         styled_col.append(new_col_name)
-    merged_df[score_columns] = merged_df[score_columns].applymap(_format_percentage)
+    merged_df[score_columns] = merged_df[score_columns].map(_format_percentage)
+    column_all_sort = []
+    for c in score_columns:
+        column_all_sort.append(c)
+        cur_s = [s for s in styled_col if c.split('success_rate')[0] in s]
+        column_all_sort += cur_s
+
+    merged_df = merged_df[['policy'] + column_all_sort]
     return pd.DataFrame(graph_data), merged_df, styled_col
 
 
@@ -120,7 +126,6 @@ def app1_main():
     df_s = df_s.set_index('policy')
     df_s = df_s.sort_index()
 
-    df_s = df_s.style.format(_format_arrow, subset=styled_col).applymap(_color_arrow, subset=styled_col)
 
 
     # Sidebar for experiment selection
@@ -136,6 +141,7 @@ def app1_main():
     if experiments:
         # Filter data for selected experiments
         filtered_data = data[data['experiment'].isin(experiments)]
+        unique_exp = filtered_data['experiment'].unique()
 
         # Plot all selected experiments on the same graph
         fig = px.line(
@@ -147,7 +153,13 @@ def app1_main():
             labels={"value": "Measured Value", "time": "Time"},
         )
         st.plotly_chart(fig)
-        st.dataframe(df_s)
+        unique_exp = [exp + '_' for exp in unique_exp]
+        valid_columns = [col for col in df_s.columns if any(expr in col for expr in unique_exp)]
+        filtered_df = df_s[valid_columns]
+        cur_styled_col = [col for col in styled_col if col in valid_columns]
+        filtered_df = filtered_df.style.format(_format_arrow, subset=cur_styled_col).map(_color_arrow,
+                                                                                         subset=cur_styled_col)
+        st.dataframe(filtered_df)
     else:
         st.write("Please select at least one experiment to display.")
 
