@@ -40,12 +40,6 @@ def _color_binary(val):
     return "color: green" if val > 0 else "color: red" if val <=0 else "color: black"
 
 
-def update_db_path():
-    # Update the thread list in the session state
-    thread_list = extract_threads(st.session_state["memory_path"])
-    st.session_state["threads"] = thread_list
-
-
 # Load or generate experimental data
 def read_experiment_data(exp_path: str):
     df = pd.read_csv(exp_path + '/results.csv')
@@ -72,19 +66,25 @@ def read_experiment_data(exp_path: str):
     events_info['score'] = events_info['score'].astype(float)
     return graph_info, table_policies_info, events_info
 
+def change_data():
+    database_path = st.session_state.get('database_path', None)
+    data, policies_df, styled_col, events_df = load_data(database_path)
 
 @st.cache_data
-def load_data():
-    database_path = st.session_state.get('database_path', None)
+def load_data(database_path=None):
     if database_path is None:
-        return pd.DataFrame()
+        return pd.DataFrame(), pd.DataFrame(), [], pd.DataFrame()
     # Example data: replace this with your actual data
+
     parent_dir = os.path.dirname(os.path.dirname(database_path)) + '/experiments'
     database_name = database_path.split('/')[-1]
     experiments_list = [x for x in os.listdir(parent_dir) if database_name in x]
     experiments_data = {}
     policies_datasets = []
     events_df = None
+    if not experiments_list:
+        print('No experiments found in the database')
+        return pd.DataFrame(), pd.DataFrame(), [], pd.DataFrame()
 
     for exp in experiments_list:
         exp_path = parent_dir + '/' + exp
@@ -148,10 +148,13 @@ def load_data():
 
 def main():
     last_db_path = get_latest_dataset()
-    st.sidebar.text_input('Database path', key='database_path', on_change=load_data,
+    st.sidebar.text_input('Database path', key='database_path', on_change=change_data,
                           value=last_db_path)
-
-    data, policies_df, styled_col, events_df = load_data()
+    database_path = st.session_state.get('database_path', None)
+    data, policies_df, styled_col, events_df = load_data(database_path)
+    if data.empty:
+        st.write("The database you selected does not contain any experiments. Please select another database.")
+        return
     policies_df = policies_df.set_index('policy')
     events_df = events_df.rename(columns={"id": 'event_id'})
     events_df = events_df.set_index('event_id')
