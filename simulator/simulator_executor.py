@@ -113,7 +113,7 @@ class SimulatorExecutor:
         all_rows = []
         for r in results:
             cur_event = self.dataset_handler.records[r['event_id'] - 1]
-            score = False if 'FAILURE' in r['res']['user_messages'][-1] else True
+            score = False if 'FAILURE' in r['res']['user_messages'][-1].content else True
             cur_row = {'id': r['event_id'], 'thread_id': r['res']['thread_id'],
                        'score': score,
                        'reason': r['res']['user_thoughts'][-1],
