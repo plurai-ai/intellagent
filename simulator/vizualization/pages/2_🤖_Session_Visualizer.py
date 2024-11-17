@@ -141,10 +141,10 @@ def main():
     # Set the initial db path to the last run in the default results path
     last_db_path = get_last_db()
 
-    st.text_input('Memory path', key='memory_path', on_change=update_thread_list,
+    st.sidebar.text_input('Memory path', key='memory_path', on_change=update_thread_list,
                   value=last_db_path)
     st.session_state["threads"] = extract_threads(last_db_path)
-    st.selectbox("Select a thread to visualized:", st.session_state["threads"],
+    st.sidebar.selectbox("Select a thread to visualized:", st.session_state["threads"],
                                   key="selected_thread",
                                   on_change=on_select_thread
                                   )
