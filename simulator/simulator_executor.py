@@ -73,7 +73,7 @@ class SimulatorExecutor:
             print(f"{ConsoleColor.BLUE}The dataset is empty. Loading the last dataset...{ConsoleColor.RESET}")
             self.load_dataset()
         experiments_dir = os.path.join(self.output_path, 'experiments')
-        experiment_name = self.dataset_handler.dataset_name + '__' + datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+        experiment_name = self.dataset_handler.dataset_name + '__' + 'exp_{}'.format(len(os.listdir(experiments_dir))+1)
         experiment_dir = os.path.join(experiments_dir, experiment_name)
         os.mkdir(experiment_dir)
         update_logger_file(os.path.join(experiment_dir, 'experiment.log'))
@@ -104,7 +104,7 @@ class SimulatorExecutor:
             all_res.extend(res)
             total_cost += cost
         logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")
-        self.analyze_results(all_res,experiment_dir)
+        self.analyze_results(all_res, experiment_dir)
 
     def analyze_results(self, results, experiment_dir):
         """
@@ -123,8 +123,7 @@ class SimulatorExecutor:
                        'policies': cur_event.description.policies}
             all_rows.append(cur_row)
         df = pd.DataFrame(all_rows)
-        df.to_csv(os.path.join(experiment_dir,'results.csv'), index=False)
-
+        df.to_csv(os.path.join(experiment_dir, 'results.csv'), index=False)
 
     @staticmethod
     def set_output_folder(output_path):

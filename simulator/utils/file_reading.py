@@ -1,6 +1,6 @@
 import yaml
 from pathlib import Path
-
+import os
 
 def get_latest_file(directory_path, extension='pickle') -> str:
     """
@@ -46,3 +46,44 @@ def override_config(override_config_file, config_file='config/config_default.yml
         override_config_dict = yaml.safe_load(file)
     config_dict = override_dict(default_config_dict, override_config_dict)
     return config_dict
+
+def get_last_created_directory(path):
+    # Convert path to Path object for convenience
+    if not os.path.isdir(path):
+        return None
+    path = Path(path)
+
+    # Get all directories in the specified path
+    directories = [d for d in path.iterdir() if d.is_dir()]
+
+    # Sort directories by creation time (newest first) and get the first one
+    last_created_dir = max(directories, key=lambda d: d.stat().st_ctime, default=None)
+
+    return last_created_dir
+
+def get_last_db(base_path = "./results"):
+    # Get the last created db in the default result path
+    last_dir = get_last_created_directory(base_path)
+    if last_dir is None:
+        return None
+    last_dir = last_dir/'experiments'
+    # Get the last created database file in the last created directory
+    last_exp = get_last_created_directory(last_dir)
+    if os.path.isfile(last_exp / "memory.db"):
+        last_db = last_exp / "memory.db"
+        return str(last_db)
+    return None
+
+def get_latest_dataset(base_path = "./results"):
+    # Get the last created db in the default result path
+    last_dir = get_last_created_directory(base_path)
+    if last_dir is None:
+        return None
+    last_dir = last_dir/'datasets'
+    # Get the last created database file in the last created directory
+    last_dataset = get_latest_file(str(last_dir))
+    if last_dataset is None:
+        return None
+    last_dataset = last_dir / last_dataset
+    last_dataset, _ = os.path.splitext(last_dataset)
+    return last_dataset

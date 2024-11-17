@@ -1,37 +1,11 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
-import os
+import sys
 from pathlib import Path
-
-
-def get_last_created_directory(path):
-    # Convert path to Path object for convenience
-    if not os.path.isdir(path):
-        return None
-    path = Path(path)
-
-    # Get all directories in the specified path
-    directories = [d for d in path.iterdir() if d.is_dir()]
-
-    # Sort directories by creation time (newest first) and get the first one
-    last_created_dir = max(directories, key=lambda d: d.stat().st_ctime, default=None)
-
-    return last_created_dir
-
-def get_last_db():
-    # Get the last created db in the default result path
-    last_dir = get_last_created_directory("./results")
-    if last_dir is None:
-        return None
-    last_dir = last_dir/'experiments'
-    # Get the last created database file in the last created directory
-    last_exp = get_last_created_directory(last_dir)
-    if os.path.isfile(last_exp / "memory.db"):
-        last_db = last_exp / "memory.db"
-        return str(last_db)
-    return None
-
+project_root = Path(__file__).resolve().parent.parent.parent.parent
+sys.path.append(str(project_root))
+from simulator.utils.file_reading import get_last_db
 def add_dataframe(self, df):
     """Add a DataFrame to the log display as a table."""
     html_table = df.to_html(classes='dataframe', index=False, escape=False)
@@ -123,7 +97,8 @@ def on_select_thread():
         mk = logger_user.get_markdown()
         st.markdown(mk, unsafe_allow_html=True)
 
-st.set_page_config( layout="wide")
+st.set_page_config(page_title="Session vizualization", page_icon="🤖", layout="wide")
+
 
 
 col1, divider1, col2, divider2, col3 = st.columns([100,5 ,200,5, 100])
