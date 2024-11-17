@@ -136,7 +136,7 @@ def app1_main():
         default=data['experiment'].unique()
     )
 
-    st.title("Combined Line Graph for Experiments")
+    st.title("Experiments Report")
 
     if experiments:
         # Filter data for selected experiments
@@ -149,7 +149,7 @@ def app1_main():
             x='Challenge level',
             y='Success rate',
             color='experiment',
-            title="Comparison of Experiments",
+            title="Comparison of Experiments success rate",
             labels={"value": "Measured Value", "time": "Time"},
         )
         st.plotly_chart(fig)
@@ -159,6 +159,7 @@ def app1_main():
         cur_styled_col = [col for col in styled_col if col in valid_columns]
         filtered_df = filtered_df.style.format(_format_arrow, subset=cur_styled_col).map(_color_arrow,
                                                                                          subset=cur_styled_col)
+        st.markdown("#### A table of policies performances in the selected experiments")
         st.dataframe(filtered_df)
     else:
         st.write("Please select at least one experiment to display.")
