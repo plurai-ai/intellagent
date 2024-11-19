@@ -5,7 +5,7 @@ from typing import Annotated
 from langgraph.graph import StateGraph, START
 from typing_extensions import TypedDict
 from typing import Optional
-
+import time
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
 
@@ -84,6 +84,7 @@ class Dialog:
                         all_tool_calls[message.tool_call_id]['output'] = message.content
                 for v in all_tool_calls.values():
                     self.memory.insert_tool(state['thread_id'], v['name'], v['arguments'], v['output'])
+                    time.sleep(0.001)
                 # inserting the chatbot messages into memory
                 self.memory.insert_dialog(state['thread_id'], 'AI', response['messages'][-1].content)
             return {"chatbot_messages": [AIMessage(content=response['messages'][-1].content)],

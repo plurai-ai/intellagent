@@ -75,7 +75,7 @@ class SqliteSaver:
     def insert_dialog(self, thread_id: str, role: str, message: str):
         try:
             with self.lock:
-                current_time = int(time.time())
+                current_time = int(time.time() * 1000) # in milliseconds
                 self.cursor.execute(
                     "INSERT INTO Dialog (thread_id, role, message, time) VALUES (?, ?, ?, ?)",
                     (thread_id, role, message, current_time)
@@ -87,7 +87,7 @@ class SqliteSaver:
     def insert_thought(self, thread_id: str, message: str):
         try:
             with self.lock:
-                current_time = int(time.time())
+                current_time = int(time.time() * 1000) # in milliseconds
                 self.cursor.execute(
                     "INSERT INTO Thoughts (thread_id, message, time) VALUES (?, ?, ?)",
                     (thread_id, message, current_time)
@@ -99,7 +99,7 @@ class SqliteSaver:
     def insert_tool(self, thread_id: str, tool_name: str, input: Optional[str], output: Optional[str]):
         try:
             with self.lock:
-                current_time = int(time.time())
+                current_time = int(time.time() * 1000) # in milliseconds
                 self.cursor.execute(
                     "INSERT INTO Tools (thread_id, tool_name, input, output, time) VALUES (?, ?, ?, ?, ?)",
                     (thread_id, tool_name, input, output, current_time)
