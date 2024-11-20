@@ -8,6 +8,7 @@ from typing import Optional
 import time
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
+import re
 
 
 class DialogState(TypedDict):
@@ -16,6 +17,22 @@ class DialogState(TypedDict):
     chatbot_args: Optional[dict]
     thread_id: str
     user_thoughts: Optional[list]
+    scenario: Optional[str]
+
+
+def parse_user_message(ai_message: AIMessage, parsing_mode='thought') -> dict[str, str]:
+    """Parse the user message."""
+    extracted_text = ai_message.content
+    extracted_thought = ''
+    if parsing_mode == 'thought':
+        pattern = r"^(.*?)\s*User Response:\s*(.*)"  # The pattern to extract the user response
+        match = re.search(pattern, ai_message.content, re.DOTALL)
+        if match:
+            extracted_thought = match.group(1).strip()  # Text before "User Response:"
+            extracted_text = match.group(2).strip()
+        else:
+            extracted_text = ai_message.content
+    return {'response': extracted_text, 'thought': extracted_thought}
 
 
 class Dialog:
@@ -24,7 +41,7 @@ class Dialog:
     """
 
     def __init__(self, user: Runnable, chatbot: Runnable, intermediate_processing: Callable = None,
-                 memory=None):
+                 memory=None, user_parsing_mode='thought'):
         """
         Initialize the event generator.]
         :param user (Runnable): The user model
@@ -34,6 +51,7 @@ class Dialog:
         :param memory (optional): The memory to store the conversations artifacts
         """
         self.user = user
+        self.user_parsing_mode = user_parsing_mode
         self.chatbot = chatbot
         self.intermediate_processing = intermediate_processing  # TODO: Add default function
         self.memory = memory
@@ -53,8 +71,9 @@ class Dialog:
         def simulated_user_node(state):
             messages = state["user_messages"]
             # Call the simulated user
-            response = self.user.invoke(messages)
+            response = self.user.invoke(messages=messages, additional_args=state['chatbot_args'])
             # This response is an AI message - we need to flip this to be a human message
+            response = parse_user_message(response['messages'][-1], self.user_parsing_mode)
             user_thoughts = state['user_thoughts']
             if self.memory is not None:
                 if response['thought'] is not None:

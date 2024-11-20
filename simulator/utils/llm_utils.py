@@ -11,6 +11,7 @@ from langchain_community.llms import HuggingFacePipeline
 from langchain_openai.chat_models import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import yaml
+import pandas as pd
 
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
 
@@ -176,3 +177,30 @@ def get_llm(config: dict):
         )
     else:
         raise NotImplementedError("LLM not implemented")
+
+
+def dataframe_to_string(df: pd.DataFrame) -> str:
+    """
+    Converts a pandas DataFrame into a readable string table.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to convert.
+
+    Returns:
+        str: A string representation of the DataFrame in table format.
+    """
+    # Generate the header
+    header = " | ".join(df.columns)
+    header_line = "| " + header + " |"
+
+    # Generate the separator
+    separator = "| " + " | ".join("-" * len(col) for col in df.columns) + " |"
+
+    # Generate the rows
+    rows = [
+        "| " + " | ".join(map(str, row)) + " |" for row in df.values.tolist()
+    ]
+
+    # Combine all parts
+    table = "\n".join([header_line, separator] + rows)
+    return table

@@ -22,6 +22,7 @@ class Plan(BaseModel):
         description="different steps to follow, should be in sorted order, if no steps are needed then the list should be empty"
     )
     final_response: str = Field(description="The final response to the user")
+    symbolic_variable_descriptions: str = Field(description="Full list of all the symbolic variables used in the plan and their meaning in the context of the scenario")
 
 
 class PlanExecute(TypedDict):
@@ -52,7 +53,7 @@ class PlanExecuteImplementation:
 
     def __init__(self, planner: Runnable, executor: dict[Runnable], replanner: Runnable):
         """
-        Initialize the event generator.
+        Initialize the planer.
         :param planner (Runnable): The planner model
         :param executor (Runnable): The executor model
         :param replanner (Runnable): The replanner model

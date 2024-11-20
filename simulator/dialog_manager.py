@@ -1,16 +1,18 @@
 import os.path
-
 from simulator.env import Env
 from simulator.utils.llm_utils import get_prompt_template
-from simulator.dialog_graph import Dialog
+from agents.dialog_graph import Dialog
 from agents.langgraph_tool import AgentTools
-import re
+from typing import Annotated
+from pydantic import BaseModel
+from langgraph.prebuilt import InjectedState
 from langchain_core.messages import AIMessage
-from simulator.utils.llm_utils import get_llm, set_callbck
+from simulator.utils.llm_utils import get_llm, set_callbck, dataframe_to_string
 from simulator.events_generator import Event
 import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
-from simulator.utils.parallelism import async_batch_invoke, batch_invoke
+from simulator.utils.parallelism import batch_invoke
+from agents.user_graph import UserAgent
 
 
 class DialogManager:
@@ -26,8 +28,6 @@ class DialogManager:
         """
         self.llm_user = get_llm(config['llm_user'])
         self.llm_chat = get_llm(config['llm_chat'])
-        self.llm_user = self.llm_user | self.get_user_parsing_function(
-            parsing_mode=config['user_parsing_mode'])  # The user language model
         self.callbacks = [set_callbck(t) for t in
                           {config['llm_user']['type'], config['llm_chat']['type']}]  # The callbacks
         self.data = {}
@@ -40,25 +40,9 @@ class DialogManager:
         self.user_prompt = config['user_prompt']
         self.num_workers = config['num_workers']
         self.timeout = config['timeout']
+        self.user_parsing_mode = config.get('user_parsing_mode', 'thought')
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
-
-    def get_user_parsing_function(self, parsing_mode='default'):
-        def parse_user_message(ai_message: AIMessage) -> dict[str, str]:
-            """Parse the user message."""
-            extracted_text = ai_message.content
-            extracted_thought = ''
-            if parsing_mode == 'thought':
-                pattern = r"^(.*?)\s*User Response:\s*(.*)"  # The pattern to extract the user response
-                match = re.search(pattern, ai_message.content, re.DOTALL)
-                if match:
-                    extracted_thought = match.group(1).strip()  # Text before "User Response:"
-                    extracted_text = match.group(2).strip()
-                else:
-                    extracted_text = ai_message.content
-            return {'response': extracted_text, 'thought': extracted_thought}
-
-        return parse_user_message
 
     def get_intermediate_processing_function(self):
         def intermediate_processing(state):
@@ -77,9 +61,11 @@ class DialogManager:
         chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
         self.memory = SqliteSaver(os.path.join(experiment_path, 'memory.db'))
         chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
-        self.dialog = Dialog(self.llm_user, chatbot,
+        user = UserAgent(agent=self.llm_user, moderator=chatbot)
+
+        self.dialog = Dialog(user, chatbot,
                              intermediate_processing=self.get_intermediate_processing_function(),
-                             memory=self.memory)
+                             memory=self.memory, user_parsing_mode=self.user_parsing_mode)
         self.user_prompt = get_prompt_template(self.user_prompt)
         self.chatbot_prompt = get_prompt_template(chatbot_prompt_args)
 
@@ -103,7 +89,8 @@ class DialogManager:
                                          "chatbot_messages": chatbot_messages,
                                          "chatbot_args": chatbot_env_args,
                                          "thread_id": str(uuid.uuid4()),
-                                         "user_thoughts": []})
+                                         "user_thoughts": [],
+                                         "scenario": user_prompt_params.get('scenario', '')})
     async def arun(self, user_prompt_params=None, chatbot_prompt_params=None,
             chatbot_env_args=None):
         """
@@ -150,8 +137,30 @@ class DialogManager:
         Run the dialog between the user and the chatbot on the events.
         :param events: The events to run.
         """
-        res = async_batch_invoke(self.arun_event, events, num_workers=self.num_workers,
-                                 callbacks=self.callbacks, timeout=self.timeout)
+        # res = async_batch_invoke(self.arun_event, events, num_workers=self.num_workers,
+        #                          callbacks=self.callbacks, timeout=self.timeout)
+        res = batch_invoke(self.run_event, events, num_workers=self.num_workers,callbacks=self.callbacks)
         final_result = [{'res': r['result'], 'event_id':events[r['index']].id} for r in res if r['error'] is None]
         cost = sum([r['usage'] for r in res if r['error'] is None])
         return final_result, cost
+
+    def get_extract_info_function(self, query_info_llm):
+        def extract_system_info(query: str, data: Annotated[dict, InjectedState("data")]):
+            def dataset_to_str(dataset):
+                res_str = ''
+                for i,v in dataset.items():
+                    res_str += f'Table:{i}\n'
+                    res_str += dataframe_to_string(v)
+                    res_str += '\n'
+                return res_str
+
+            return dataset_to_str(data) #query_info_llm.invoke(input={'query': query, 'dataset': dataset_to_str(data)})
+            # try:
+            #     return query_info_llm.invoke(input={'query': query, 'dataset': dataset_to_str(dataset)})
+            # except Exception as e:
+            #     return f"Error: {e}"
+
+        class get_info_input(BaseModel):
+            query: str = "The row to insert"
+
+        return extract_system_info, get_info_input
