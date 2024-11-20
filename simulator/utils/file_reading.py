@@ -1,6 +1,9 @@
 import yaml
 from pathlib import Path
 import os
+import importlib.util
+import inspect
+
 
 def get_latest_file(directory_path, extension='pickle') -> str:
     """
@@ -21,6 +24,33 @@ def get_latest_file(directory_path, extension='pickle') -> str:
         return None
     return latest_file.name
 
+def validator(table=None):
+    def decorator(func):
+        func.is_collected = True  # Add a custom attribute to the function
+        func.table = table  # Add a category or variable to the function
+        return func
+    return decorator
+
+def get_validators_from_module(file_path, table_name):
+    """
+    Get a validators from a module in a file
+    :param file_path:
+    :param table_name: The table name
+    :return: the list of the table validators
+    """
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError(f"The file '{file_path}' does not exist.")
+
+    # Load the module dynamically
+    module_name = os.path.splitext(os.path.basename(file_path))[0]
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    collected = []
+    for name, obj in inspect.getmembers(module, inspect.isfunction):
+        if getattr(obj, "is_collected", False) and obj.table == table_name:
+            collected.append(obj)
+    return collected
 
 def override_config(override_config_file, config_file='config/config_default.yml'):
     """
