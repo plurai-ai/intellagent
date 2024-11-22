@@ -11,11 +11,12 @@ from langchain_core.tools.structured import StructuredTool
 from langchain_core.tools import tool
 from simulator.utils.llm_utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Plan
-from simulator.utils.llm_utils import get_llm, set_callbck
+from simulator.utils.llm_utils import get_llm, set_callback
 from dataclasses import dataclass
 from simulator.descriptor_generator import Description
 from simulator.utils.parallelism import async_batch_invoke
 from typing import Tuple
+from simulator.healthcare_analytics import ExceptionEvent, track_event
 
 @tool
 def calculate(expression: str) -> str:
@@ -25,6 +26,8 @@ def calculate(expression: str) -> str:
     try:
         return str(round(float(eval(expression, {"__builtins__": None}, {})), 2))
     except Exception as e:
+        track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
         return f"Error: {e}"
 
 
@@ -58,7 +61,7 @@ class EventsGenerator:
         """
         llm_config = config['llm']
         self.llm = get_llm(llm_config)
-        self.callbacks = [set_callbck(llm_config['type'])]
+        self.callbacks = [set_callback(llm_config['type'])]
         self.data = {}
         self.data_examples = env.data_examples
         self.data_schema = env.data_schema
@@ -100,6 +103,8 @@ class EventsGenerator:
                     dataset[table_name] = pd.DataFrame()
                 dataset[table_name] = pd.concat([dataset[table_name], df], ignore_index=True)
             except Exception as e:
+                track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
                 return f"Error: {e}"
             return f"Added row to {table_name} table"
 

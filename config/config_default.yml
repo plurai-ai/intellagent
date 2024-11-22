@@ -1,7 +1,7 @@
 environment:
-    prompt_path: ''
-    tools_folder: ''
-    database_folder: ''
+    prompt_path: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/wiki.md'
+    tools_folder: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/tools/agent_tools.py'
+    database_folder: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/data_scheme'
     task_description:  # If you don't want to infer you can simply provide it in the field 'content'
         llm:
             type: 'azure'
@@ -76,8 +76,8 @@ dataset:
     name: 'dataset'
     min_difficult_level: 5
     max_difficult_level: 10
-    num_samples: 30
-    mini_batch_size: 10
+    num_samples: 4
+    mini_batch_size: 2
     max_iterations: 100
     cost_limit: 50 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dataset generation part
 

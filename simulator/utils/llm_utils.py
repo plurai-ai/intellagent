@@ -11,6 +11,7 @@ from langchain_community.llms import HuggingFacePipeline
 from langchain_openai.chat_models import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import yaml
+from simulator.healthcare_analytics import ExceptionEvent, track_event
 
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
 
@@ -78,7 +79,10 @@ def load_tools(tools_path: str):
 
         spec.loader.exec_module(schema_parser)
     except ImportError as e:
-        raise ImportError(f"Error loading module {tools_path}: {e}")
+        error_message = f"Error loading module {tools_path}: {e}"
+        track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=error_message))
+        raise ImportError(error_message)
     # <class 'langchain_core.tools.StructuredTool'>
     for attribute in dir(schema_parser):
         # Skip special attributes
@@ -111,7 +115,7 @@ def get_dummy_callback():
     return DummyCallback()
 
 
-def set_callbck(llm_type):
+def set_callback(llm_type):
     if llm_type.lower() == 'openai' or llm_type.lower() == 'azure':
         callback = get_openai_callback
     elif llm_type.lower() == 'anthropic_bedrock':

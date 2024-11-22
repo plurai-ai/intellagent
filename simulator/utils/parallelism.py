@@ -5,6 +5,7 @@ import contextlib
 from tqdm import trange, tqdm
 import concurrent.futures
 import asyncio
+from simulator.healthcare_analytics import ExceptionEvent,track_event
 
 
 def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: list[BaseCallbackHandler]) -> list[Any]:
@@ -33,6 +34,8 @@ def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: l
                 logger.error('Error in chain invoke: {}'.format(e))
                 result = None
                 error = 'Error while running: ' + str(e)
+                track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=error))
             for cb in CB:
                 accumulate_usage = cb.total_cost
         pbar.update(1)  # Update the progress bar
@@ -73,6 +76,8 @@ async def batch_ainvoke(llm_async_function, inputs: list[Any], num_workers: int,
                 logger.error('Error in chain invoke: {}'.format(e))
                 result = None
                 error = 'Error while running: ' + str(e)
+                track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=error))
             for cb in CB:
                 accumulate_usage = cb.total_cost
         return {'index': i, 'result': result, 'usage': accumulate_usage, 'error': error}
@@ -84,10 +89,13 @@ async def batch_ainvoke(llm_async_function, inputs: list[Any], num_workers: int,
         async with semaphore:
             try:
                 return await asyncio.wait_for(process_sample_with_progress(func_input), timeout=timeout)
-            except asyncio.TimeoutError:
-                print(f"Task  reached timeout and was terminated.")
+            except asyncio.TimeoutError as e:
+                print(f"Task reached timeout and was terminated.")
+                error_message = 'Timeout'
+                track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=error_message))
                 return {'index': func_input[0], 'result': None, 'usage': 0,
-                        'error': 'Timeout'}  # Return None or any appropriate value for a failed task
+                        'error': 'error_message'}  # Return None or any appropriate value for a failed task
 
     # Create tasks
     tasks = [task_runner(func_input) for func_input in sample_generator()]

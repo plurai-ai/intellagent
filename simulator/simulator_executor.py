@@ -10,6 +10,9 @@ from datetime import datetime
 from simulator.dataset_handler import Dataset
 import yaml
 import pandas as pd
+import uuid
+from simulator.healthcare_analytics import RunSimulationEvent, AnalyzeSimulationResultsEvent, ExceptionEvent, track_event
+
 
 logger = None
 
@@ -50,6 +53,10 @@ class SimulatorExecutor:
         self.output_path = output_path
         self.simulator_results = None
 
+    def generate_run_id():
+        """Generate a unique random Run ID."""
+        return f"run-{uuid.uuid4().hex}"
+    
     def load_dataset(self, dataset_path='latest'):
         """
         Load the dataset. If latest, load the latest dataset.
@@ -85,13 +92,23 @@ class SimulatorExecutor:
 
         # init the dialog
         self.dialog_manager.init_dialog(experiment_dir)
+        
         # Run the dialog
         mini_batch_size = self.config['dialog_manager']['mini_batch_size']
         records = self.dataset_handler.records
-        num_batch = len(records) // mini_batch_size
+        num_records = len(records)
+
+        if num_records == 0:
+            logger.warning(f"{ConsoleColor.RED}No records found to process.{ConsoleColor.RESET}")
+            return []  # or handle this case appropriately
+
+        num_batch = num_records // mini_batch_size
         all_res = []
         total_cost = 0
+
         logger.info(f"{ConsoleColor.CYAN}Start running the simulator{ConsoleColor.RESET}")
+
+        # Handle batches
         for i in range(num_batch):
             if total_cost > self.config['dialog_manager']['cost_limit']:
                 logger.warning(
@@ -100,10 +117,28 @@ class SimulatorExecutor:
                 break
             logger.info(f"{ConsoleColor.WHITE}Running batch {i}...{ConsoleColor.RESET}")
             res, cost = self.dialog_manager.run_events(records[i * mini_batch_size:
-                                                               (i + 1) * mini_batch_size])
+                                                            (i + 1) * mini_batch_size])
             all_res.extend(res)
             total_cost += cost
+
+        # Handle remaining records if any
+        remaining_records = records[num_batch * mini_batch_size:]
+        if remaining_records:
+            logger.info(f"{ConsoleColor.WHITE}Running remaining records...{ConsoleColor.RESET}")
+            if total_cost <= self.config['dialog_manager']['cost_limit']:
+                res, cost = self.dialog_manager.run_events(remaining_records)
+                all_res.extend(res)
+                total_cost += cost
+            else:
+                logger.warning(
+                    f"{ConsoleColor.RED}The cost limit for the experiment is reached. "
+                    f"Skipping remaining records.{ConsoleColor.RESET}")
+
         logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")
+        track_event(RunSimulationEvent(cost=total_cost,
+                                       n_dialogs=len(all_res),
+                                       avg_n_user_messages_per_dialog= sum(len(entry['res']['user_messages']) for entry in all_res) / len(all_res) if all_res else 0,
+                                       avg_n_chatbot_messages_per_dialog=sum(len(entry['res']['chatbot_messages']) for entry in all_res) / len(all_res) if all_res else 0))
         self.analyze_results(all_res, experiment_dir)
 
     def analyze_results(self, results, experiment_dir):
@@ -112,19 +147,47 @@ class SimulatorExecutor:
         """
         all_rows = []
         for r in results:
-            cur_event = self.dataset_handler.records[r['event_id'] - 1]
-            score = False if 'FAILURE' in r['res']['user_messages'][-1].content else True
-            cur_row = {'id': r['event_id'], 'thread_id': r['res']['thread_id'],
-                       'score': score,
-                       'reason': r['res']['user_thoughts'][-1],
-                       'scenario': cur_event.scenario,
-                       'expected_behaviour': cur_event.description.expected_behaviour,
-                       'challenge_level': cur_event.description.challenge_level,
-                       'policies': cur_event.description.policies}
-            all_rows.append(cur_row)
-        df = pd.DataFrame(all_rows)
-        df.to_csv(os.path.join(experiment_dir, 'results.csv'), index=False)
+            try:
+                cur_event = self.dataset_handler.records[r['event_id'] - 1]
+                user_messages = r['res'].get('user_messages', [])
+                if not user_messages:
+                    continue  # Skip if no user messages
+                last_message_content = user_messages[-1].content
+                score = False if 'FAILURE' in last_message_content else True
+                
+                cur_row = {
+                    'id': r['event_id'],
+                    'thread_id': r['res'].get('thread_id'),
+                    'score': score,
+                    'reason': r['res']['user_thoughts'][-1] if 'user_thoughts' in r['res'] else None,
+                    'scenario': getattr(cur_event, 'scenario', None),
+                    'expected_behaviour': getattr(cur_event.description, 'expected_behaviour', None),
+                    'challenge_level': getattr(cur_event.description, 'challenge_level', None),
+                    'policies': getattr(cur_event.description, 'policies', None),
+                }
+                all_rows.append(cur_row)
+            except (KeyError, AttributeError, IndexError) as e:
+                error_message = f"Skipping a result due to missing data: {e}" 
+                logger.info(f"{ConsoleColor.CYAN}{error_message}{ConsoleColor.RESET}")
+                track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=error_message))
+                continue
 
+        if all_rows:
+            df = pd.DataFrame(all_rows)
+            df.to_csv(os.path.join(experiment_dir, 'results.csv'), index=False)
+            failure_rate = (df['score'] == False).mean()
+            track_event(
+                AnalyzeSimulationResultsEvent(
+                    failure_rate=failure_rate
+                )
+            )
+            logger.info(f"{ConsoleColor.CYAN}Finish running results analysis{ConsoleColor.RESET}")
+        else:
+            logger.info(f"{ConsoleColor.CYAN}No rows to process. Results are empty.{ConsoleColor.RESET}")
+
+        
+        
     @staticmethod
     def set_output_folder(output_path):
         # Create the output folder if it does not exist with all the subfolders
