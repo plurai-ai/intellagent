@@ -65,6 +65,7 @@ class EventsGenerator:
         self.data = {}
         self.data_examples = env.data_examples
         self.data_schema = env.data_schema
+        self.database_validators = env.database_validators
         self.init_agent()
         self.num_workers = config['num_workers']
         self.timeout = config['timeout']
@@ -101,6 +102,8 @@ class EventsGenerator:
                 df = pd.DataFrame([json.loads(json_row)])
                 if not table_name in dataset:
                     dataset[table_name] = pd.DataFrame()
+                for validator in self.database_validators[table_name]:
+                    df, dataset = validator(df, dataset)
                 dataset[table_name] = pd.concat([dataset[table_name], df], ignore_index=True)
             except Exception as e:
                 track_event(ExceptionEvent(exception_type=type(e).__name__,

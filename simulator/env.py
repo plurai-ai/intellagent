@@ -1,12 +1,10 @@
 import os
 import pandas as pd
 from pathlib import Path
-from simulator.utils.llm_utils import load_tools
+from simulator.utils.llm_utils import load_tools, set_llm_chain, get_llm
 from langchain import hub
 from simulator.utils.logger_config import get_logger, ConsoleColor
-from simulator.utils.llm_utils import set_llm_chain
-from simulator.utils.llm_utils import get_llm
-
+from simulator.utils.file_reading import get_validators_from_module
 
 class Env:
     def __init__(self, config):
@@ -60,6 +58,11 @@ class Env:
         all_data = {Path(file).stem: pd.read_json(os.path.join(self.config['database_folder'], file), orient='index') for file in all_data_files}
         self.data_schema = {Path(file).stem: list(data.columns) for file, data in all_data.items()}
         self.data_examples = {table: all_data[table].iloc[0].to_json() for table in all_data}
+        database_validators_path = self.config.get('database_validators', None)
+        if database_validators_path is not None:
+            self.database_validators = {table: get_validators_from_module(database_validators_path, table) for table in all_data}
+        else:
+            self.database_validators = {table: [] for table in all_data}
 
     def get_policies(self):
         pass
