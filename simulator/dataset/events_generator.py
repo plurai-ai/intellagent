@@ -27,24 +27,24 @@ class EventsGenerator:
         :param environment (Env): The environment of the simulator.
         """
         llm_config = config['llm']
+        self.config = config
         self.llm = get_llm(llm_config)
         self.callbacks = [set_callbck(llm_config['type'])]
         self.data = {}
-        self.data_examples = env.data_examples
-        self.data_schema = env.data_schema
-        self.database_validators = env.database_validators
+        self.env = env
         self.init_agent()
         self.num_workers = config['num_workers']
         self.timeout = config['timeout']
-        self.llm_symbolic = set_llm_chain(self.llm,
-                                          prompt_hub_name='eladlev/event_symbolic', structure=info_symbolic)
+        self.llm_symbolic = set_llm_chain(self.llm, **config['symbolic_enrichment_config']['prompt'],
+                                          structure=info_symbolic)
+        self.llm_constraints = set_llm_chain(self.llm, **config['symbolic_constraints_config']['prompt'])
 
     def init_executors(self) -> dict[AgentTools]:
         """
         Initialize the database plane executors.
         :return: list[AgentTools]: The list of executors.
         """
-        rows_data = self.data_examples
+        rows_data = self.env.data_examples
         table_insertion_tools = {}
         agent_executors = {}
         for table_name, example in rows_data.items():
@@ -58,7 +58,7 @@ class EventsGenerator:
             )
 
             system_messages = hub.pull("eladlev/event_executor")
-            system_messages = system_messages.partial(schema=self.data_schema[table_name],
+            system_messages = system_messages.partial(schema=self.env.data_schema[table_name],
                                                               example=json.dumps(rows_data[table_name]))
             agent_executor = AgentTools(llm=self.llm, tools=[think, table_insertion_tools[table_name]],
                                         system_prompt=system_messages)
@@ -71,7 +71,7 @@ class EventsGenerator:
                 df = pd.DataFrame([json.loads(json_row)])
                 if not table_name in dataset:
                     dataset[table_name] = pd.DataFrame()
-                for validator in self.database_validators[table_name]:
+                for validator in self.env.database_validators[table_name]:
                     df, dataset = validator(df, dataset)
                 dataset[table_name] = pd.concat([dataset[table_name], df], ignore_index=True)
             except Exception as e:
@@ -85,7 +85,7 @@ class EventsGenerator:
 
     def get_planner_prompt(self):
         prompt = hub.pull("eladlev/planner_event_generator")
-        return prompt.partial(tables_info=dict_to_str(self.data_schema))
+        return prompt.partial(tables_info=dict_to_str(self.env.data_schema))
 
     def init_agent(self):
         """
@@ -102,7 +102,7 @@ class EventsGenerator:
         Generate an event based on the given description.
         """
         res = self.agent.invoke(input={'planner_input': {'symbolic_info': description.symbolic_info,
-                                                         'tables_schema': dict_to_str(self.data_schema)},
+                                                         'tables_schema': dict_to_str(self.env.data_schema)},
                                        'args': {'dataset': {}}})
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
@@ -115,13 +115,52 @@ class EventsGenerator:
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
 
-    def description_to_symbolic(self, descriptions: list[Description]) -> list[str]:
+    def descriptions_to_symbolic(self, descriptions: list[Description]) -> tuple[list[EventSymbolic], float]:
         """
         Generate symbolic variables representations based on the given descriptions.
+        :param descriptions: The descriptions of the events
+        :return: The symbolic event including: enriched scenario with variables, symbolic variables list, the relations between the symbols, and tables rows.
+                 The cost of the step.
         """
-        res = async_batch_invoke(self.description_to_symbolic, descriptions, num_workers=self.num_workers,
-                                 callbacks=self.callbacks, timeout=self.timeout)
-        return [r['result'] for r in res if r['error'] is None]
+        samples_batch = []
+        cost = 0
+        schema = dict_to_str(self.env.data_schema)
+        for i, description in enumerate(descriptions):
+            samples_batch.append( {"tables_info": schema, 'scenario': description.event_description})
+        num_workers = self.config['symbolic_enrichment_config'].get('num_workers', 1)
+        timeout = self.config['symbolic_enrichment_config'].get('timeout', 40)
+        res = async_batch_invoke(self.llm_symbolic.ainvoke, samples_batch, num_workers=num_workers,
+                                 callbacks=self.callbacks, timeout=timeout)
+        events_info = []
+        for result in res:
+            if result['error'] is not None:
+                continue
+            cost += result['usage']
+            cur_event = EventSymbolic(symbolic_info=result['result'], description=descriptions[result['index']])
+            events_info.append(cur_event)
+        return events_info, cost
+
+    def get_symbolic_constraints(self, events: list[EventSymbolic]) -> Tuple[list[EventSymbolic], float]:
+        """
+        Generate the policies constraints based on the given symbolic events.
+        :param events: The symbolic events
+        :return: The symbolic events with the policies constraints and the cost of the step.
+        """
+        samples_batch = []
+        cost = 0
+        for i, event in enumerate(events):
+            samples_batch.append({"symbolic_info": str(event), 'system_prompt': self.env.prompt})
+        num_workers = self.config['symbolic_constraints_config'].get('num_workers', 1)
+        timeout = self.config['symbolic_constraints_config'].get('timeout', 40)
+        res = async_batch_invoke(self.llm_constraints.ainvoke, samples_batch, num_workers=num_workers,
+                                 callbacks=self.callbacks, timeout=timeout)
+        for result in res:
+            if result['error'] is not None:
+                continue
+            cost += result['usage']
+            events[result['index']].policies_constraints = result['result'].content
+        return events, cost
+
 
     def descriptions_to_events(self, descriptions: list[Description]) -> Tuple[list[Event], float]:
         """

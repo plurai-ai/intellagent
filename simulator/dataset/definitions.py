@@ -43,3 +43,17 @@ class Event:
     scenario: str = None  # The full scenario
     id: int = -1  # The id of the event
 
+@dataclass
+class EventSymbolic:
+    """
+    The symbolic_representation of the event
+    """
+    description: Description
+    symbolic_info: info_symbolic
+    policies_constraints: str = None  # The policy constraints
+    def __str__(self):
+        symbolic_dict = self.symbolic_info.dict()
+        tables_rows_str = '\n- '.join([f"Table: {s['table_name']}. Row: {s['row']}" for s in
+                                       symbolic_dict['tables_rows']])
+        symbolic_relations_str = '\n'.join(symbolic_dict['symbolic_relations'])
+        return  f"## Enriched scenario:\n{symbolic_dict['enriched_scenario']}\n## Tables rows:\n- {tables_rows_str}\n## Symbolic variable relations:\n{symbolic_relations_str}"

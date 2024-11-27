@@ -47,10 +47,16 @@ class Dataset:
         weights = deficits / total_deficit if total_deficit > 0 else np.zeros_like(deficits)
 
         challenge_complexity = np.random.choice(bins, size=batch_size, p=weights)
-        logger.info(f'{ConsoleColor.CYAN}Sample mini batch descriptions{ConsoleColor.RESET}')
+        logger.info(f'{ConsoleColor.CYAN}- Sample mini batch descriptions{ConsoleColor.RESET}')
+        # Step 1: Generate descriptions
         descriptions, description_cost = self.descriptions_generator.sample_description(challenge_complexity,
                                                                                         num_samples=batch_size)
-        events, events_cost = self.event_generator.descriptions_to_events(descriptions)
+        # Step 2: Generate symbolic variables
+        logger.info(f'{ConsoleColor.CYAN}- Generate symbolic representation{ConsoleColor.RESET}')
+        event_symbols, symbols_cost = self.event_generator.descriptions_to_symbolic(descriptions)
+        # Step 3: Get symbols constraints
+        logger.info(f'{ConsoleColor.CYAN}- Generate symbolic constraints{ConsoleColor.RESET}')
+        events, events_cost = self.event_generator.get_symbolic_constraints(event_symbols)
         minibatch_cost = description_cost + events_cost
         return events, minibatch_cost
 
