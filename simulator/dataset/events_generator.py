@@ -1,6 +1,5 @@
 from agents.langgraph_tool import AgentTools
 import pandas as pd
-from pydantic import BaseModel
 from agents.plan_and_execute import PlanExecuteImplementation
 import json
 from langchain import hub
@@ -8,42 +7,13 @@ from simulator.env import Env
 from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
-from langchain_core.tools import tool
+from simulator.dataset.definitions import *
 from simulator.utils.llm_utils import dict_to_str, set_llm_chain
 from agents.plan_and_execute import Plan
 from simulator.utils.llm_utils import get_llm, set_callbck
-from dataclasses import dataclass
-from simulator.descriptor_generator import Description
+from simulator.dataset.descriptor_generator import Description
 from simulator.utils.parallelism import async_batch_invoke
 from typing import Tuple
-
-@tool
-def calculate(expression: str) -> str:
-    """Calculate the result of a mathematical expression. The mathematical expression to calculate, such as '2 + 2'. The expression can contain numbers, operators (+, -, *, /), parentheses, and spaces."""
-    if not all(char in "0123456789+-*/(). " for char in expression):
-        return "Error: invalid characters in expression"
-    try:
-        return str(round(float(eval(expression, {"__builtins__": None}, {})), 2))
-    except Exception as e:
-        return f"Error: {e}"
-
-
-@tool
-def think(thought: str) -> str:
-    "Use the tool to think about something. It will not obtain new information or change the database, but just append the thought to the log. Use it when complex reasoning is needed."
-    return ""
-
-
-@dataclass
-class Event:
-    """
-    The event
-    """
-    description: Description
-    database: dict[pd.DataFrame]
-    scenario: str = None  # The full scenario
-    id: int = -1  # The id of the event
-
 
 class EventsGenerator:
     """
@@ -66,6 +36,8 @@ class EventsGenerator:
         self.init_agent()
         self.num_workers = config['num_workers']
         self.timeout = config['timeout']
+        self.llm_symbolic = set_llm_chain(self.llm,
+                                          prompt_hub_name='eladlev/event_symbolic', structure=info_symbolic)
 
     def init_executors(self) -> dict[AgentTools]:
         """
@@ -81,14 +53,14 @@ class EventsGenerator:
                 cur_tool,
                 None,
                 name='add_row_to_table',
-                description='Add a row to the table in json format',
+                description='Add a row to the table in json format. The row should be a **json string** with the same schema as in the provided example.',
                 infer_schema=True,
             )
 
             system_messages = hub.pull("eladlev/event_executor")
-            system_messages = system_messages.format_messages(schema=self.data_schema[table_name],
+            system_messages = system_messages.partial(schema=self.data_schema[table_name],
                                                               example=json.dumps(rows_data[table_name]))
-            agent_executor = AgentTools(llm=self.llm, tools=[calculate, think, table_insertion_tools[table_name]],
+            agent_executor = AgentTools(llm=self.llm, tools=[think, table_insertion_tools[table_name]],
                                         system_prompt=system_messages)
             agent_executors[table_name] = agent_executor
         return agent_executors
@@ -107,7 +79,7 @@ class EventsGenerator:
             return f"Added row to {table_name} table"
 
         class add_row_input(BaseModel):
-            json_row: str = "The row to insert"
+            json_row: str = "The row to insert, it must be as **string**"
 
         return tool_function, add_row_input
 
@@ -129,7 +101,9 @@ class EventsGenerator:
         """
         Generate an event based on the given description.
         """
-        res = self.agent.invoke(input={'input': description.event_description, 'args': {'dataset': {}}})
+        res = self.agent.invoke(input={'planner_input': {'symbolic_info': description.symbolic_info,
+                                                         'tables_schema': dict_to_str(self.data_schema)},
+                                       'args': {'dataset': {}}})
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
 
@@ -140,6 +114,14 @@ class EventsGenerator:
         res = await self.agent.ainvoke(input={'input': description.event_description, 'args': {'dataset': {}}})
         event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
         return event
+
+    def description_to_symbolic(self, descriptions: list[Description]) -> list[str]:
+        """
+        Generate symbolic variables representations based on the given descriptions.
+        """
+        res = async_batch_invoke(self.description_to_symbolic, descriptions, num_workers=self.num_workers,
+                                 callbacks=self.callbacks, timeout=self.timeout)
+        return [r['result'] for r in res if r['error'] is None]
 
     def descriptions_to_events(self, descriptions: list[Description]) -> Tuple[list[Event], float]:
         """
