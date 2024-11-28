@@ -2,20 +2,22 @@ from langchain_core.runnables.base import Runnable
 from langgraph.graph import END
 from langgraph.graph import StateGraph, START
 from typing_extensions import TypedDict
-from typing import Optional
+from typing import Optional, List
 from simulator.agents_graphs.langgraph_tool import AgentTools
 from simulator.utils.llm_utils import dict_to_str, load_yaml_content
+import yaml
 
 
 class EventState(TypedDict):
     rows_to_generate: list[str]
     rows_generated: list[str]
     event_description: str
-    variables_definitions: dict[str, str]
+    variables_definitions: str  # json representation to run in async
     cur_restrictions: Optional[str]
     dataset: Optional[str]
     all_restrictions: Optional[str]
-    final_response: Optional[dict]
+    final_response_scenario: Optional[str]
+    final_response_table_rows: Optional[List[str]]
 
 
 class EventGraph:
@@ -23,7 +25,7 @@ class EventGraph:
     Building the Events with the database for the simulator
     """
 
-    def __init__(self, executors: list[AgentTools],
+    def __init__(self, executors: dict[AgentTools],
                  llm_filter_constraints: Runnable,
                  llm_final_response: Runnable,
                  memory=None):
@@ -64,10 +66,12 @@ class EventGraph:
             state['rows_generated'].append(cur_row)
             cur_dataset = res['args']['dataset']
             last_var = load_yaml_content(res['messages'][-1].content)
-            variable_definitions = state['variables_definitions']
+            variable_definitions = yaml.safe_load(state['variables_definitions'])
+            if variable_definitions is None:
+                variable_definitions = {}
             variable_definitions.update(last_var)
             return {"rows_to_generate": state['rows_to_generate'], 'rows_generated': state['rows_generated'],
-                    'variables_definitions': variable_definitions, 'dataset': cur_dataset}
+                    'variables_definitions': yaml.dump(variable_definitions), 'dataset': cur_dataset}
 
         return executor_node
 
@@ -77,7 +81,11 @@ class EventGraph:
                 return
             cur_row = state['rows_to_generate'][0]['row']
             restrictions = state['all_restrictions']
-            variables_str = dict_to_str(state['variables_definitions'])
+            variables_str = yaml.safe_load(state['variables_definitions'])
+            if variables_str is None:
+                variables_str = ''
+            else:
+                variables_str = dict_to_str(variables_str)
             filter_constraints = self.llm_filter_constraints.invoke({'row': cur_row, 'restrictions': restrictions,
                                                                      'variables': variables_str})
             return {"cur_restrictions": filter_constraints.content}
@@ -88,11 +96,13 @@ class EventGraph:
         def final_node(state):
             tables_rows_str = '\n- '.join([f"Table: {k['table_name']}. Row: {k['row']}" for
                                            k in state['rows_generated']])
-            variables_str = dict_to_str(state['variables_definitions'])
+            variables_str = dict_to_str(yaml.safe_load(state['variables_definitions']))
             final_res = self.llm_final_response.invoke({'scenario': state['event_description'],
                                                         'rows': tables_rows_str,
                                                         'values': variables_str})
-            return {"final_response": final_res.dict()}
+            final_res = final_res.dict()
+            return {"final_response_scenario": final_res['scenario'],
+                    'final_response_table_rows': final_res['tables_rows']}
 
         return final_node
 
@@ -123,4 +133,4 @@ class EventGraph:
         async Invoke the agent with the messages
         :return:
         """
-        return self.graph.ainvoke(**kwargs)
+        return self.graph.ainvoke(input=kwargs)

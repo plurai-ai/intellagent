@@ -1,5 +1,5 @@
 from simulator.agents_graphs.langgraph_tool import AgentTools
-from simulator.agents_graphs.plan_and_execute import PlanExecuteImplementation
+from simulator.agents_graphs.event_graph import EventGraph
 import json
 from langchain import hub
 from simulator.env import Env
@@ -8,11 +8,11 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
 from simulator.dataset.definitions import *
 from simulator.utils.llm_utils import dict_to_str, set_llm_chain
-from simulator.agents_graphs.plan_and_execute import Plan
 from simulator.utils.llm_utils import get_llm, set_callback
 from simulator.dataset.descriptor_generator import Description
 from simulator.utils.parallelism import async_batch_invoke
 from typing import Tuple
+
 
 class EventsGenerator:
     """
@@ -25,15 +25,13 @@ class EventsGenerator:
         :param config: The language model config
         :param environment (Env): The environment of the simulator.
         """
-        llm_config = config['llm']
+        llm_config = config['event_graph']['llm']
         self.config = config
         self.llm = get_llm(llm_config)
         self.callbacks = [set_callback(llm_config['type'])]
         self.data = {}
         self.env = env
         self.init_agent()
-        self.num_workers = config['num_workers']
-        self.timeout = config['timeout']
         self.llm_symbolic = set_llm_chain(self.llm, **config['symbolic_enrichment_config']['prompt'],
                                           structure=info_symbolic)
         self.llm_constraints = set_llm_chain(self.llm, **config['symbolic_constraints_config']['prompt'])
@@ -56,9 +54,9 @@ class EventsGenerator:
                 infer_schema=True,
             )
 
-            system_messages = hub.pull("eladlev/event_executor")
+            system_messages = hub.pull(self.config['event_graph']['prompt_executors']['prompt_hub_name'])
             system_messages = system_messages.partial(schema=self.env.data_schema[table_name],
-                                                              example=json.dumps(rows_data[table_name]))
+                                                      example=json.dumps(rows_data[table_name]))
             agent_executor = AgentTools(llm=self.llm, tools=[think, table_insertion_tools[table_name]],
                                         system_prompt=system_messages)
             agent_executors[table_name] = agent_executor
@@ -90,29 +88,54 @@ class EventsGenerator:
         """
         Initialize the agent.
         """
-        planner = set_llm_chain(self.llm, prompt=self.get_planner_prompt(), structure=Plan)
-        replanner = set_llm_chain(self.llm, prompt_hub_name="eladlev/replanner_event_generator", structure=Plan)
-        self.agent = PlanExecuteImplementation(planner=planner,
-                                               replanner=replanner,
-                                               executor=self.init_executors())
+        llm_filter_restrictions = set_llm_chain(self.llm, **self.config['event_graph']['prompt_restrictions'])
+        llm_final_res = set_llm_chain(self.llm, **self.config['event_graph']['prompt_final_res'], structure=FinalResult)
+        self.agent = EventGraph(executors=self.init_executors(),
+                                llm_filter_constraints=llm_filter_restrictions,
+                                llm_final_response=llm_final_res)
 
-    def description_to_event(self, description: Description) -> Event:
+    def symbolic_to_event(self, symbolic_event: EventSymbolic) -> Event:
         """
-        Generate an event based on the given description.
+        Generate an event based on the given symbolic_event.
         """
-        res = self.agent.invoke(input={'planner_input': {'symbolic_info': description.symbolic_info,
-                                                         'tables_schema': dict_to_str(self.env.data_schema)},
-                                       'args': {'dataset': {}}})
-        event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
+        event_dict = symbolic_event.symbolic_info.dict()
+        policies_constraints = symbolic_event.policies_constraints.split('## rows constraints:\n')[1]
+        res = self.agent.invoke(rows_to_generate=event_dict['tables_rows'], rows_generated=[],
+                                event_description=event_dict['enriched_scenario'], variables_definitions='{}',
+                                cur_restrictions=None, dataset={},
+                                all_restrictions=policies_constraints)
+
+        event = Event(description=symbolic_event.description,
+                      database=res['dataset'], scenario=res['final_response_scenario'],
+                      relevant_rows=res['final_response_table_rows'])
         return event
 
-    async def adescription_to_event(self, description: Description) -> Event:
+    async def asymbolic_to_event(self, symbolic_event: EventSymbolic) -> Event:
         """
-        Generate an event based on the given description.
+        Generate an event based on the given symbolic_event.
         """
-        res = await self.agent.ainvoke(input={'input': description.event_description, 'args': {'dataset': {}}})
-        event = Event(description=description, database=res['args']['dataset'], scenario=res['response'])
+        event_dict = symbolic_event.symbolic_info.dict()
+        policies_constraints = symbolic_event.policies_constraints.split('## rows constraints:\n')[1]
+        res = await self.agent.ainvoke(rows_to_generate=event_dict['tables_rows'], rows_generated=[],
+                                       event_description=event_dict['enriched_scenario'], variables_definitions='{}',
+                                       cur_restrictions=None, dataset={},
+                                       all_restrictions=policies_constraints)
+        event = Event(description=symbolic_event.description,
+                      database=res['dataset'], scenario=res['final_response_scenario'],
+                      relevant_rows=res['final_response_table_rows'])
         return event
+
+    def symbolics_to_events(self, symbolic_events: list[EventSymbolic]) -> Tuple[list[Event], float]:
+        """
+        Generate events based on the given symbolic events.
+        """
+        num_workers = self.config['event_graph']['num_workers']
+        timeout = self.config['event_graph']['timeout']
+        res = async_batch_invoke(self.asymbolic_to_event, symbolic_events, num_workers=num_workers,
+                                 callbacks=self.callbacks, timeout=timeout)
+        all_events = [r['result'] for r in res if r['error'] is None]
+        total_cost = sum([r['usage'] for r in res if r['error'] is None])
+        return all_events, total_cost
 
     def descriptions_to_symbolic(self, descriptions: list[Description]) -> tuple[list[EventSymbolic], float]:
         """
@@ -125,7 +148,7 @@ class EventsGenerator:
         cost = 0
         schema = dict_to_str(self.env.data_schema)
         for i, description in enumerate(descriptions):
-            samples_batch.append( {"tables_info": schema, 'scenario': description.event_description})
+            samples_batch.append({"tables_info": schema, 'scenario': description.event_description})
         num_workers = self.config['symbolic_enrichment_config'].get('num_workers', 1)
         timeout = self.config['symbolic_enrichment_config'].get('timeout', 40)
         res = async_batch_invoke(self.llm_symbolic.ainvoke, samples_batch, num_workers=num_workers,
@@ -159,14 +182,3 @@ class EventsGenerator:
             cost += result['usage']
             events[result['index']].policies_constraints = result['result'].content
         return events, cost
-
-
-    def descriptions_to_events(self, descriptions: list[Description]) -> Tuple[list[Event], float]:
-        """
-        Generate events based on the given descriptions.
-        """
-        res = async_batch_invoke(self.adescription_to_event, descriptions, num_workers=self.num_workers,
-                                 callbacks=self.callbacks, timeout=self.timeout)
-        all_events = [r['result'] for r in res if r['error'] is None]
-        total_cost = sum([r['usage'] for r in res if r['error'] is None])
-        return all_events, total_cost

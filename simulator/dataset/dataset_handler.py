@@ -56,8 +56,12 @@ class Dataset:
         event_symbols, symbols_cost = self.event_generator.descriptions_to_symbolic(descriptions)
         # Step 3: Get symbols constraints
         logger.info(f'{ConsoleColor.CYAN}- Generate symbolic constraints{ConsoleColor.RESET}')
-        events, events_cost = self.event_generator.get_symbolic_constraints(event_symbols)
-        minibatch_cost = description_cost + events_cost
+        event_symbols, events_constraints_cost = self.event_generator.get_symbolic_constraints(event_symbols)
+        # Step 4: Generate the event (with the dataset)
+        logger.info(f'{ConsoleColor.CYAN}- Generate the event (This would take a while...){ConsoleColor.RESET}')
+        events, events_cost = self.event_generator.symbolics_to_events(event_symbols)
+
+        minibatch_cost = description_cost + symbols_cost + events_constraints_cost + events_cost
         return events, minibatch_cost
 
     def load_dataset(self, path: str):
