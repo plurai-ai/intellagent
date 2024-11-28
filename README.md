@@ -38,25 +38,16 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 ## 🚀 How CHAS AI Pipeline Works
 
-CHAS operates through an AI pipeline of components powered by LLMs and AI Agents that work together to test and evaluate chatbot agents:
+CHAS operates through an AI pipeline of components powered by LLMs and AI Agents that work together to test and evaluate chatbot agents. The pipeline is outlined below:
 
-1. **Input Context**: Analyze the agent's context, including task description, tools, and database schema.
-   ![Input Context](./docs/input_context.png){:width="300"}
-
-2. **Flow and Policies Generation**: Decompose the agent's task into sub-flows and extract relevant policies.
-   ![Flow and Policies Generation](./docs/flow_and_policies_decomposition.png){:width="300"}
-
-3. **Policies Graph Generation**: Create a weighted graph representing relationships between policies to identify complex scenarios.
-   ![Policies Graph Generation](./docs/policies_graph_generation.png){:width="300"}
-
-4. **Generate Dataset Event**: Create a dataset of scenario events with varying challenge scores for thorough testing.
-   ![Generate Dataset Event](./docs/generate_dataset_event.png){:width="300"}
-
-5. **Run Simulation Events**: Execute simulation events through an interactive dialog system, capturing performance insights.
-   ![Run Simulation Events](./docs/run_simulation_events.png){:width="300"}
-
-6. **Report (Comprehensive Evaluation)**: Generate a detailed evaluation report analyzing performance and failure points.
-   ![Report Comprehensive Evaluation](./docs/report_comprehensive_evaluation.png){:width="300"}
+| **Step** | **Description** | **Illustration** |
+|----------|-----------------|------------------|
+| 1. **Input Context** | Analyze the agent's context, including task description, tools, and database schema. | <img src="./docs/input_context.png" alt="Input Context" width="300"> |
+| 2. **Flow and Policies Generation** | Decompose the agent's task into sub-flows and extract relevant policies. | <img src="./docs/flow_and_policies_decomposition.png" alt="Flow and Policies Generation" width="300"> |
+| 3. **Policies Graph Generation** | Create a weighted graph representing relationships between policies to identify complex scenarios. | <img src="./docs/policies_graph_generation.png" alt="Policies Graph Generation" width="300"> |
+| 4. **Generate Dataset Event** | Create a dataset of scenario events with varying challenge scores for thorough testing. | <img src="./docs/generate_dataset_event.png" alt="Generate Dataset Event" width="300"> |
+| 5. **Run Simulation Events** | Execute simulation events through an interactive dialog system, capturing performance insights. | <img src="./docs/run_simulation_events.png" alt="Run Simulation Events" width="300"> |
+| 6. **Report (Comprehensive Evaluation)** | Generate a detailed evaluation report analyzing performance and failure points. | <img src="./docs/report_comprehensive_evaluation.png" alt="Report Comprehensive Evaluation" width="300"> |
 
 For more details, refer to the [How it works](docs/how-it-works.md) (Explanation of AI Pipeline).
 
