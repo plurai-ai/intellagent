@@ -1,0 +1,9 @@
+2024-11-19 12:03:39,476 - INFO - [36mStart running the simulator[0m
+2024-11-19 12:03:39,476 - INFO - [97mRunning batch 0...[0m
+2024-11-19 12:03:48,126 - ERROR - Error in chain invoke: 'reservations'
+2024-11-19 12:03:58,521 - ERROR - Error in chain invoke: DataFrame index must be unique for orient='index'.
+2024-11-19 12:04:06,768 - INFO - [97mRunning batch 1...[0m
+2024-11-19 12:04:38,918 - INFO - [97mRunning batch 2...[0m
+2024-11-19 12:04:45,632 - ERROR - Error in chain invoke: DataFrame index must be unique for orient='index'.
+2024-11-19 12:04:46,950 - ERROR - Error in chain invoke: DataFrame index must be unique for orient='index'.
+2024-11-19 12:05:15,816 - INFO - [36mFinish running the simulator[0m

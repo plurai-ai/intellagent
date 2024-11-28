@@ -1,0 +1,78 @@
+dataset:
+  cost_limit: 50
+  max_difficult_level: 10
+  max_iterations: 100
+  min_difficult_level: 5
+  mini_batch_size: 2
+  name: dataset
+  num_samples: 30
+description_generator:
+  description_config:
+    num_workers: 3
+    prompt:
+      prompt_hub_name: eladlev/description_generation
+    timeout: 10
+  edge_config:
+    num_workers: 5
+    prompt:
+      prompt_hub_name: eladlev/policies_graph
+    timeout: 10
+  flow_config:
+    prompt:
+      prompt_hub_name: eladlev/flows_extraction
+  llm_description:
+    name: gpt-4o
+    type: azure
+  llm_edge:
+    name: gpt-4o-mini
+    type: azure
+  llm_policy:
+    name: gpt-4o
+    type: azure
+  llm_refinement:
+    name: gpt-4o
+    type: azure
+  policies_config:
+    num_workers: 3
+    prompt:
+      prompt_hub_name: eladlev/policies_extraction
+    timeout: 10
+  refinement_config:
+    do_refinement: true
+    num_workers: 3
+    prompt_feedback:
+      prompt_hub_name: eladlev/description_refinement
+    prompt_refinement:
+      prompt_hub_name: eladlev/refined_description2
+    timeout: 10
+dialog_manager:
+  cost_limit: 30
+  llm_chat:
+    name: gpt-4o
+    type: azure
+  llm_user:
+    name: gpt-4o
+    type: azure
+  memory_path: memory.db
+  mini_batch_size: 10
+  num_workers: 5
+  timeout: 30
+  user_parsing_mode: thought
+  user_prompt:
+    prompt_hub_name: eladlev/user_sim
+environment:
+  database_folder: /Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/data_scheme
+  prompt_path: /Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/wiki.md
+  task_description:
+    extraction_prompt:
+      prompt_hub_name: eladlev/task_extraction
+    llm:
+      name: gpt-4o
+      type: azure
+  tools_folder: /Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/tools/agent_tools.py
+event_generator:
+  llm:
+    name: gpt-4o
+    type: azure
+  num_workers: 3
+  timeout: 60

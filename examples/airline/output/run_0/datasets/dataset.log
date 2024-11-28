@@ -1,0 +1,25 @@
+2024-11-19 11:09:37,355 - WARNING - [31mDataset dump not found, initializing from zero[0m
+2024-11-19 11:09:37,355 - INFO - [36mStart building the dataset[0m
+2024-11-19 11:09:37,355 - INFO - [97mIteration 0 started[0m
+2024-11-19 11:11:38,781 - ERROR - Error in chain invoke: 'information'
+2024-11-19 11:12:31,462 - INFO - [97mIteration 1 started[0m
+2024-11-19 11:49:44,787 - INFO - [36mStart building the dataset[0m
+2024-11-19 11:49:44,787 - INFO - [97mIteration 1 started[0m
+2024-11-19 11:50:42,628 - INFO - [97mIteration 2 started[0m
+2024-11-19 11:51:52,971 - INFO - [97mIteration 3 started[0m
+2024-11-19 11:52:41,657 - INFO - [97mIteration 4 started[0m
+2024-11-19 11:53:28,188 - INFO - [97mIteration 5 started[0m
+2024-11-19 11:53:58,994 - INFO - [97mIteration 6 started[0m
+2024-11-19 11:54:36,571 - INFO - [97mIteration 7 started[0m
+2024-11-19 11:55:42,888 - INFO - [97mIteration 8 started[0m
+2024-11-19 11:56:33,655 - INFO - [97mIteration 9 started[0m
+2024-11-19 11:57:49,694 - INFO - [97mIteration 10 started[0m
+2024-11-19 11:58:38,223 - INFO - [97mIteration 11 started[0m
+2024-11-19 12:00:23,814 - INFO - [97mIteration 12 started[0m
+2024-11-19 12:01:11,764 - INFO - [97mIteration 13 started[0m
+2024-11-19 12:02:32,169 - INFO - [97mIteration 14 started[0m
+2024-11-19 12:03:38,933 - INFO - [36mFinish building the dataset[0m
+2024-11-20 15:06:17,860 - INFO - [36mStart building the dataset[0m
+2024-11-20 15:06:17,861 - INFO - [36mFinish building the dataset[0m
+2024-11-20 18:02:45,193 - INFO - [36mStart building the dataset[0m
+2024-11-20 18:02:45,193 - INFO - [36mFinish building the dataset[0m
