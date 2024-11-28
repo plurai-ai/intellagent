@@ -14,7 +14,7 @@ sys.path.append(str(project_root))
 from simulator.utils.file_reading import get_latest_dataset
 import numpy as np
 
-st.set_page_config(page_title="Experiments report", page_icon="📈")
+st.set_page_config(page_title="Experiments report", page_icon="../../../docs/plurai_icon.png")
 
 
 def _format_arrow(val):
@@ -116,7 +116,11 @@ def load_data(database_path=None):
         merged_df = pd.merge(merged_df, df, on="policy", how="outer")
 
     score_columns = [col for col in merged_df.columns if "success_rate" in col]
-    score_columns = sorted(score_columns, key=lambda x: int(x.split('_')[1]))
+    # Filter out any columns that do not have a valid integer after the underscore
+    score_columns = [col for col in score_columns if len(col.split('_')) > 1 and col.split('_')[1].isdigit()]
+    
+    # Sort score_columns, but handle cases where the second part is not a digit
+    score_columns = sorted(score_columns, key=lambda x: (int(x.split('_')[1]) if x.split('_')[1].isdigit() else float('inf')))
     mean_scores = merged_df[score_columns].apply(lambda row: row[row >= 0].mean(), axis=1)
     styled_col = []
     for col in score_columns:
