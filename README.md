@@ -57,17 +57,17 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 
 ## 📖 Documentation
 
-- [Installation & Quick Start](docs/installation.md)  
+- [Installation & Quick Start](./docs/installation.md)  
   Step-by-step setup instructions.
 
-- [How It Works](docs/how-it-works.md)  
+- [How It Works](./docs/how-it-works.md)  
   Detailed explanation of the AI pipeline.
 
-- [Architecture Guide](docs/architecture.md)  
+- [Architecture Guide](./docs/architecture.md)  
   Overview of the system's main components.
 
-- [Simulation Examples](docs/examples.md)  
-  Examples from various domains, including [airline agent](docs/examples.md#airline).
+- [Running Examples](./docs/examples.md)  
+  Running examples from various agents, including [airline agent](./docs/examples/airline.md), including [retail agent](./docs/examples/retail.md),[langgraph agent](./docs/examples/langraph.md) 
  
 ## Features
 
