@@ -61,35 +61,17 @@ The system includes comprehensive analysis and visualization tools:
 
 ### 1. Scalability
 - **Parallel Processing**: The system implements batch processing and parallel execution patterns for handling multiple simulations simultaneously.
-  ```python:simulator/descriptor_generator.py
-  startLine: 153
-  endLine: 157
-  ```
-
 - **Modular Architecture**: Components are designed to be independent and easily scalable.
 
 ### 2. Extensibility
 - **Plugin System**: Tools and validators can be dynamically loaded and configured
-  ```python:simulator/env.py
-  startLine: 16
-  endLine: 26
-  ```
-
 - **Configurable Components**: Most components accept configuration dictionaries for easy modification
 
 ### 3. Monitoring and Debugging
 - **Comprehensive Logging**: Structured logging system with different severity levels
-  ```python:simulator/utils/logger_config.py
-  startLine: 33
-  endLine: 59
-  ```
-
+  
 - **Analytics Events**: Tracking system for monitoring performance and errors
-  ```python:simulator/healthcare_analytics.py
-  startLine: 147
-  endLine: 167
-  ```
-
+  
 ### 4. Cost Management
 - **Cost Tracking**: Built-in cost monitoring for LLM usage
 - **Batch Processing**: Optimized processing to minimize API calls
@@ -98,11 +80,7 @@ The system includes comprehensive analysis and visualization tools:
 ### 5. Error Handling
 - **Graceful Degradation**: System continues functioning even if some components fail
 - **Error Tracking**: Comprehensive error tracking and reporting system
-  ```python:simulator/events_generator.py
-  startLine: 28
-  endLine: 31
-  ```
-
+  
 ### 6. Security
 - **Environment Configuration**: Sensitive configuration managed through environment variables
 - **Input Validation**: Structured validation of inputs and outputs

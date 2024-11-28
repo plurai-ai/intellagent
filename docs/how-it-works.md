@@ -12,7 +12,7 @@ The process begins with a comprehensive analysis of your agent's context, includ
 
 This initial analysis establishes the foundation for understanding the agent's intended behavior and operational boundaries.
 
-![Input Context](./docs/input_context.png)
+![Input Context](./input_context.png)
 
 ### 2. Flow and Policies Generation
 The system automatically:
@@ -20,7 +20,7 @@ The system automatically:
 - Extracts relevant policies and guidelines
 - Identifies potential edge cases and interaction patterns
 
-![Flow and Policies Generation](./docs/flow_and_policies_decomposition.png)
+![Flow and Policies Generation](./flow_and_policies_decomposition.png)
 
 ### 3. Policies Graph Generation
 CHAS creates a weighted graph structure where:
@@ -30,7 +30,7 @@ CHAS creates a weighted graph structure where:
 
 This graph helps identify complex interaction scenarios requiring testing.
 
-![Policies Graph Generation](./docs/policies_graph_generation.png)
+![Policies Graph Generation](./policies_graph_generation.png)
 
 ### 4. Dataset Event Generation
 The system generates comprehensive test scenarios including:
@@ -40,7 +40,7 @@ The system generates comprehensive test scenarios including:
 
 Each scenario is assigned varying challenge scores to ensure thorough testing across complexity levels.
 
-![Generate Dataset Event](./docs/generate_dataset_event.png)
+![Generate Dataset Event](./generate_dataset_event.png)
 
 ### 5. Simulation Execution
 CHAS runs generated scenarios through an interactive dialog system, capturing:
@@ -50,7 +50,7 @@ CHAS runs generated scenarios through an interactive dialog system, capturing:
 - Agent thought processes
 - Performance metrics
 
-![Run Simulation Events](./docs/run_simulation_events.png)
+![Run Simulation Events](./run_simulation_events.png)
 
 ### 6. Comprehensive Evaluation
 The final output includes detailed analysis across multiple dimensions:
@@ -59,7 +59,7 @@ The final output includes detailed analysis across multiple dimensions:
 - Tool usage effectiveness
 - Specific failure point identification
 
-![Report Comprehensive Evaluation](./docs/report_comprehensive_evaluation.png)
+![Report Comprehensive Evaluation](./report_comprehensive_evaluation.png)
 
 ## Key Components
 

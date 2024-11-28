@@ -36,70 +36,41 @@ CHAS turns the traditional "restrict-by-default" approach into a data-driven "en
 
 Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
 
-## System Overview
+## 🚀 How CHAS AI Pipeline Works
 
-CHAS operates through an AI pipeline of components powered by LLMs and Langraph agents that work together to comprehensively test and evaluate chatbot agents:
+CHAS operates through an AI pipeline of components powered by LLMs and AI Agents that work together to test and evaluate chatbot agents:
 
-![Input Context](./docs/input_context.png)
+1. **Input Context**: Analyze the agent's context, including task description, tools, and database schema.
+   ![Input Context](./docs/input_context.png){:width="300"}
 
-**Step#1: Input Context**
-CHAS starts by analyzing your agent's context, including its task description, tools, and database schema. This comprehensive analysis helps understand the agent's intended behavior and operational boundaries.
+2. **Flow and Policies Generation**: Decompose the agent's task into sub-flows and extract relevant policies.
+   ![Flow and Policies Generation](./docs/flow_and_policies_decomposition.png){:width="300"}
 
-**Step#2: Flow and Policies Generation**
-CHAS automatically decomposes your agent's task into sub-flows and extracts relevant policies and guidelines. This decomposition helps identify potential edge cases and interaction patterns that need testing.
+3. **Policies Graph Generation**: Create a weighted graph representing relationships between policies to identify complex scenarios.
+   ![Policies Graph Generation](./docs/policies_graph_generation.png){:width="300"}
 
-![Flow and Policies Generation](./docs/flow_and_policies_decomposition.png)
-**Step#3: Policies Graph Generation**
-CHAS generates a weighted graph representing relationships between policies, where edges indicate related policies and weights reflect the challenge score of implementing connected policies together. This graph structure helps identify complex interaction scenarios that require testing.
+4. **Generate Dataset Event**: Create a dataset of scenario events with varying challenge scores for thorough testing.
+   ![Generate Dataset Event](./docs/generate_dataset_event.png){:width="300"}
 
-![Policies Graph Generation](./docs/policies_graph_generation.png)
+5. **Run Simulation Events**: Execute simulation events through an interactive dialog system, capturing performance insights.
+   ![Run Simulation Events](./docs/run_simulation_events.png){:width="300"}
 
-**Step#4: Generate Dataset Event**
-CHAS generates a comprehensive dataset of scenario events with varying challenge scores. Each event consists of three key components:
-- Scenario Content: The specific user interaction scenario to test
-- Expected Output: The desired agent behavior based on policies
-- Data Ingestion: The required database records and state before running the simulation
+6. **Report (Comprehensive Evaluation)**: Generate a detailed evaluation report analyzing performance and failure points.
+   ![Report Comprehensive Evaluation](./docs/report_comprehensive_evaluation.png){:width="300"}
 
-This dataset generation enables thorough testing across different complexity levels and interaction patterns.
+For more details, refer to the [How it works](docs/how-it-works.md) (Explanation of AI Pipeline).
 
-![Generate Dataset Event](./docs/generate_dataset_event.png)
-
-**Step#5: Run Simulation Events**
-CHAS executes the generated simulation events against your chat agent through an interactive dialog system. Each simulation run includes:
-
-- Event Execution: Running the generated scenarios through your agent
-- Dialog Logging: Detailed logging of the conversation flow and agent responses
-- User Simulation: Simulated user interactions based on the scenario content
-- Thought Process: Capturing the agent's reasoning and decision-making process
-- Performance Analysis: Evaluating responses against expected behaviors
-
-The simulation provides comprehensive insights into your agent's performance across different scenarios and challenge levels, helping identify areas for improvement.
-
-![Run Simulation Events](./docs/run_simulation_events.png)
-
-
-**Step#6: Report (Comprehensive Evaluation)**
-CHAS generates a comprehensive evaluation report that analyzes your chatbot agent's performance and failure points across multiple dimensions:
-
-- Complexity Level Analysis: Breakdown of success/failure rates across different challenge scores
-- Policy Interaction Evaluation: Identification of problematic policy combinations 
-- Tool Usage Assessment: Analysis of tool effectiveness and failure patterns
-
-This detailed reporting helps identify optimal operating parameters and guides targeted improvements to enhance your agent's reliability and capabilities.
-
-![Report Comprehensive Evaluation](./docs/report_comprehensive_evaluation.png)
-
-
-## Demo
+## 🔍 Demo
 
 ![simulator_recording](./docs/simulator_recording.gif)
 
 
 ## 📖 Documentation
- - [How to install](docs/installation.md) (Setup instructions)
- - [Simulation examples](docs/examples.md) (domains: airline, retail)
- - [How it works](docs/how-it-works.md) (Explanation of pipelines)
+ - [How to install & quick start](docs/installation.md) (Setup instructions)
+ - [How it works](docs/how-it-works.md) (Explanation of AI Pipeline)
  - [Architecture guide](docs/architecture.md) (Overview of main components)
+ - [Simulation examples](docs/examples.md) (domains: airline)
+ 
 
 ## Features
 
