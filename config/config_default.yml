@@ -50,9 +50,6 @@ description_generator:
         name: 'gpt-4o'
 
 event_generator:
-    llm:
-        type: 'azure'
-        name: 'gpt-4o'
     symbolic_enrichment_config:
         prompt:
             prompt_hub_name: 'eladlev/event_symbolic'
@@ -63,8 +60,19 @@ event_generator:
             prompt_hub_name: 'eladlev/symbolic_prompt_constraints'
         num_workers: 3
         timeout: 40 # in seconds
-    num_workers: 3
-    timeout: 60 # in seconds
+    event_graph:
+        llm:
+            type: 'azure'
+            name: 'gpt-4o'
+        prompt_restrictions:
+            prompt_hub_name: 'eladlev/filter_restrictions'
+        prompt_final_res:
+            prompt_hub_name: 'eladlev/event_final'
+        prompt_executors:
+            prompt_hub_name: 'eladlev/event_executor'
+        num_workers: 3
+        timeout: 120 # in seconds
+
 
 
 dialog_manager:
