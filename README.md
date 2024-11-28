@@ -55,22 +55,26 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 
 ![simulator_recording](./docs/simulator_recording.gif)
 
-
 ## 📖 Documentation
- - [How to install & quick start](docs/installation.md) (Setup instructions)
- - [How it works](docs/how-it-works.md) (Explanation of AI Pipeline)
- - [Architecture guide](docs/architecture.md) (Overview of main components)
- - [Simulation examples](docs/examples.md) (domains: airline)
- 
 
+- [Installation & Quick Start](docs/installation.md)  
+  Step-by-step setup instructions.
+
+- [How It Works](docs/how-it-works.md)  
+  Detailed explanation of the AI pipeline.
+
+- [Architecture Guide](docs/architecture.md)  
+  Overview of the system's main components.
+
+- [Simulation Examples](docs/examples.md)  
+  Examples from various domains, including [airline agent](docs/examples.md#airline).
+ 
 ## Features
 
 - 🔬 Simulates thousands of edge-case events tailored to your chatbot agent
 - 🤖 Simulates user interactions with your agent based on generated events
 - 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
 - 🚀 Enables confident deployment of more reliable chatbot agents
-
-
 
 ## :fire: QuickStart
 Chat-Agent-Simulator (CHAS) requires `python == 3.10`
@@ -238,9 +242,6 @@ python visualize_simulation_run.py (need to be added)
 This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.
 
 ![Simulator Results](./docs/simulator_recording.gif)
-
-## Tips
-TODO
 
 ## 🚀 Community & Contributing
 
