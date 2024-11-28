@@ -12,6 +12,7 @@ from simulator.utils.llm_utils import get_llm, set_callback
 from simulator.dataset.descriptor_generator import Description
 from simulator.utils.parallelism import async_batch_invoke
 from typing import Tuple
+from simulator.healthcare_analytics import ExceptionEvent, track_event
 
 
 class EventsGenerator:
@@ -72,6 +73,8 @@ class EventsGenerator:
                     df, dataset = validator(df, dataset)
                 dataset[table_name] = pd.concat([dataset[table_name], df], ignore_index=True)
             except Exception as e:
+                track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                           error_message=str(e)))
                 return f"Error: {e}"
             return f"Added row to {table_name} table"
 

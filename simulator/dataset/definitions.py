@@ -4,6 +4,7 @@ from langchain_core.tools import tool
 from dataclasses import dataclass
 import pandas as pd
 from simulator.dataset.descriptor_generator import Description
+from simulator.healthcare_analytics import ExceptionEvent, track_event
 
 
 class row_info(BaseModel):
@@ -27,6 +28,8 @@ def calculate(expression: str) -> str:
     try:
         return str(round(float(eval(expression, {"__builtins__": None}, {})), 2))
     except Exception as e:
+        track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
         return f"Error: {e}"
 
 
