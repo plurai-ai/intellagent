@@ -2,15 +2,15 @@ import os.path
 
 from simulator.env import Env
 from simulator.utils.llm_utils import get_prompt_template
-from simulator.dialog_graph import Dialog
-from agents.langgraph_tool import AgentTools
+from simulator.agents_graphs.dialog_graph import Dialog
+from simulator.agents_graphs.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
 from simulator.utils.llm_utils import get_llm, set_callback
-from simulator.events_generator import Event
+from simulator.dataset.events_generator import Event
 import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
-from simulator.utils.parallelism import async_batch_invoke, batch_invoke
+from simulator.utils.parallelism import async_batch_invoke
 
 
 class DialogManager:
@@ -104,8 +104,9 @@ class DialogManager:
                                          "chatbot_args": chatbot_env_args,
                                          "thread_id": str(uuid.uuid4()),
                                          "user_thoughts": []})
+
     async def arun(self, user_prompt_params=None, chatbot_prompt_params=None,
-            chatbot_env_args=None):
+                   chatbot_env_args=None):
         """
         Run the simulation asynchronously.
         :param user_prompt_params:
@@ -122,10 +123,10 @@ class DialogManager:
         if len(chatbot_messages) == 1:
             chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
         return await self.dialog.ainvoke(input={"user_messages": user_messages,
-                                         "chatbot_messages": chatbot_messages,
-                                         "chatbot_args": chatbot_env_args,
-                                         "thread_id": str(uuid.uuid4()),
-                                         "user_thoughts": []})
+                                                "chatbot_messages": chatbot_messages,
+                                                "chatbot_args": chatbot_env_args,
+                                                "thread_id": str(uuid.uuid4()),
+                                                "user_thoughts": []})
 
     def run_event(self, event: Event):
         """
@@ -133,6 +134,7 @@ class DialogManager:
         :param event: The event to run.
         """
         return self.run(user_prompt_params={'scenario': event.scenario,
+                                            'rows': '- ' + '\n- '.join(event.relevant_rows),
                                             'expected_behaviour': event.description.expected_behaviour},
                         chatbot_env_args={'data': event.database})
 
@@ -142,8 +144,9 @@ class DialogManager:
         :param event: The event to run.
         """
         return await self.arun(user_prompt_params={'scenario': event.scenario,
-                                            'expected_behaviour': event.description.expected_behaviour},
-                        chatbot_env_args={'data': event.database})
+                                                   'rows': '- ' + '\n- '.join(event.relevant_rows),
+                                                   'expected_behaviour': event.description.expected_behaviour},
+                               chatbot_env_args={'data': event.database})
 
     def run_events(self, events: list[Event]):
         """
@@ -152,6 +155,6 @@ class DialogManager:
         """
         res = async_batch_invoke(self.arun_event, events, num_workers=self.num_workers,
                                  callbacks=self.callbacks, timeout=self.timeout)
-        final_result = [{'res': r['result'], 'event_id':events[r['index']].id} for r in res if r['error'] is None]
+        final_result = [{'res': r['result'], 'event_id': events[r['index']].id} for r in res if r['error'] is None]
         cost = sum([r['usage'] for r in res if r['error'] is None])
         return final_result, cost

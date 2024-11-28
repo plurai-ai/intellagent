@@ -1,13 +1,13 @@
 from simulator.env import Env
 import os
-from simulator.descriptor_generator import DescriptionGenerator
-from simulator.events_generator import EventsGenerator
-from simulator.dialog_manager import DialogManager
+from simulator.dataset.descriptor_generator import DescriptionGenerator
+from simulator.dataset.events_generator import EventsGenerator
+from simulator.dialog.dialog_manager import DialogManager
 from simulator.utils.logger_config import update_logger_file, setup_logger, ConsoleColor
 import pickle
 from simulator.utils.file_reading import get_latest_file
 from datetime import datetime
-from simulator.dataset_handler import Dataset
+from simulator.dataset.dataset_handler import Dataset
 import yaml
 import pandas as pd
 import uuid
