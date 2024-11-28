@@ -39,6 +39,7 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     else:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
+
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''
     for key, value in d.items():
@@ -111,7 +112,7 @@ def get_dummy_callback():
     return DummyCallback()
 
 
-def set_callbck(llm_type):
+def set_callback(llm_type):
     if llm_type.lower() == 'openai' or llm_type.lower() == 'azure':
         callback = get_openai_callback
     elif llm_type.lower() == 'anthropic_bedrock':
@@ -119,6 +120,30 @@ def set_callbck(llm_type):
     else:
         callback = get_dummy_callback
     return callback
+
+
+def load_yaml_content(yaml_content: str) -> dict:
+    """
+    Load YAML content into a Python dictionary, handling YAML blocks with ```yml prefixes.
+
+    Args:
+        yaml_content (str): The YAML content as a string, potentially wrapped with ```yml and ``` markers.
+
+    Returns:
+        dict: The parsed YAML content as a dictionary.
+    """
+    try:
+        index = yaml_content.find('```yml')
+        yaml_content = yaml_content[index:] if index != -1 else yaml_content
+        # Remove ```yml and ``` markers if they exist
+        if yaml_content.startswith("```yml"):
+            yaml_content = yaml_content.strip("```yml").strip("```").strip()
+
+        # Load the YAML content
+        return yaml.safe_load(yaml_content)
+    except yaml.YAMLError as e:
+        print(f"Error loading YAML: {e}")
+        return {}
 
 
 def get_llm(config: dict):

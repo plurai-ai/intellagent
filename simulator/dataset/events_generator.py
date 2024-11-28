@@ -1,6 +1,5 @@
-from agents.langgraph_tool import AgentTools
-import pandas as pd
-from agents.plan_and_execute import PlanExecuteImplementation
+from simulator.agents_graphs.langgraph_tool import AgentTools
+from simulator.agents_graphs.plan_and_execute import PlanExecuteImplementation
 import json
 from langchain import hub
 from simulator.env import Env
@@ -9,8 +8,8 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools.structured import StructuredTool
 from simulator.dataset.definitions import *
 from simulator.utils.llm_utils import dict_to_str, set_llm_chain
-from agents.plan_and_execute import Plan
-from simulator.utils.llm_utils import get_llm, set_callbck
+from simulator.agents_graphs.plan_and_execute import Plan
+from simulator.utils.llm_utils import get_llm, set_callback
 from simulator.dataset.descriptor_generator import Description
 from simulator.utils.parallelism import async_batch_invoke
 from typing import Tuple
@@ -29,7 +28,7 @@ class EventsGenerator:
         llm_config = config['llm']
         self.config = config
         self.llm = get_llm(llm_config)
-        self.callbacks = [set_callbck(llm_config['type'])]
+        self.callbacks = [set_callback(llm_config['type'])]
         self.data = {}
         self.env = env
         self.init_agent()

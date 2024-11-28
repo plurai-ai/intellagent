@@ -25,11 +25,11 @@ description_generator:
         timeout: 10 # in seconds
     description_config:
         prompt:
-            prompt_hub_name: 'eladlev/description_generation'
+            prompt_hub_name: 'eladlev/description_generation:c7ecf9ea'
         num_workers: 3
         timeout: 10 # in seconds
     refinement_config:
-        do_refinement: True # If you don't want to refine the expected behaviour of the descriptions, set this to False
+        do_refinement: False # If you don't want to refine the expected behaviour of the descriptions, set this to False
         prompt_feedback:
             prompt_hub_name: 'eladlev/description_refinement'
         prompt_refinement:
@@ -53,8 +53,19 @@ event_generator:
     llm:
         type: 'azure'
         name: 'gpt-4o'
+    symbolic_enrichment_config:
+        prompt:
+            prompt_hub_name: 'eladlev/event_symbolic'
+        num_workers: 3
+        timeout: 40 # in seconds
+    symbolic_constraints_config:
+        prompt:
+            prompt_hub_name: 'eladlev/symbolic_prompt_constraints'
+        num_workers: 3
+        timeout: 40 # in seconds
     num_workers: 3
     timeout: 60 # in seconds
+
 
 dialog_manager:
     user_parsing_mode: 'thought' # 'thought' in case the user has thought part or 'default'
@@ -67,7 +78,7 @@ dialog_manager:
     llm_chat:
         type: 'azure'
         name: 'gpt-4o'
-    num_workers: 5
+    num_workers: 1
     timeout: 30 # in seconds
     mini_batch_size: 10
     cost_limit: 30 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dialog manager part
@@ -77,7 +88,7 @@ dataset:
     min_difficult_level: 5
     max_difficult_level: 10
     num_samples: 30
-    mini_batch_size: 10
+    mini_batch_size: 3
     max_iterations: 100
     cost_limit: 50 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dataset generation part
 

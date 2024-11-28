@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel, Field
-from simulator.utils.llm_utils import set_llm_chain, set_callbck
+from simulator.utils.llm_utils import set_llm_chain, set_callback
 from simulator.utils.parallelism import batch_invoke, async_batch_invoke
 from typing import Tuple
 from simulator.utils.llm_utils import get_llm
@@ -105,7 +105,7 @@ class DescriptionGenerator:
         flow_extractor = set_llm_chain(llm, structure=FlowsList, **self.config['flow_config']['prompt'])
         result = batch_invoke(flow_extractor.invoke,
                            [{'user_prompt': self.prompt}], num_workers=1,
-                              callbacks=[set_callbck(self.config['llm_policy']['type'])])[0]
+                              callbacks=[set_callback(self.config['llm_policy']['type'])])[0]
         self.total_cost += result['usage']
         flows = result['result']
         return flows.dict()['sub_flows']
@@ -123,7 +123,7 @@ class DescriptionGenerator:
         res = async_batch_invoke(policy_extractor.ainvoke, batch,
                                  num_workers=self.config['policies_config']['num_workers'],
                                  timeout=self.config['policies_config']['timeout'],
-                                 callbacks=[set_callbck(self.config['llm_policy']['type'])])
+                                 callbacks=[set_callback(self.config['llm_policy']['type'])])
         for i, result in enumerate(res):
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
@@ -143,7 +143,7 @@ class DescriptionGenerator:
             return f"Flow: {policy['flow']}\npolicy: {policy['policy']}"
 
         edge_llm = set_llm_chain(llm, structure=Rank, **self.config['edge_config']['prompt'])
-        callback = set_callbck(self.config['llm_edge']['type'])
+        callback = set_callback(self.config['llm_edge']['type'])
         samples_batch = []
         policies_list = []
         for flow, policies in self.policies.items():
@@ -225,7 +225,7 @@ class DescriptionGenerator:
                                   'policies': policies_list_to_str(policies)})
         num_workers = self.config['description_config'].get('num_workers', 1)
         timeout = self.config['description_config'].get('timeout', 10)
-        callback = set_callbck(self.config['llm_description']['type'])
+        callback = set_callback(self.config['llm_description']['type'])
         res = async_batch_invoke(self.llm_description.ainvoke, samples_batch, num_workers=num_workers,
                                  callbacks=[callback], timeout=timeout)
         for result in res:
@@ -254,7 +254,7 @@ class DescriptionGenerator:
         iteration_indices = list(range(len(descriptions)))
         num_workers = self.config['refinement_config'].get('num_workers', 5)
         timeout = self.config['refinement_config'].get('timeout', 10)
-        callback = set_callbck(self.config['llm_refinement']['type'])
+        callback = set_callback(self.config['llm_refinement']['type'])
         cost = 0
 
         for i in range(num_iterations):

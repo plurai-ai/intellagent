@@ -2,11 +2,11 @@ import os.path
 
 from simulator.env import Env
 from simulator.utils.llm_utils import get_prompt_template
-from simulator.dialog.dialog_graph import Dialog
-from agents.langgraph_tool import AgentTools
+from simulator.agents_graphs.dialog_graph import Dialog
+from simulator.agents_graphs.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
-from simulator.utils.llm_utils import get_llm, set_callbck
+from simulator.utils.llm_utils import get_llm, set_callback
 from simulator.dataset.events_generator import Event
 import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
@@ -28,7 +28,7 @@ class DialogManager:
         self.llm_chat = get_llm(config['llm_chat'])
         self.llm_user = self.llm_user | self.get_user_parsing_function(
             parsing_mode=config['user_parsing_mode'])  # The user language model
-        self.callbacks = [set_callbck(t) for t in
+        self.callbacks = [set_callback(t) for t in
                           {config['llm_user']['type'], config['llm_chat']['type']}]  # The callbacks
         self.data = {}
         self.data_examples = environment.data_examples
