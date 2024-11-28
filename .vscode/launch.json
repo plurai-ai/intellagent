@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--output_path",
+                "../../data/chatbot_simulator/airline/output_debug_6"
+            ]
+        }
+    ]
+}

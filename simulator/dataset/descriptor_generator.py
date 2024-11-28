@@ -5,10 +5,19 @@ from simulator.utils.parallelism import batch_invoke, async_batch_invoke
 from typing import Tuple
 from simulator.utils.llm_utils import get_llm
 import networkx as nx
-import random
+import random, math
 from simulator.env import Env
 from dataclasses import dataclass
 from simulator.utils.logger_config import ConsoleColor, get_logger
+
+
+from simulator.healthcare_analytics import (
+    ExtractFlowEvent,
+    ExtractFlowPoliciesEvent,
+    GenerateRelationsGraphEvent,
+    track_event
+)
+
 
 
 def policies_list_to_str(policies):
@@ -108,6 +117,11 @@ class DescriptionGenerator:
                               callbacks=[set_callback(self.config['llm_policy']['type'])])[0]
         self.total_cost += result['usage']
         flows = result['result']
+        error_message = result['error']
+        track_event(ExtractFlowEvent(cost=result['usage'],
+                                     n_flows=len(flows.dict()['sub_flows']),
+                                     prompt_length = len(self.prompt),
+                                     error_message = error_message))
         return flows.dict()['sub_flows']
 
     def extract_policies(self):
@@ -120,16 +134,34 @@ class DescriptionGenerator:
         batch = []
         for flow in self.flows:
             batch.append({'user_prompt': self.prompt, 'flow': flow})
-        res = async_batch_invoke(policy_extractor.ainvoke, batch,
+        res = batch_invoke(policy_extractor.invoke, batch,
                                  num_workers=self.config['policies_config']['num_workers'],
-                                 timeout=self.config['policies_config']['timeout'],
                                  callbacks=[set_callback(self.config['llm_policy']['type'])])
+        extract_policies_cost = 0
+        batch_error_message = None
+        n_policies_per_flow = []
         for i, result in enumerate(res):
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
+                batch_error_message = (batch_error_message or "") + f"flow {result['index']}: {result['error']} "
                 continue
-            self.total_cost += result['usage']
-            flows_policies[self.flows[result['index']]] = result['result'].dict()['policies']
+
+            # Accumulate usage cost
+            extract_policies_cost += result.get('usage', 0)
+
+            # Update flows_policies and calculate the number of policies
+            flow_key = self.flows[result['index']]
+            policies = result['result'].dict().get('policies', [])
+            flows_policies[flow_key] = policies
+            n_policies_per_flow.append(len(policies) if policies is not None else None)
+
+        # Update the total cost
+        self.total_cost += extract_policies_cost
+        track_event(ExtractFlowPoliciesEvent(cost=extract_policies_cost,
+                                     n_policies_per_flow = n_policies_per_flow,
+                                     error_message = batch_error_message
+                                     )
+        )
         return flows_policies
 
     def extract_graph(self):
@@ -161,15 +193,28 @@ class DescriptionGenerator:
         res = async_batch_invoke(edge_llm.ainvoke, samples_batch, num_workers=num_workers,
                                  callbacks=[callback], timeout=timeout)
         all_edges = []
+        graph_creation_cost = 0
+        batch_error_message = None
         for result in res:
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
+                batch_error_message = (batch_error_message or "") + f"edge {result['index']}: {result['error']} "
                 continue
-            self.total_cost += result['usage']
+            graph_creation_cost += result['usage']
             cur_sample = samples_batch[result['index']]
             all_edges.append((cur_sample['ind1'], cur_sample['ind2'], {'weight': result['result'].score}))
-
+        self.total_cost += graph_creation_cost
+        n_edges = len(all_edges)
+        avg_edge_weight = sum(edge[2]['weight'] for edge in all_edges) / n_edges
+        # Calculate standard deviation
+        std_edge_weight = math.sqrt(sum((edge[2]['weight'] - avg_edge_weight) ** 2 for edge in all_edges) / n_edges)
         self.graph_info['G'].add_edges_from(all_edges)
+        track_event(GenerateRelationsGraphEvent(cost=graph_creation_cost,
+                                                n_edges=n_edges,
+                                                avg_edge_weight = avg_edge_weight,
+                                                std_edge_weight = std_edge_weight,
+                                                error_message = batch_error_message
+                                     ))
 
     def sample_from_graph(self, threshold) -> Tuple[list, int]:
         """

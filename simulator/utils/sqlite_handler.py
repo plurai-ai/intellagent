@@ -2,6 +2,7 @@ import sqlite3
 import threading
 from typing import Optional
 import time
+from simulator.healthcare_analytics import ExceptionEvent, track_event
 
 class SqliteSaver:
     """A checkpoint saver that stores checkpoints in a SQLite database.
@@ -64,6 +65,8 @@ class SqliteSaver:
 
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
 
     def exit(self):
         # Commit any changes and close the connection when exiting the context
@@ -83,7 +86,9 @@ class SqliteSaver:
                 self.conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while inserting into Dialog: {e}")
-
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
+            
     def insert_thought(self, thread_id: str, message: str):
         try:
             with self.lock:
@@ -95,6 +100,8 @@ class SqliteSaver:
                 self.conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while inserting into Thoughts: {e}")
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
 
     def insert_tool(self, thread_id: str, tool_name: str, input: Optional[str], output: Optional[str]):
         try:
@@ -107,6 +114,9 @@ class SqliteSaver:
                 self.conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while inserting into Tools: {e}")
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
+            
 
 
     def read_dialog(self, thread_id: str):
@@ -116,6 +126,8 @@ class SqliteSaver:
             return rows if rows else None  # Return None if no rows are found
         except sqlite3.Error as e:
             print(f"An error occurred while reading from Dialog: {e}")
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
             return None
 
     def read_thought(self, thread_id: str):
@@ -125,6 +137,8 @@ class SqliteSaver:
             return rows if rows else None  # Return None if no rows are found
         except sqlite3.Error as e:
             print(f"An error occurred while reading from Thoughts: {e}")
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
             return None
 
     def read_tool(self, thread_id: str):
@@ -134,4 +148,6 @@ class SqliteSaver:
             return rows if rows else None  # Return None if no rows are found
         except sqlite3.Error as e:
             print(f"An error occurred while reading from Tools: {e}")
+            track_event(ExceptionEvent(exception_type=type(e).__name__,
+                                   error_message=str(e)))
             return None

@@ -86,7 +86,7 @@ dialog_manager:
     llm_chat:
         type: 'azure'
         name: 'gpt-4o'
-    num_workers: 1
+    num_workers: 5
     timeout: 30 # in seconds
     mini_batch_size: 10
     cost_limit: 30 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dialog manager part
@@ -96,7 +96,7 @@ dataset:
     min_difficult_level: 5
     max_difficult_level: 10
     num_samples: 30
-    mini_batch_size: 3
+    mini_batch_size: 10
     max_iterations: 100
     cost_limit: 50 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dataset generation part
 

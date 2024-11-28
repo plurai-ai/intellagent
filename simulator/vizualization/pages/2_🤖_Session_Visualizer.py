@@ -104,7 +104,7 @@ def on_select_thread():
         mk = logger_user.get_markdown()
         st.markdown(mk, unsafe_allow_html=True)
 
-st.set_page_config(page_title="Session vizualization", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Session vizualization", page_icon="./docs/plurai_icon.png", layout="wide")
 
 
 
