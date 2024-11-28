@@ -1,1 +1,4 @@
 config/llm_env.yml
+simulator/__pycache__/events_generator.cpython-310.pyc
+simulator/utils/__pycache__/file_reading.cpython-310.pyc
+simulator/__pycache__/env.cpython-310.pyc

@@ -9,7 +9,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--output_path",
-                "../../data/chatbot_simulator/airline/output_debug_4"
+                "../../data/chatbot_simulator/airline/output_debug_6"
             ]
         }
     ]

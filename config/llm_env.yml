@@ -3,9 +3,6 @@ openai:
   OPENAI_API_BASE: ''
   OPENAI_ORGANIZATION: ''
 
-anthropic:
-  ANTHROPIC_API_KEY: "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"
-
 azure:
   AZURE_OPENAI_API_KEY: 'f967a59a59214db588c49a8ec37f32fe'
   AZURE_OPENAI_ENDPOINT: 'https://test-openai-plurai-002.openai.azure.com'

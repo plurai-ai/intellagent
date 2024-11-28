@@ -2,13 +2,12 @@ environment:
     prompt_path: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/wiki.md'
     tools_folder: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/tools/agent_tools.py'
     database_folder: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/data_scheme'
-    task_description:  # If you don't want to infer you can simply provide it in the field 'content'
+    task_description:  # Infered automatically from the input dataIf you don't want to infer you can simply provide it in the field 'content'
         llm:
             type: 'azure'
             name: 'gpt-4o'
         extraction_prompt:
             prompt_hub_name: 'eladlev/task_extraction'
-
 description_generator:
     flow_config:
         prompt:
