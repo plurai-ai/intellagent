@@ -16,9 +16,13 @@ from simulator.healthcare_analytics import (
     ExtractFlowPoliciesEvent,
     GenerateRelationsGraphEvent,
     track_event
-) 
+)
 
 
+
+def policies_list_to_str(policies):
+    return "\n".join([f"Policy {i} flow: {policy['flow']}\nPolicy {i} content: {policy['policy']}\n------" for
+                      i, policy in enumerate(policies)])
 
 class Rank(BaseModel):
     """The Rank"""
@@ -56,6 +60,8 @@ class Description:
     expected_behaviour: str
     policies: List[str]
     challenge_level: int
+    symbolic_info: str = None
+    symbolic_restrictions: str = None
 
 
 class DescriptionGenerator:
@@ -134,16 +140,15 @@ class DescriptionGenerator:
         extract_policies_cost = 0
         batch_error_message = None
         n_policies_per_flow = []
-
         for i, result in enumerate(res):
             if result['error'] is not None:
                 print(f"Error in sample {result['index']}: {result['error']}")
                 batch_error_message = (batch_error_message or "") + f"flow {result['index']}: {result['error']} "
                 continue
-            
+
             # Accumulate usage cost
             extract_policies_cost += result.get('usage', 0)
-            
+
             # Update flows_policies and calculate the number of policies
             flow_key = self.flows[result['index']]
             policies = result['result'].dict().get('policies', [])
@@ -151,9 +156,9 @@ class DescriptionGenerator:
             n_policies_per_flow.append(len(policies) if policies is not None else None)
 
         # Update the total cost
-        self.total_cost += extract_policies_cost        
+        self.total_cost += extract_policies_cost
         track_event(ExtractFlowPoliciesEvent(cost=extract_policies_cost,
-                                     n_policies_per_flow = n_policies_per_flow,                  
+                                     n_policies_per_flow = n_policies_per_flow,
                                      error_message = batch_error_message
                                      )
         )
@@ -188,7 +193,7 @@ class DescriptionGenerator:
         res = async_batch_invoke(edge_llm.ainvoke, samples_batch, num_workers=num_workers,
                                  callbacks=[callback], timeout=timeout)
         all_edges = []
-        graph_creation_cost = 0 
+        graph_creation_cost = 0
         batch_error_message = None
         for result in res:
             if result['error'] is not None:
@@ -223,7 +228,7 @@ class DescriptionGenerator:
         path_sum = self.graph_info['nodes'][current_node]['score']
 
         # Traverse until the path sum exceeds the threshold
-        while path_sum <= threshold:
+        while path_sum < threshold:
             # Get neighbors and weights for current node
             neighbors = list(self.graph_info['G'].neighbors(current_node))
             weights = [self.graph_info['G'][current_node][neighbor]['weight'] for neighbor in neighbors]
@@ -233,7 +238,7 @@ class DescriptionGenerator:
 
             # Add the chosen node to the path and update path sum
             path.append(next_node)
-            path_sum += self.graph_info['nodes'][current_node]['score']
+            path_sum += self.graph_info['nodes'][next_node]['score']
 
             # Move to the next node
             current_node = next_node
@@ -248,10 +253,6 @@ class DescriptionGenerator:
         :return: The description of the event, the list of policies that were used to generate the description and the
         actual complexity of the description + the cost
         """
-
-        def policies_list_to_str(policies):
-            return "\n".join([f"Policy {i} flow: {policy['flow']}\nPolicy {i} content: {policy['policy']}\n------" for
-                              i, policy in enumerate(policies)])
 
         if isinstance(challenge_complexity, int):
             challenge_complexity = [challenge_complexity] * num_samples

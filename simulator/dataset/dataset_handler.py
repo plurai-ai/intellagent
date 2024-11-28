@@ -1,8 +1,8 @@
 import os.path
 from simulator.utils.logger_config import get_logger, ConsoleColor
 import numpy as np
-from simulator.descriptor_generator import DescriptionGenerator
-from simulator.events_generator import EventsGenerator, Event
+from simulator.dataset.descriptor_generator import DescriptionGenerator
+from simulator.dataset.events_generator import EventsGenerator, Event
 import pickle
 from typing import List, Tuple
 from statistics import mean, stdev
@@ -34,6 +34,7 @@ class Dataset:
         return len(self.records)
 
     def generate_mini_batch(self, batch_size: int) -> Tuple[List[Event], float]:
+        logger = get_logger()
         # Equalizing the distribution of difficulty levels according to the gap between the target frequency and the actual frequency
         difficulty_distribution, _ = np.histogram([r.description.challenge_level for r in self.records],
                                                   bins=np.arange(self.config['min_difficult_level'] - 0.5,
@@ -47,10 +48,21 @@ class Dataset:
         weights = deficits / total_deficit if total_deficit > 0 else np.zeros_like(deficits)
 
         challenge_complexity = np.random.choice(bins, size=batch_size, p=weights)
+        logger.info(f'{ConsoleColor.CYAN}- Sample mini batch descriptions{ConsoleColor.RESET}')
+        # Step 1: Generate descriptions
         descriptions, description_cost = self.descriptions_generator.sample_description(challenge_complexity,
                                                                                         num_samples=batch_size)
-        events, events_cost = self.event_generator.descriptions_to_events(descriptions)
-        minibatch_cost = description_cost + events_cost
+        # Step 2: Generate symbolic variables
+        logger.info(f'{ConsoleColor.CYAN}- Generate symbolic representation{ConsoleColor.RESET}')
+        event_symbols, symbols_cost = self.event_generator.descriptions_to_symbolic(descriptions)
+        # Step 3: Get symbols constraints
+        logger.info(f'{ConsoleColor.CYAN}- Generate symbolic constraints{ConsoleColor.RESET}')
+        event_symbols, events_constraints_cost = self.event_generator.get_symbolic_constraints(event_symbols)
+        # Step 4: Generate the event (with the dataset)
+        logger.info(f'{ConsoleColor.CYAN}- Generate the event (This would take a while...){ConsoleColor.RESET}')
+        events, events_cost = self.event_generator.symbolics_to_events(event_symbols)
+
+        minibatch_cost = description_cost + symbols_cost + events_constraints_cost + events_cost
         return events, minibatch_cost
 
     def load_dataset(self, path: str):

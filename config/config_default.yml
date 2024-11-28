@@ -1,13 +1,14 @@
 environment:
-    prompt_path: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/wiki.md'
-    tools_folder: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/tools/agent_tools.py'
-    database_folder: '/Users/ilankadar/github/plurai/code/chatbot_simulator/examples/airline/data_scheme'
-    task_description:  # Infered automatically from the input dataIf you don't want to infer you can simply provide it in the field 'content'
+    prompt_path: ''
+    tools_folder: ''
+    database_folder: ''
+    task_description:  # If you don't want to infer you can simply provide it in the field 'content'
         llm:
             type: 'azure'
             name: 'gpt-4o'
         extraction_prompt:
             prompt_hub_name: 'eladlev/task_extraction'
+
 description_generator:
     flow_config:
         prompt:
@@ -24,11 +25,11 @@ description_generator:
         timeout: 10 # in seconds
     description_config:
         prompt:
-            prompt_hub_name: 'eladlev/description_generation'
+            prompt_hub_name: 'eladlev/description_generation:c7ecf9ea'
         num_workers: 3
         timeout: 10 # in seconds
     refinement_config:
-        do_refinement: True # If you don't want to refine the expected behaviour of the descriptions, set this to False
+        do_refinement: False # If you don't want to refine the expected behaviour of the descriptions, set this to False
         prompt_feedback:
             prompt_hub_name: 'eladlev/description_refinement'
         prompt_refinement:
@@ -49,11 +50,30 @@ description_generator:
         name: 'gpt-4o'
 
 event_generator:
-    llm:
-        type: 'azure'
-        name: 'gpt-4o'
-    num_workers: 3
-    timeout: 60 # in seconds
+    symbolic_enrichment_config:
+        prompt:
+            prompt_hub_name: 'eladlev/event_symbolic'
+        num_workers: 3
+        timeout: 40 # in seconds
+    symbolic_constraints_config:
+        prompt:
+            prompt_hub_name: 'eladlev/symbolic_prompt_constraints'
+        num_workers: 3
+        timeout: 40 # in seconds
+    event_graph:
+        llm:
+            type: 'azure'
+            name: 'gpt-4o'
+        prompt_restrictions:
+            prompt_hub_name: 'eladlev/filter_restrictions'
+        prompt_final_res:
+            prompt_hub_name: 'eladlev/event_final'
+        prompt_executors:
+            prompt_hub_name: 'eladlev/event_executor'
+        num_workers: 3
+        timeout: 120 # in seconds
+
+
 
 dialog_manager:
     user_parsing_mode: 'thought' # 'thought' in case the user has thought part or 'default'
@@ -75,8 +95,8 @@ dataset:
     name: 'dataset'
     min_difficult_level: 5
     max_difficult_level: 10
-    num_samples: 4
-    mini_batch_size: 2
+    num_samples: 30
+    mini_batch_size: 10
     max_iterations: 100
     cost_limit: 50 #In dollars, only available for openAI/Anthropic bedrock. This is only for the dataset generation part
 
