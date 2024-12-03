@@ -2,10 +2,10 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Simulator Visualizer",
-    page_icon="./docs/plurai_icon.png",
+    page_icon="./images/plurai_icon.png",
 )
 
-st.image('./docs/plurai_logo.png', use_column_width=True)  # Added line to display the Plurai logo
+st.image('./images/plurai_logo.png', use_column_width=True)  # Added line to display the Plurai logo
 st.write("# Welcome to Plurai Chat-Agent-Simulator (CHAS)!")
 
 st.markdown(
@@ -20,5 +20,3 @@ st.markdown(
     - Check out [Plurai.ai](https://plurai.ai)
 """
 )
-
-

@@ -1,0 +1,33 @@
+2024-12-01 16:17:04,897 - WARNING - [31mDataset dump not found, initializing from zero[0m
+2024-12-01 16:17:04,897 - INFO - [36mStart building the dataset[0m
+2024-12-01 16:17:04,897 - INFO - [97mIteration 0 started[0m
+2024-12-01 16:17:04,899 - INFO - [36m- Sample mini batch descriptions[0m
+2024-12-01 16:17:09,970 - INFO - [36m- Generate symbolic representation[0m
+2024-12-01 16:17:16,376 - INFO - [36m- Generate symbolic constraints[0m
+2024-12-01 16:17:21,631 - INFO - [36m- Generate the event (This would take a while...)[0m
+2024-12-01 16:19:51,467 - INFO - [97mIteration 1 started[0m
+2024-12-01 16:19:51,468 - INFO - [36m- Sample mini batch descriptions[0m
+2024-12-01 16:19:54,863 - INFO - [36m- Generate symbolic representation[0m
+2024-12-01 16:19:59,193 - INFO - [36m- Generate symbolic constraints[0m
+2024-12-01 16:20:05,851 - INFO - [36m- Generate the event (This would take a while...)[0m
+2024-12-01 16:21:30,279 - INFO - [97mIteration 2 started[0m
+2024-12-01 16:21:30,280 - INFO - [36m- Sample mini batch descriptions[0m
+2024-12-01 16:21:33,910 - INFO - [36m- Generate symbolic representation[0m
+2024-12-01 16:21:38,514 - INFO - [36m- Generate symbolic constraints[0m
+2024-12-01 16:21:45,642 - INFO - [36m- Generate the event (This would take a while...)[0m
+2024-12-01 16:22:36,976 - INFO - [97mIteration 3 started[0m
+2024-12-01 16:22:36,977 - INFO - [36m- Sample mini batch descriptions[0m
+2024-12-01 16:22:40,651 - INFO - [36m- Generate symbolic representation[0m
+2024-12-01 16:22:45,743 - INFO - [36m- Generate symbolic constraints[0m
+2024-12-01 16:22:51,879 - INFO - [36m- Generate the event (This would take a while...)[0m
+2024-12-01 16:24:50,700 - INFO - [97mIteration 4 started[0m
+2024-12-01 16:24:50,700 - INFO - [36m- Sample mini batch descriptions[0m
+2024-12-01 16:24:54,183 - INFO - [36m- Generate symbolic representation[0m
+2024-12-01 16:25:01,449 - INFO - [36m- Generate symbolic constraints[0m
+2024-12-01 16:25:07,569 - INFO - [36m- Generate the event (This would take a while...)[0m
+2024-12-01 16:27:09,148 - INFO - [97mIteration 5 started[0m
+2024-12-01 16:27:09,149 - INFO - [36m- Sample mini batch descriptions[0m
+2024-12-01 16:27:13,550 - INFO - [36m- Generate symbolic representation[0m
+2024-12-01 16:27:20,526 - INFO - [36m- Generate symbolic constraints[0m
+2024-12-01 16:27:29,093 - INFO - [36m- Generate the event (This would take a while...)[0m
+2024-12-01 16:31:52,910 - INFO - [36mFinish building the dataset[0m

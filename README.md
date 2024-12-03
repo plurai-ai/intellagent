@@ -204,7 +204,7 @@ python run.py --output_path <output_path> [--config_path <config_path>] [--datas
 ### Example
 
 ```bash
-python run.py --output_path ../output/exp1 
+python run.py --output_path ./examples/airline/output/run_1 --config_path ./config/config_airline.yml 
 ```
 
 This command will run the simulation using the specified configuration and dataset, and save the results to `../output/exp1`.
@@ -237,7 +237,8 @@ Each experiment run creates a timestamped folder containing all relevant files f
 
 To visualize the simulation results using streamlit, run:
 ```bash
-streamlit run simulator/vizualization/Simulator_Visualizer.py
+cd simulator/visualization 
+streamlit run Simulator_Visualizer.py
 ```
 This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.
 

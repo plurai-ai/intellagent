@@ -1,0 +1,8 @@
+2024-12-01 16:15:04,155 - INFO - [36mStart Building the policies graph:[0m
+2024-12-01 16:15:04,562 - INFO - [97mStep 1: Breaking prompt to flows[0m
+2024-12-01 16:15:07,691 - INFO - [97mFinish step 1[0m
+2024-12-01 16:15:07,691 - INFO - [97mStep 2: Breaking each flow to policies[0m
+2024-12-01 16:15:16,668 - INFO - [97mFinish step 2[0m
+2024-12-01 16:15:16,669 - INFO - [97mStep 3: Building the relations graph[0m
+2024-12-01 16:16:01,168 - INFO - [97mFinish step 3[0m
+2024-12-01 16:16:01,168 - INFO - [36mFinish Building the policies graph[0m
