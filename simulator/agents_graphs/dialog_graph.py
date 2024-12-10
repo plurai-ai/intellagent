@@ -8,6 +8,7 @@ from typing import Optional
 import time
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
+from simulator.utils.llm_utils import convert_messages_to_str
 
 
 class DialogState(TypedDict):
@@ -16,6 +17,7 @@ class DialogState(TypedDict):
     chatbot_args: Optional[dict]
     thread_id: str
     user_thoughts: Optional[list]
+    critique_feedback: Optional[str]
 
 
 class Dialog:
@@ -23,7 +25,7 @@ class Dialog:
     Building the dialog graph that runs the convesration between the chatbot and the user
     """
 
-    def __init__(self, user: Runnable, chatbot: Runnable, intermediate_processing: Callable = None,
+    def __init__(self, user: Runnable, chatbot: Runnable, critique: Runnable, intermediate_processing: Callable = None,
                  memory=None):
         """
         Initialize the event generator.]
@@ -31,10 +33,12 @@ class Dialog:
         :param chatbot (Runnable): The chatbot model
         :param intermediate_processing (optional): A function between that processes the output of the user and the
         chatbot at each step
+        :param critique (Runnable): The critique mode, should determine if the final decision of the user is correct
         :param memory (optional): The memory to store the conversations artifacts
         """
         self.user = user
         self.chatbot = chatbot
+        self.critique = critique
         self.intermediate_processing = intermediate_processing  # TODO: Add default function
         self.memory = memory
         self.compile_graph()
@@ -42,10 +46,10 @@ class Dialog:
     def get_end_condition(self):
         def should_end(state: DialogState):
             terminate = self.intermediate_processing(state)
-            if terminate:
+            if terminate == 'END':
                 return END
             else:
-                return "chatbot"
+                return terminate
 
         return should_end
 
@@ -66,6 +70,16 @@ class Dialog:
                     'user_thoughts': user_thoughts}
 
         return simulated_user_node
+
+    def get_critique_node(self):
+        def critique_node(state):
+            # Call the simulated user
+            user_thoughts = state['user_thoughts'][-1]
+            conversation = convert_messages_to_str(state['user_messages'][2:])
+            response = self.critique.invoke({'reason': user_thoughts, 'conversation': conversation})
+            return {"critique_feedback": response.content}
+
+        return critique_node
 
     def get_chatbot_node(self):
         def chat_bot_node(state):
@@ -96,9 +110,15 @@ class Dialog:
         workflow = StateGraph(DialogState)
         workflow.add_node("user", self.get_user_node())
         workflow.add_node("chatbot", self.get_chatbot_node())
+        workflow.add_node("end_critique", self.get_critique_node())
         workflow.add_edge(START, "user")
         workflow.add_conditional_edges(
             "user",
+            self.get_end_condition(),
+            ["chatbot", "end_critique"],
+        )
+        workflow.add_conditional_edges(
+            "end_critique",
             self.get_end_condition(),
             ["chatbot", END],
         )

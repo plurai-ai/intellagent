@@ -12,7 +12,7 @@ from langchain_openai.chat_models import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import yaml
 from simulator.healthcare_analytics import ExceptionEvent, track_event
-
+from langchain_core.messages import HumanMessage, AIMessage
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
 
 
@@ -40,6 +40,15 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     else:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
+def convert_messages_to_str(messages: list) -> str:
+    """
+    Convert a list of (langchain) messages to a string
+    """
+    formatted_string = "\n".join(
+        f"{'user' if isinstance(msg, HumanMessage) else 'chatbot'}: {msg.content}"
+        for msg in messages
+    )
+    return formatted_string
 
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''

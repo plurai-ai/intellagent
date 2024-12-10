@@ -1,17 +1,15 @@
 import os.path
 
 from simulator.env import Env
-from simulator.utils.llm_utils import get_prompt_template
 from simulator.agents_graphs.dialog_graph import Dialog
 from simulator.agents_graphs.langgraph_tool import AgentTools
 import re
 from langchain_core.messages import AIMessage
-from simulator.utils.llm_utils import get_llm, set_callback
+from simulator.utils.llm_utils import get_llm, set_callback, get_prompt_template, set_llm_chain
 from simulator.dataset.events_generator import Event
 import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
 from simulator.utils.parallelism import async_batch_invoke
-
 
 class DialogManager:
     """
@@ -42,6 +40,14 @@ class DialogManager:
         self.timeout = config['timeout']
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
+        self.set_critique(config['critique_config'])
+
+    def set_critique(self, config: dict):
+        #set the critique model
+        self.llm_critique = get_llm(config['llm'])
+        critique_prompt = get_prompt_template(config['prompt'])
+        critique_prompt = critique_prompt.partial(prompt=self.environment_prompt)
+        self.llm_critique = critique_prompt | self.llm_critique
 
     def get_user_parsing_function(self, parsing_mode='default'):
         def parse_user_message(ai_message: AIMessage) -> dict[str, str]:
@@ -64,8 +70,11 @@ class DialogManager:
         def intermediate_processing(state):
             """Process the state of the dialog."""
             if '###STOP' in state['chatbot_messages'][-1].content:  # Stop signal from the user
-                return True
-            return False
+                if 'critique_feedback' in state.keys() and 'PASS' in state['critique_feedback']: # The user behavior is correct
+                    return 'END'
+                else:
+                    return 'end_critique'
+            return 'chatbot'
 
         return intermediate_processing
 
@@ -77,7 +86,7 @@ class DialogManager:
         chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
         self.memory = SqliteSaver(os.path.join(experiment_path, 'memory.db'))
         chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
-        self.dialog = Dialog(self.llm_user, chatbot,
+        self.dialog = Dialog(self.llm_user, chatbot, critique=self.llm_critique,
                              intermediate_processing=self.get_intermediate_processing_function(),
                              memory=self.memory)
         self.user_prompt = get_prompt_template(self.user_prompt)
