@@ -1,12 +1,12 @@
 openai:
-  OPENAI_API_KEY: 'sk-HVAcB4W4wrEIQMbEJp3yqpapABcijzAjcMlDtsF_EvT3BlbkFJFRxnERFX_FjpZunSJP6VmMBYzDEh9vl_lYVFGtSIkA'
+  OPENAI_API_KEY: ''
   OPENAI_API_BASE: ''
   OPENAI_ORGANIZATION: ''
 
 azure:
-  AZURE_OPENAI_API_KEY: 'f967a59a59214db588c49a8ec37f32fe'
-  AZURE_OPENAI_ENDPOINT: 'https://test-openai-plurai-002.openai.azure.com'
-  OPENAI_API_VERSION: '2024-02-15-preview'
+  AZURE_OPENAI_API_KEY: ''
+  AZURE_OPENAI_ENDPOINT: ''
+  OPENAI_API_VERSION: ''
 
 google:
   GOOGLE_API_KEY: ''
