@@ -105,7 +105,7 @@ class Dataset:
         average_challenge_level = mean(challenge_scores)
         std_challenge_level = stdev(challenge_scores) if len(challenge_scores) > 1 else 0  
         avg_n_policies = mean(len(r.description.policies) for r in self.records)
-/        track_event(GenerateDatasetEvent(cost = dataset_generation_cost,
+        track_event(GenerateDatasetEvent(cost = dataset_generation_cost,
                                          initial_n_samples = initial_n_samples,
                                          total_n_samples = len(self.records),
                                          initial_n_iterations = initial_n_iterations,
