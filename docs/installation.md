@@ -83,7 +83,7 @@ Arguments:
 
 Example:
 ```bash
-python run.py --output_path ../output/exp1
+python run.py --output_path ../output/exp1 --config_path ./config/config_airline.yml
 ```
 
 ### 6. View Results
@@ -108,7 +108,10 @@ policies_graph/
 └── descriptions_generator.pickle     # Generated descriptions
 ```
 
-To visualize results, run:
+To visualize the simulation results using streamlit, run:
 ```bash
-python visualize_simulation_run.py
+cd simulator/visualization 
+streamlit run Simulator_Visualizer.py
+```
+This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.
 ```
