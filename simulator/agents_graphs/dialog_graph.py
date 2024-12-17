@@ -7,6 +7,7 @@ from typing_extensions import TypedDict
 from typing import Optional
 import time
 from langgraph.graph.message import add_messages
+from langchain_core.messages.base import BaseMessage
 from langchain_core.messages import HumanMessage, AIMessage
 from simulator.utils.llm_utils import convert_messages_to_str
 
@@ -18,6 +19,7 @@ class DialogState(TypedDict):
     thread_id: str
     user_thoughts: Optional[list]
     critique_feedback: Optional[str]
+    stop_signal: Optional[str]
 
 
 class Dialog:
@@ -55,7 +57,7 @@ class Dialog:
 
     def get_user_node(self):
         def simulated_user_node(state):
-            messages = state["user_messages"]
+            messages = [state["user_messages"][0]] + set_user_message(state)
             # Call the simulated user
             response = self.user.invoke(messages)
             # This response is an AI message - we need to flip this to be a human message
@@ -65,18 +67,27 @@ class Dialog:
                     self.memory.insert_thought(state['thread_id'], response['thought'])
                     user_thoughts.append(response['thought'])
                 self.memory.insert_dialog(state['thread_id'], 'Human', response['response'])
-            return {"chatbot_messages": [HumanMessage(content=response['response'])],
-                    'user_messages': [AIMessage(content=response['response'])],
-                    'user_thoughts': user_thoughts}
+
+            result_state = {'user_thoughts': user_thoughts, 'critique_feedback': '', 'stop_signal': ''}
+            if '###STOP' in response['response']:
+                result_state['stop_signal'] = response['response']
+            else:
+                result_state.update({"chatbot_messages": [HumanMessage(content=response['response'])],
+                                     'user_messages': [AIMessage(content=response['response'])]})
+            return result_state
 
         return simulated_user_node
 
     def get_critique_node(self):
         def critique_node(state):
             # Call the simulated user
-            user_thoughts = state['user_thoughts'][-1]
-            conversation = convert_messages_to_str(state['user_messages'][2:])
-            response = self.critique.invoke({'reason': user_thoughts, 'conversation': conversation})
+            user_thought = state['user_thoughts'][-1].split('Thought:')[1]
+            conversation = convert_messages_to_str(state['chatbot_messages'][2:-1])
+            if '###STOP FAILURE' in state['chatbot_messages'][-1].content:
+                judgement = f"The chatbot failed to adhere the policies\n Reason:{user_thought}"
+            else:
+                judgement = f"The chatbot adhered to the policies\n Reason:{user_thought}"
+            response = self.critique.invoke({'reason': judgement, 'conversation': conversation})
             return {"critique_feedback": response.content}
 
         return critique_node
@@ -120,7 +131,7 @@ class Dialog:
         workflow.add_conditional_edges(
             "end_critique",
             self.get_end_condition(),
-            ["chatbot", END],
+            ["user", END],
         )
         workflow.add_edge("chatbot", "user")
         self.graph = workflow.compile()
@@ -138,3 +149,22 @@ class Dialog:
         :return:
         """
         return self.graph.ainvoke(**kwargs)
+
+
+def set_user_message(state: DialogState) -> list[BaseMessage]:
+    """
+    Set the user message
+    :param state: The current state
+    :return: The AI message
+    """
+    conversation = convert_messages_to_str(state['chatbot_messages'][1:])
+    text = f"You are provided with the conversation between the user and the chatbot.\n# Conversation:\n{conversation}"
+    messages_list = [HumanMessage(content=text)]
+    critique_feedback = state.get('critique_feedback', '')
+    if not critique_feedback == '':
+        text = f"{state['user_thoughts'][-1]}\nUser Response:\n{state['stop_signal']}"
+        messages_list.append(AIMessage(content=text))
+        text = 'Your response was inaccurate, you are provided with the feedback from the critique. ' \
+               f'Please provide a new response (use the same format), you should also determine if the conversation should continue or stop.\nFeedback:\n{state["critique_feedback"]}'
+        messages_list.append(HumanMessage(content=text))
+    return messages_list

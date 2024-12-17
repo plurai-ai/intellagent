@@ -10,7 +10,7 @@ from simulator.dataset.events_generator import Event
 import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
 from simulator.utils.parallelism import async_batch_invoke
-
+from simulator.dialog.utils import intermediate_processing
 class DialogManager:
     """
     This class is responsible for executing rollout of simulation.
@@ -43,7 +43,7 @@ class DialogManager:
         self.set_critique(config['critique_config'])
 
     def set_critique(self, config: dict):
-        #set the critique model
+        # set the critique model
         self.llm_critique = get_llm(config['llm'])
         critique_prompt = get_prompt_template(config['prompt'])
         critique_prompt = critique_prompt.partial(prompt=self.environment_prompt)
@@ -66,18 +66,6 @@ class DialogManager:
 
         return parse_user_message
 
-    def get_intermediate_processing_function(self):
-        def intermediate_processing(state):
-            """Process the state of the dialog."""
-            if '###STOP' in state['chatbot_messages'][-1].content:  # Stop signal from the user
-                if 'critique_feedback' in state.keys() and 'PASS' in state['critique_feedback']: # The user behavior is correct
-                    return 'END'
-                else:
-                    return 'end_critique'
-            return 'chatbot'
-
-        return intermediate_processing
-
     def init_dialog(self, experiment_path: str):
         """
         Initialize the dialog graph.
@@ -87,7 +75,7 @@ class DialogManager:
         self.memory = SqliteSaver(os.path.join(experiment_path, 'memory.db'))
         chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
         self.dialog = Dialog(self.llm_user, chatbot, critique=self.llm_critique,
-                             intermediate_processing=self.get_intermediate_processing_function(),
+                             intermediate_processing=intermediate_processing,
                              memory=self.memory)
         self.user_prompt = get_prompt_template(self.user_prompt)
         self.chatbot_prompt = get_prompt_template(chatbot_prompt_args)
