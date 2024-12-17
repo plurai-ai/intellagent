@@ -80,6 +80,12 @@ dialog_manager:
     memory_path: "memory.db"
     user_prompt:
         prompt_hub_name: 'eladlev/user_sim'
+    critique_config:
+        prompt:
+            prompt_hub_name: 'eladlev/end_critique'
+        llm:
+            type: 'azure'
+            name: 'gpt-4o'
     llm_user:
         type: 'azure'
         name: 'gpt-4o'
