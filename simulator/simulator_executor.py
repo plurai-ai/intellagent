@@ -12,8 +12,7 @@ import yaml
 import pandas as pd
 import uuid
 from simulator.healthcare_analytics import RunSimulationEvent, AnalyzeSimulationResultsEvent, ExceptionEvent, track_event
-
-
+from simulator.utils.analysis import get_dialog_policies
 logger = None
 
 
@@ -53,6 +52,7 @@ class SimulatorExecutor:
         self.output_path = output_path
         self.simulator_results = None
 
+    @staticmethod
     def generate_run_id():
         """Generate a unique random Run ID."""
         return f"run-{uuid.uuid4().hex}"
@@ -139,12 +139,13 @@ class SimulatorExecutor:
                                        n_dialogs=len(all_res),
                                        avg_n_user_messages_per_dialog= sum(len(entry['res']['user_messages']) for entry in all_res) / len(all_res) if all_res else 0,
                                        avg_n_chatbot_messages_per_dialog=sum(len(entry['res']['chatbot_messages']) for entry in all_res) / len(all_res) if all_res else 0))
+        logger.info(f"{ConsoleColor.CYAN}Analyzing the results{ConsoleColor.RESET}")
         self.analyze_results(all_res, experiment_dir)
-
     def analyze_results(self, results, experiment_dir):
         """
         Analyze the results of the simulation.
         """
+        res = get_dialog_policies(self.config['analysis'], results, self.dataset_handler.records)
         all_rows = []
         for r in results:
             try:
