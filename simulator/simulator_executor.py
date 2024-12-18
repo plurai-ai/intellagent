@@ -145,7 +145,7 @@ class SimulatorExecutor:
         """
         Analyze the results of the simulation.
         """
-        res = get_dialog_policies(self.config['analysis'], results, self.dataset_handler.records)
+        results = get_dialog_policies(self.config['analysis'], results, self.dataset_handler.records)
         all_rows = []
         for r in results:
             try:
@@ -165,6 +165,8 @@ class SimulatorExecutor:
                     'expected_behaviour': getattr(cur_event.description, 'expected_behaviour', None),
                     'challenge_level': getattr(cur_event.description, 'challenge_level', None),
                     'policies': getattr(cur_event.description, 'policies', None),
+                    'policies_in_dialog': r.get('tested_policies', None),
+                    'violated_policies': r.get('violated_policies', None)
                 }
                 all_rows.append(cur_row)
             except (KeyError, AttributeError, IndexError) as e:
