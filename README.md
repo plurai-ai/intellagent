@@ -236,9 +236,8 @@ policies_graph/
 Each experiment run creates a timestamped folder containing all relevant files for analysis and reproduction. The results.csv file contains the comprehensive evaluation metrics discussed in Step #6 of the System Overview.
 
 To visualize the simulation results using streamlit, run:
-```bash
-cd simulator/visualization 
-streamlit run Simulator_Visualizer.py
+```bash 
+streamlit run simulator/visualization/Simulator_Visualizer.py
 ```
 This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.
 
