@@ -39,6 +39,13 @@ def _color_arrow(val):
 def _color_binary(val):
     return "color: green" if val > 0 else "color: red" if val <=0 else "color: black"
 
+def extract_violated_policies_str(row):
+    # Parse the policies and indices
+    policies = ast.literal_eval(row['policies'])
+    violated_policies_ind = ast.literal_eval(row['violated_policies'])
+    # Extract the violated policies
+    violated_policies = [policies[j]['flow'] + ': ' + policies[j]['policy'] for j in violated_policies_ind]
+    return violated_policies
 
 # Load or generate experimental data
 def read_experiment_data(exp_path: str):
@@ -48,21 +55,25 @@ def read_experiment_data(exp_path: str):
     all_policies_list = []
     for i, row in df.iterrows():
         policies = ast.literal_eval(row['policies'])
-        for policy in policies:
-            all_policies_list.append({'policy': policy['flow'] + ': ' + policy['policy'],
-                                      'score': row['score'], 'challenge_level': row['challenge_level']})
+        policies_sublist = ast.literal_eval(row['policies_in_dialog'])
+        violated_policies = ast.literal_eval(row['violated_policies'])
+        for j in policies_sublist:
+            score = 0 if j in violated_policies else 1
+            all_policies_list.append({'policy': policies[j]['flow'] + ': ' + policies[j]['policy'],
+                                      'score': score, 'challenge_level': row['challenge_level']})
 
     policies_names = list(set([name['policy'] for name in all_policies_list]))
     success_rate = []
     for name in policies_names:
         cur_policies = [policy for policy in all_policies_list if policy['policy'] == name]
-        if len(cur_policies) < 3:
+        if len(cur_policies) < 2:
             success_rate.append(-1)
             continue
         success_rate.append(100 * sum([policy['score'] for policy in cur_policies]) / len(cur_policies))
     graph_info = {'scores': scores, 'challenge_level': challenge}
     table_policies_info = {'policy': policies_names, 'success_rate': success_rate}
-    events_info = df[['id', 'scenario', 'score', 'reason']]
+    df['violated_policies'] = df.apply(extract_violated_policies_str, axis=1)
+    events_info = df[['id', 'scenario', 'score', 'reason', 'violated_policies']]
     events_info['score'] = events_info['score'].astype(float)
     return graph_info, table_policies_info, events_info
 
@@ -88,11 +99,14 @@ def load_data(database_path=None):
 
     for exp in experiments_list:
         exp_path = parent_dir + '/' + exp
+        if not os.path.isfile(exp_path + '/results.csv'):
+            continue
         graph_info, table_policies_info, events_info = read_experiment_data(exp_path)
         exp_name = exp_path.split(database_name + '__')[-1]
         experiments_data[exp_name] = graph_info
         events_info = events_info.rename(columns={"score": f'{exp_name}_score'})
         events_info = events_info.rename(columns={"reason": f'{exp_name}_reason'})
+        events_info = events_info.rename(columns={"violated_policies": f'{exp_name}_violated_policies'})
         if events_df is None:
             events_df = events_info
         else:

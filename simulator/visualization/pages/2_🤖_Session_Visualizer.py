@@ -76,10 +76,13 @@ def on_select_thread():
     with col2:
         cursor.execute("SELECT * FROM Dialog WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
         rows = cursor.fetchall()
-        for row in rows:
+        for i,row in enumerate(rows):
             if row[1] == 'AI':
                 st.chat_message('AI').write(row[2])
             else:
+                # Skip the last message if it's a stop signal and not the end message
+                if '###STOP' in row[2] and i < len(rows)-1:
+                    continue
                 st.chat_message('User').write(row[2])
     with col1:
         cursor.execute("SELECT * FROM Tools WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
