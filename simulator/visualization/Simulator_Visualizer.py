@@ -1,11 +1,12 @@
+import os.path
 import streamlit as st
-
+base_path = './' if os.path.isfile('Simulator_Visualizer.py') else './simulator/visualization/'
 st.set_page_config(
     page_title="Simulator Visualizer",
-    page_icon="./images/plurai_icon.png",
+    page_icon= base_path + "images/plurai_icon.png",
 )
 
-st.image('./images/plurai_logo.png', use_column_width=True)  # Added line to display the Plurai logo
+st.image(base_path + 'images/plurai_logo.png', use_column_width=True)  # Added line to display the Plurai logo
 st.write("# Welcome to Plurai Chat-Agent-Simulator (CHAS)!")
 
 st.markdown(
