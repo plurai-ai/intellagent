@@ -105,11 +105,14 @@ class SimulatorExecutor:
         num_batch = num_records // mini_batch_size
         all_res = []
         total_cost = 0
+        start_iteration = 0
 
         logger.info(f"{ConsoleColor.CYAN}Start running the simulator{ConsoleColor.RESET}")
-
+        intermediate_res = os.path.join(experiment_dir, 'res_dump.pickle')
+        if os.path.isfile(intermediate_res):
+            all_res, start_iteration, total_cost = pickle.load(open(intermediate_res, 'rb'))
         # Handle batches
-        for i in range(num_batch):
+        for i in range(start_iteration, num_batch, 1):
             if total_cost > self.config['dialog_manager']['cost_limit']:
                 logger.warning(
                     f"{ConsoleColor.RED}The cost limit for the experiment is reached. "
@@ -117,9 +120,11 @@ class SimulatorExecutor:
                 break
             logger.info(f"{ConsoleColor.WHITE}Running batch {i}...{ConsoleColor.RESET}")
             res, cost = self.dialog_manager.run_events(records[i * mini_batch_size:
-                                                            (i + 1) * mini_batch_size])
+                                                               (i + 1) * mini_batch_size])
             all_res.extend(res)
             total_cost += cost
+            pickle.dump((all_res, i+1, total_cost), open(intermediate_res, 'wb'))
+
 
         # Handle remaining records if any
         remaining_records = records[num_batch * mini_batch_size:]
