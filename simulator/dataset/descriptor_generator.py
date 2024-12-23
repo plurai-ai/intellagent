@@ -279,6 +279,7 @@ class DescriptionGenerator:
             cost += result['usage']
             all_policies[result['index']]['description'] = result['result'].event_description
             all_policies[result['index']]['expected_behaviour'] = result['result'].expected_behaviour
+        all_policies = [policy for policy in all_policies if 'description' in policy]
         descriptions = [Description(event_description=policy['description'],
                                     expected_behaviour=policy['expected_behaviour'],
                                     policies= policy['policies'],
