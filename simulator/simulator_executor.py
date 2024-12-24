@@ -11,8 +11,10 @@ from simulator.dataset.dataset_handler import Dataset
 import yaml
 import pandas as pd
 import uuid
-from simulator.healthcare_analytics import RunSimulationEvent, AnalyzeSimulationResultsEvent, ExceptionEvent, track_event
+from simulator.healthcare_analytics import RunSimulationEvent, AnalyzeSimulationResultsEvent, ExceptionEvent, \
+    track_event
 from simulator.utils.analysis import get_dialog_policies
+
 logger = None
 
 
@@ -56,7 +58,7 @@ class SimulatorExecutor:
     def generate_run_id():
         """Generate a unique random Run ID."""
         return f"run-{uuid.uuid4().hex}"
-    
+
     def load_dataset(self, dataset_path='latest'):
         """
         Load the dataset. If latest, load the latest dataset.
@@ -72,7 +74,7 @@ class SimulatorExecutor:
         update_logger_file(os.path.join(datasets_dir, 'dataset.log'))
         self.dataset_handler.load_dataset(dataset_path)
 
-    def run_simulation(self):
+    def run_simulation(self, experiment_name=''):
         """
         Run the simulation on the dataset.
         """
@@ -80,9 +82,12 @@ class SimulatorExecutor:
             print(f"{ConsoleColor.BLUE}The dataset is empty. Loading the last dataset...{ConsoleColor.RESET}")
             self.load_dataset()
         experiments_dir = os.path.join(self.output_path, 'experiments')
-        experiment_name = self.dataset_handler.dataset_name + '__' + 'exp_{}'.format(len(os.listdir(experiments_dir))+1)
+        if experiment_name == '':
+            experiment_name = 'exp_{}'.format(len(os.listdir(experiments_dir)) + 1)
+        experiment_name = self.dataset_handler.dataset_name + '__' + experiment_name
         experiment_dir = os.path.join(experiments_dir, experiment_name)
-        os.mkdir(experiment_dir)
+        if not os.path.isdir(experiment_dir):
+            os.mkdir(experiment_dir)
         update_logger_file(os.path.join(experiment_dir, 'experiment.log'))
         ## Save the prompt and the config in the experiment folder
         with open(os.path.join(experiment_dir, 'prompt.txt'), "w") as file:
@@ -92,7 +97,7 @@ class SimulatorExecutor:
 
         # init the dialog
         self.dialog_manager.init_dialog(experiment_dir)
-        
+
         # Run the dialog
         mini_batch_size = self.config['dialog_manager']['mini_batch_size']
         records = self.dataset_handler.records
@@ -125,7 +130,6 @@ class SimulatorExecutor:
             total_cost += cost
             pickle.dump((all_res, i+1, total_cost), open(intermediate_res, 'wb'))
 
-
         # Handle remaining records if any
         remaining_records = records[num_batch * mini_batch_size:]
         if remaining_records:
@@ -142,10 +146,15 @@ class SimulatorExecutor:
         logger.info(f"{ConsoleColor.CYAN}Finish running the simulator{ConsoleColor.RESET}")
         track_event(RunSimulationEvent(cost=total_cost,
                                        n_dialogs=len(all_res),
-                                       avg_n_user_messages_per_dialog= sum(len(entry['res']['user_messages']) for entry in all_res) / len(all_res) if all_res else 0,
-                                       avg_n_chatbot_messages_per_dialog=sum(len(entry['res']['chatbot_messages']) for entry in all_res) / len(all_res) if all_res else 0))
+                                       avg_n_user_messages_per_dialog=sum(
+                                           len(entry['res']['user_messages']) for entry in all_res) / len(
+                                           all_res) if all_res else 0,
+                                       avg_n_chatbot_messages_per_dialog=sum(
+                                           len(entry['res']['chatbot_messages']) for entry in all_res) / len(
+                                           all_res) if all_res else 0))
         logger.info(f"{ConsoleColor.CYAN}Analyzing the results{ConsoleColor.RESET}")
         self.analyze_results(all_res, experiment_dir)
+
     def analyze_results(self, results, experiment_dir):
         """
         Analyze the results of the simulation.
@@ -156,11 +165,16 @@ class SimulatorExecutor:
             try:
                 cur_event = self.dataset_handler.records[r['event_id'] - 1]
                 user_messages = r['res'].get('user_messages', [])
+                stop_signal = r['res'].get('stop_signal', '')
                 if not user_messages:
                     continue  # Skip if no user messages
-                last_message_content = user_messages[-1].content
-                score = False if 'FAILURE' in last_message_content else True
-                
+                if 'FAILURE' in stop_signal:
+                    score = 0
+                elif 'SUCCESS' in stop_signal:
+                    score = 1
+                else:
+                    score = -1
+
                 cur_row = {
                     'id': r['event_id'],
                     'thread_id': r['res'].get('thread_id'),
@@ -175,10 +189,10 @@ class SimulatorExecutor:
                 }
                 all_rows.append(cur_row)
             except (KeyError, AttributeError, IndexError) as e:
-                error_message = f"Skipping a result due to missing data: {e}" 
+                error_message = f"Skipping a result due to missing data: {e}"
                 logger.info(f"{ConsoleColor.CYAN}{error_message}{ConsoleColor.RESET}")
                 track_event(ExceptionEvent(exception_type=type(e).__name__,
-                                   error_message=error_message))
+                                           error_message=error_message))
                 continue
 
         if all_rows:
@@ -194,8 +208,6 @@ class SimulatorExecutor:
         else:
             logger.info(f"{ConsoleColor.CYAN}No rows to process. Results are empty.{ConsoleColor.RESET}")
 
-        
-        
     @staticmethod
     def set_output_folder(output_path):
         # Create the output folder if it does not exist with all the subfolders

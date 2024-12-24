@@ -41,10 +41,13 @@ def _color_binary(val):
 
 def extract_violated_policies_str(row):
     # Parse the policies and indices
-    policies = ast.literal_eval(row['policies'])
-    violated_policies_ind = ast.literal_eval(row['violated_policies'])
-    # Extract the violated policies
-    violated_policies = [policies[j]['flow'] + ': ' + policies[j]['policy'] for j in violated_policies_ind]
+    try:
+        policies = ast.literal_eval(row['policies'])
+        violated_policies_ind = ast.literal_eval(row['violated_policies'])
+        # Extract the violated policies
+        violated_policies = [policies[j]['flow'] + ': ' + policies[j]['policy'] for j in violated_policies_ind]
+    except:
+        violated_policies = []
     return violated_policies
 
 # Load or generate experimental data
@@ -55,8 +58,12 @@ def read_experiment_data(exp_path: str):
     all_policies_list = []
     for i, row in df.iterrows():
         policies = ast.literal_eval(row['policies'])
-        policies_sublist = ast.literal_eval(row['policies_in_dialog'])
-        violated_policies = ast.literal_eval(row['violated_policies'])
+        try:
+            policies_sublist = ast.literal_eval(row['policies_in_dialog'])
+            violated_policies = ast.literal_eval(row['violated_policies'])
+        except:
+            policies_sublist = []
+            violated_policies = []
         for j in policies_sublist:
             score = 0 if j in violated_policies else 1
             all_policies_list.append({'policy': policies[j]['flow'] + ': ' + policies[j]['policy'],
@@ -120,7 +127,7 @@ def load_data(database_path=None):
         unique_values = np.sort(unique_values)
         for val in unique_values:
             cur_valid_score = [data['scores'][i] for i in range(len(data['scores']))
-                               if data['challenge_level'][i] <= val]
+                               if data['challenge_level'][i] >= val and data['scores'][i] >= 0]
             if len(cur_valid_score) < 5:  # Not enough data points
                 continue
             graph_data.append({'experiment': exp, 'Challenge level': val,
