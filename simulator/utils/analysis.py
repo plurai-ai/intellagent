@@ -5,12 +5,14 @@ from typing import List
 from simulator.dataset.events_generator import Event
 from simulator.dataset.descriptor_generator import policies_list_to_str
 from simulator.utils.llm_utils import convert_messages_to_str
+from typing import Optional
 
 
 class PoliciesAnalysis(BaseModel):
     conversation_policies: List[int] = Field(
         description="The sublist of the **indexes** of all the policies that are relevant to the conversation")
-    violated_policies: List[int] = Field(
+    violated_policies: Optional[List[int]] = Field(
+        default=[],  # Explicitly set a default value
         description="The sublist of the **indexes** of all the policies that are violated in the conversation, if non return an empty list")
 
 

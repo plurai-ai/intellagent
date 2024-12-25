@@ -6,8 +6,8 @@ import plotly.express as px
 import sys
 from pathlib import Path
 import ast
-pd.options.mode.chained_assignment = None
 
+pd.options.mode.chained_assignment = None
 
 project_root = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.append(str(project_root))
@@ -26,6 +26,8 @@ def _format_percentage(val):
         return None
     else:
         return f"{val:.0f}%"
+
+
 def _format_binary(val):
     if val < 0:
         return None
@@ -36,8 +38,10 @@ def _format_binary(val):
 def _color_arrow(val):
     return "color: green" if val > 0 else "color: red" if val < 0 else "color: black"
 
+
 def _color_binary(val):
-    return "color: green" if val > 0 else "color: red" if val <=0 else "color: black"
+    return "color: green" if val > 0 else "color: red" if val <= 0 else "color: black"
+
 
 def extract_violated_policies_str(row):
     # Parse the policies and indices
@@ -47,11 +51,13 @@ def extract_violated_policies_str(row):
     violated_policies = [policies[j]['flow'] + ': ' + policies[j]['policy'] for j in violated_policies_ind]
     return violated_policies
 
+
 # Load or generate experimental data
 def read_experiment_data(exp_path: str):
     df = pd.read_csv(exp_path + '/results.csv')
-    scores = df['score'].tolist()
-    challenge = df['challenge_level'].tolist()
+    err_df = pd.read_csv(exp_path + '/err_events.csv')
+    scores = df['score'].tolist() + err_df['score'].tolist()
+    challenge = df['challenge_level'].tolist() + err_df['challenge_level'].tolist()
     all_policies_list = []
     for i, row in df.iterrows():
         policies = ast.literal_eval(row['policies'])
@@ -77,9 +83,11 @@ def read_experiment_data(exp_path: str):
     events_info['score'] = events_info['score'].astype(float)
     return graph_info, table_policies_info, events_info
 
+
 def change_data():
     database_path = st.session_state.get('database_path', None)
     data, policies_df, styled_col, events_df = load_data(database_path)
+
 
 @st.cache_data
 def load_data(database_path=None):
@@ -132,9 +140,10 @@ def load_data(database_path=None):
     score_columns = [col for col in merged_df.columns if "success_rate" in col]
     # Filter out any columns that do not have a valid integer after the underscore
     score_columns = [col for col in score_columns if len(col.split('_')) > 1 and col.split('_')[1].isdigit()]
-    
+
     # Sort score_columns, but handle cases where the second part is not a digit
-    score_columns = sorted(score_columns, key=lambda x: (int(x.split('_')[1]) if x.split('_')[1].isdigit() else float('inf')))
+    score_columns = sorted(score_columns,
+                           key=lambda x: (int(x.split('_')[1]) if x.split('_')[1].isdigit() else float('inf')))
     mean_scores = merged_df[score_columns].apply(lambda row: row[row >= 0].mean(), axis=1)
     styled_col = []
     for col in score_columns:
@@ -203,6 +212,10 @@ def main():
             title="Comparison of Experiments success rate",
             labels={"value": "Measured Value", "time": "Time"},
         )
+        fig.update_layout(
+            xaxis_title="Threshold Value (Challenge Level)",
+            yaxis_title="Success rate above threshold (%)",
+        )
         st.plotly_chart(fig)
         unique_exp = [exp + '_' for exp in unique_exp]
         valid_columns = [col for col in policies_df.columns if any(expr in col for expr in unique_exp)]
@@ -211,12 +224,14 @@ def main():
         filtered_df = filtered_df.style.format(_format_arrow, subset=cur_styled_col).map(_color_arrow,
                                                                                          subset=cur_styled_col)
 
-        score_columns_filter = [col for col in events_df.columns if 'score' in col and any(expr in col for expr in unique_exp)]
+        score_columns_filter = [col for col in events_df.columns if
+                                'score' in col and any(expr in col for expr in unique_exp)]
 
         exp_columns = [col for col in events_df.columns if 'exp_' in col]
         exp_columns_filter = [col for col in exp_columns if any(expr in col for expr in unique_exp)]
-        cur_events_df = events_df.drop(columns= [col for col in exp_columns if col not in exp_columns_filter])
-        cur_events_df = cur_events_df.style.format(_format_binary, subset=score_columns_filter).map(_color_binary, subset=score_columns_filter)
+        cur_events_df = events_df.drop(columns=[col for col in exp_columns if col not in exp_columns_filter])
+        cur_events_df = cur_events_df.style.format(_format_binary, subset=score_columns_filter).map(_color_binary,
+                                                                                                    subset=score_columns_filter)
         st.markdown("#### A table of policies scores in the selected experiments")
         st.dataframe(filtered_df)
         st.markdown("#### A table of events score in the selected experiments")
