@@ -54,8 +54,16 @@ class Env:
         Load the database from the database folder. Assuming each database is in a separate json file
         :return:
         """
-        all_data_files = [file for file in os.listdir(self.config['database_folder']) if file.endswith('.json')]
-        all_data = {Path(file).stem: pd.read_json(os.path.join(self.config['database_folder'], file), orient='index') for file in all_data_files}
+        all_data_files = [file for file in os.listdir(self.config['database_folder'])
+                          if file.endswith('.json') or file.endswith('.csv')]
+        all_data = {}
+        for file in all_data_files:
+            if file.endswith('.json'):
+                table = pd.read_json(os.path.join(self.config['database_folder'], file), orient='index')
+            else:
+                table = pd.read_csv(os.path.join(self.config['database_folder'], file))
+            all_data[Path(file).stem] = table
+
         self.data_schema = {Path(file).stem: list(data.columns) for file, data in all_data.items()}
         self.data_examples = {table: all_data[table].iloc[0].to_json() for table in all_data}
         database_validators_path = self.config.get('database_validators', None)
