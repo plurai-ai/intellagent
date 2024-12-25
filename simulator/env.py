@@ -19,7 +19,7 @@ class Env:
         :return:
         """
         logger = get_logger()
-        self.tools, self.tools_schema = load_tools(self.config['tools_folder'])
+        self.tools, self.tools_schema = load_tools(self.config['tools_file'])
         if self.tools_schema and not(len(self.tools) == len(self.tools_schema)):
             logger.warning(f"{ConsoleColor.RED}If providing a schema, make sure to provide a schema for each tool. Found {len(self.tools)} tools and {len(self.tools_schema)} schemas."
                             f"Using the default tools schema for all tools.{ConsoleColor.RESET}")

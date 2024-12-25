@@ -28,16 +28,23 @@ This variable specifies the path to a folder containing CSV files. Each CSV file
 
 ---
 
-### `tools_folder`
+### `tools_file`
 This variable specifies the path to a Python script containing all the agent tool functions. 
 
 The tool functions must be implemented using one of the following approaches:
 - **Using LangChain's `@tool` decorator**: [LangChain Tool Decorator Guide](https://python.langchain.com/docs/how_to/custom_tools/#tool-decorator)
 - **Using LangChain's `StructuredTool`**: [LangChain StructuredTool Guide](https://python.langchain.com/docs/how_to/custom_tools/#structuredtool)
 
+If the tool needs to access the database you should add to the function a variable 'data', and use langchain [InjectedState class](https://langchain-ai.github.io/langgraph/reference/prebuilt/#langgraph.prebuilt.tool_node.InjectedState). 
+In the following way:
+```python 
+def tool_function(data: Annotated[dict, InjectedState("dataset")]):
+```
+**The data variable will contain a dictionary of dataframe, where the name is the table name (according to the csv file name in the database folder).**
+
 Optionally, you can define a tool schema by creating a variable named `<function_name>_schema`. If no schema variable is provided, the system will infer the schema automatically.
 
-**Example of a valid `tools_folder`:**  
+**Example of a valid `tools_file`:**  
 See [examples/airline/input/tools/agent_tools.py](examples/airline/input/tools/agent_tools.py) for reference.
 
 ---
