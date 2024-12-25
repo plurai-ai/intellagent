@@ -10,6 +10,7 @@ from langgraph.graph.message import add_messages
 from langchain_core.messages.base import BaseMessage
 from langchain_core.messages import HumanMessage, AIMessage
 from simulator.utils.llm_utils import convert_messages_to_str
+import json
 
 
 class DialogState(TypedDict):
@@ -102,13 +103,13 @@ class Dialog:
             if self.memory is not None:
                 # Inserting tool calls into memory
                 for message in response['messages'][last_human_message + 1:]:
-                    if 'tool_calls' in message.additional_kwargs:
-                        for tool_call in message.additional_kwargs['tool_calls']:
-                            all_tool_calls[tool_call['id']] = tool_call['function']
+                    if hasattr(message, 'tool_calls'):
+                        for tool_call in message.tool_calls:
+                            all_tool_calls[tool_call['id']] = tool_call
                     if message.type == 'tool':
                         all_tool_calls[message.tool_call_id]['output'] = message.content
                 for v in all_tool_calls.values():
-                    self.memory.insert_tool(state['thread_id'], v['name'], v['arguments'], v['output'])
+                    self.memory.insert_tool(state['thread_id'], v['name'], json.dumps(v['args']), v['output'])
                     time.sleep(0.001)
                 # inserting the chatbot messages into memory
                 self.memory.insert_dialog(state['thread_id'], 'AI', response['messages'][-1].content)

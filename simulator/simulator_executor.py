@@ -128,7 +128,7 @@ class SimulatorExecutor:
                                                                (i + 1) * mini_batch_size])
             all_res.extend(res)
             total_cost += cost
-            pickle.dump((all_res, i+1, total_cost), open(intermediate_res, 'wb'))
+            pickle.dump((all_res, i + 1, total_cost), open(intermediate_res, 'wb'))
 
         # Handle remaining records if any
         remaining_records = records[num_batch * mini_batch_size:]
@@ -161,6 +161,7 @@ class SimulatorExecutor:
         """
         results = get_dialog_policies(self.config['analysis'], results, self.dataset_handler.records)
         all_rows = []
+        valid_event_ind = []
         for r in results:
             try:
                 cur_event = self.dataset_handler.records[r['event_id'] - 1]
@@ -185,19 +186,27 @@ class SimulatorExecutor:
                     'challenge_level': getattr(cur_event.description, 'challenge_level', None),
                     'policies': getattr(cur_event.description, 'policies', None),
                     'policies_in_dialog': r.get('tested_policies', None),
-                    'violated_policies': r.get('violated_policies', None)
+                    'violated_policies': r.get('violated_policies', [])
                 }
                 all_rows.append(cur_row)
+                valid_event_ind.append(r['event_id'] - 1)
             except (KeyError, AttributeError, IndexError) as e:
                 error_message = f"Skipping a result due to missing data: {e}"
                 logger.info(f"{ConsoleColor.CYAN}{error_message}{ConsoleColor.RESET}")
                 track_event(ExceptionEvent(exception_type=type(e).__name__,
                                            error_message=error_message))
                 continue
-
+        non_valid_rows = []
+        for i, event in enumerate(self.dataset_handler.records):
+            if i in valid_event_ind:
+                continue
+            cur_row = {'id': i + 1, 'score': 0, 'challenge_level': getattr(event.description, 'challenge_level', None)}
+            non_valid_rows.append(cur_row)
         if all_rows:
             df = pd.DataFrame(all_rows)
             df.to_csv(os.path.join(experiment_dir, 'results.csv'), index=False)
+            error_df = pd.DataFrame(non_valid_rows)
+            error_df.to_csv(os.path.join(experiment_dir, 'err_events.csv'), index=False)
             failure_rate = (df['score'] == False).mean()
             track_event(
                 AnalyzeSimulationResultsEvent(
