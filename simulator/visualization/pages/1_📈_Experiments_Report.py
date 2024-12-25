@@ -6,7 +6,7 @@ import plotly.express as px
 import sys
 from pathlib import Path
 import ast
-
+import json
 pd.options.mode.chained_assignment = None
 
 project_root = Path(__file__).resolve().parent.parent.parent.parent
@@ -59,6 +59,11 @@ def extract_violated_policies_str(row):
 def read_experiment_data(exp_path: str):
     df = pd.read_csv(exp_path + '/results.csv')
     err_df = pd.read_csv(exp_path + '/err_events.csv')
+    policies_info = json.load(open(exp_path + '/policies_info.json', 'r'))
+    policies_info_list = []
+    for flow, policies in policies_info.items():
+        for policy in policies:
+            policies_info_list.append({'name': flow + ': ' + policy['policy'], 'category': policy['category']})
     scores = df['score'].tolist() + err_df['score'].tolist()
     challenge = df['challenge_level'].tolist() + err_df['challenge_level'].tolist()
     all_policies_list = []
@@ -75,16 +80,17 @@ def read_experiment_data(exp_path: str):
             all_policies_list.append({'policy': policies[j]['flow'] + ': ' + policies[j]['policy'],
                                       'score': score, 'challenge_level': row['challenge_level']})
 
-    policies_names = list(set([name['policy'] for name in all_policies_list]))
     success_rate = []
-    for name in policies_names:
-        cur_policies = [policy for policy in all_policies_list if policy['policy'] == name]
-        if len(cur_policies) < 2:
+    for policy_info in policies_info_list:
+        cur_policies = [policy for policy in all_policies_list if policy['policy'] == policy_info['name']]
+        if len(cur_policies) < 3:
             success_rate.append(-1)
             continue
         success_rate.append(100 * sum([policy['score'] for policy in cur_policies]) / len(cur_policies))
     graph_info = {'scores': scores, 'challenge_level': challenge}
-    table_policies_info = {'policy': policies_names, 'success_rate': success_rate}
+    table_policies_info = {'policy': [policy['name'] for policy in policies_info_list],
+                           'success_rate': success_rate,
+                           'category': [policy['category'] for policy in policies_info_list]}
     df['violated_policies'] = df.apply(extract_violated_policies_str, axis=1)
     events_info = df[['id', 'scenario', 'score', 'reason', 'violated_policies']]
     events_info['score'] = events_info['score'].astype(float)
@@ -128,6 +134,7 @@ def load_data(database_path=None):
             events_df = pd.merge(events_df, events_info, on=["id", "scenario"], how="outer")
 
         policies_datasets.append(pd.DataFrame({'policy': table_policies_info['policy'],
+                                               'category': table_policies_info['category'],
                                                f'{exp_name}_success_rate': table_policies_info['success_rate']}))
     graph_data = []
     for exp, data in experiments_data.items():
@@ -135,14 +142,14 @@ def load_data(database_path=None):
         unique_values = np.sort(unique_values)
         for val in unique_values:
             cur_valid_score = [data['scores'][i] for i in range(len(data['scores']))
-                               if data['challenge_level'][i] >= val and data['scores'][i] >= 0]
+                               if data['challenge_level'][i] >= val]
             if len(cur_valid_score) < 5:  # Not enough data points
                 continue
             graph_data.append({'experiment': exp, 'Challenge level': val,
                                'Success rate': sum(cur_valid_score) / len(cur_valid_score)})
     merged_df = policies_datasets[0]
     for df in policies_datasets[1:]:
-        merged_df = pd.merge(merged_df, df, on="policy", how="outer")
+        merged_df = pd.merge(merged_df, df, on=["policy","category"], how="outer")
 
     score_columns = [col for col in merged_df.columns if "success_rate" in col]
     # Filter out any columns that do not have a valid integer after the underscore
@@ -176,7 +183,7 @@ def load_data(database_path=None):
         cur_s = [s for s in styled_col if c.split('success_rate')[0] in s]
         column_all_sort += cur_s
 
-    merged_df = merged_df[['policy'] + column_all_sort]
+    merged_df = merged_df[['category', 'policy'] + column_all_sort]
     return pd.DataFrame(graph_data), merged_df, styled_col, events_df
 
 
@@ -225,7 +232,7 @@ def main():
         )
         st.plotly_chart(fig)
         unique_exp = [exp + '_' for exp in unique_exp]
-        valid_columns = [col for col in policies_df.columns if any(expr in col for expr in unique_exp)]
+        valid_columns = ['category'] + [col for col in policies_df.columns if any(expr in col for expr in unique_exp)]
         filtered_df = policies_df[valid_columns]
         cur_styled_col = [col for col in styled_col if col in valid_columns]
         filtered_df = filtered_df.style.format(_format_arrow, subset=cur_styled_col).map(_color_arrow,

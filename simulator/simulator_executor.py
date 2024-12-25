@@ -10,6 +10,7 @@ from datetime import datetime
 from simulator.dataset.dataset_handler import Dataset
 import yaml
 import pandas as pd
+import json
 import uuid
 from simulator.healthcare_analytics import RunSimulationEvent, AnalyzeSimulationResultsEvent, ExceptionEvent, \
     track_event
@@ -94,6 +95,8 @@ class SimulatorExecutor:
             file.write(self.environment.prompt)
         with open(os.path.join(experiment_dir, 'config.yaml'), "w") as file:
             yaml.dump(self.config, file)
+        json.dump(self.dataset_handler.descriptions_generator.policies,
+                  open(os.path.join(experiment_dir, 'policies_info.json'), "w"))
 
         # init the dialog
         self.dialog_manager.init_dialog(experiment_dir)
