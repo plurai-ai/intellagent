@@ -14,6 +14,11 @@ class ConsoleColor:
     WHITE = "\033[97m"  # Bright white
     GREY = "\033[37m"   # Light gray
 
+class SuppressErrorFilter(logging.Filter):
+    def filter(self, record):
+        # Suppress messages that contain "Error in chain invoke:"
+        return "Error in chain invoke:" not in record.getMessage()
+
 def get_logger():
     """
     Returns the shared logger instance. If not initialized, raises an error.
@@ -52,6 +57,7 @@ def setup_logger(log_file="app.log"):
         file_handler.setFormatter(formatter)
         console_formatter = logging.Formatter('%(message)s')
         console_handler.setFormatter(console_formatter)
+        console_handler.addFilter(SuppressErrorFilter())
 
         # Add handlers to the logger
         logger.addHandler(file_handler)
