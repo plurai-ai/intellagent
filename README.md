@@ -60,8 +60,11 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 - [Installation & Quick Start](./docs/installation.md)  
   Step-by-step setup instructions.
 
+- [Creating New Custom Environment](./docs/custom_environment.md)  
+  Comprehensive guide for setting up custom environments, including domain-specific policies, database schemas, tools, and validators.
+
 - [How It Works](./docs/how-it-works.md)  
-  Detailed explanation of the AI pipeline.
+  Detailed explanation of the CHAS pipeline.
 
 - [Architecture Guide](./docs/architecture.md)  
   Overview of the system's main components.

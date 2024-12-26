@@ -22,9 +22,7 @@ python run --config_path <path to the config_env.yml file>
 This variable specifies the path to a prompt file. The file should be a simple text file (`.txt`) or a markdown file (`.md`) containing the desired prompt.
 
 **Example of prompt file:**
-```yaml
-prompt_path: './examples/airline/input/wiki.md'
-```
+For a complete example of a prompt file, see the [airline example system prompt](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/wiki.md).
 
 ---
 
@@ -33,7 +31,7 @@ This variable specifies the path to a folder containing CSV files. Each CSV file
 
 **Example of database_folder:**
 ```yaml
-database_folder: './examples/airline/input/data'
+database_folder: 'https://github.com/plurai-ai/chatbot_simulator/tree/main/examples/airline/input/data'
 ```
 
 The folder should contain CSV files that define your database tables. Here's an example structure from an airline booking system:
@@ -74,7 +72,7 @@ def tool_function(data: Annotated[dict, InjectedState("dataset")]):
 Optionally, you can define a tool schema by creating a variable named `<function_name>_schema`. If no schema variable is provided, the system will infer the schema automatically.
 
 **Example of a valid `tools_file`:**  
-See [examples/airline/input/tools/agent_tools.py](examples/airline/input/tools/agent_tools.py) for reference.
+See [agent_tools.py](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/tools/agent_tools.py) for reference.
 
 ---
 
@@ -102,7 +100,7 @@ def user_id_validator(new_df, dataset):
 - The `@validator` decorator requires the table name as an argument.
 - The validator function is applied before new data is inserted into the database.
 
-For a complete example of validators in action, see the airline booking system validators at [examples/airline/input/validators/data_validators.py](examples/airline/input/validators/data_validators.py). This example includes validators for:
+For a complete example of validators in action, see the airline booking system validators at [data_validators.py](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/validators/data_validators.py). This example includes validators for:
 - User ID validation (preventing duplicate users)
 - Flight ID validation (ensuring unique flight numbers)
 - Flight validation (verifying flight details in reservations)
