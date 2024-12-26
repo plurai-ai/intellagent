@@ -10,11 +10,13 @@ environment:
     database_folder: # Path to database folder
     database_validators: # Optional! Path to the file with the validators functions
 ```
-
-After defining properly all the variables, you can call:
+After defining properly all the variables, you can run the simulator on the new custom environment:
 ```bash
-python run --config_path <path to the config_env.yml file>
-````
+python run.py \
+    --output_path PATH     # Required: Directory where output files will be saved
+    --config_path PATH     # Optional: Path to config_env.yml (default: ./config_default.yml)
+    --dataset NAME         # Optional: Dataset name to use (default: 'latest')
+```
 
 ## Environment Variables
 
@@ -22,9 +24,7 @@ python run --config_path <path to the config_env.yml file>
 This variable specifies the path to a prompt file. The file should be a simple text file (`.txt`) or a markdown file (`.md`) containing the desired prompt.
 
 **Example of prompt file:**
-```yaml
-prompt_path: './examples/airline/input/wiki.md'
-```
+For a complete example of a prompt file, see the [airline example system prompt](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/wiki.md).
 
 ---
 
@@ -32,9 +32,7 @@ prompt_path: './examples/airline/input/wiki.md'
 This variable specifies the path to a folder containing CSV files. Each CSV file represents a database table used by the system and must include at least one row as an example. It is recommended to provide meaningful and indicative names for the columns in each CSV file.
 
 **Example of database_folder:**
-```yaml
-database_folder: './examples/airline/input/data'
-```
+For a complete example of a database folder, see the [airline example database folder](https://github.com/plurai-ai/chatbot_simulator/tree/main/examples/airline/input/data).
 
 The folder should contain CSV files that define your database tables. Here's an example structure from an airline booking system:
 
