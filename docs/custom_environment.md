@@ -24,7 +24,7 @@ python run.py \
 This variable specifies the path to a prompt file. The file should be a simple text file (`.txt`) or a markdown file (`.md`) containing the desired prompt.
 
 **Example of prompt file:**
-For a complete example of a prompt file, see the [airline example system prompt](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/wiki.md).
+For a complete example of a prompt file, see the [airline chat-agent system prompt](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/wiki.md).
 
 ---
 
@@ -32,7 +32,7 @@ For a complete example of a prompt file, see the [airline example system prompt]
 This variable specifies the path to a folder containing CSV files. Each CSV file represents a database table used by the system and must include at least one row as an example. It is recommended to provide meaningful and indicative names for the columns in each CSV file.
 
 **Example of database_folder:**
-For a complete example of a database folder, see the [airline example database folder](https://github.com/plurai-ai/chatbot_simulator/tree/main/examples/airline/input/data).
+For a complete example of a database folder, see the [airline chat-agent database scheme folder](https://github.com/plurai-ai/chatbot_simulator/tree/main/examples/airline/input/data).
 
 The folder should contain CSV files that define your database tables. Here's an example structure from an airline booking system:
 
@@ -72,7 +72,7 @@ def tool_function(data: Annotated[dict, InjectedState("dataset")]):
 Optionally, you can define a tool schema by creating a variable named `<function_name>_schema`. If no schema variable is provided, the system will infer the schema automatically.
 
 **Example of a valid `tools_file`:**  
-See [examples/airline/input/tools/agent_tools.py](examples/airline/input/tools/agent_tools.py) for reference.
+See [airline chat-agent tools python script](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/tools/agent_tools.py) for reference.
 
 ---
 
@@ -100,7 +100,7 @@ def user_id_validator(new_df, dataset):
 - The `@validator` decorator requires the table name as an argument.
 - The validator function is applied before new data is inserted into the database.
 
-For a complete example of validators in action, see the airline booking system validators at [examples/airline/input/validators/data_validators.py](examples/airline/input/validators/data_validators.py). This example includes validators for:
+For a complete example of validators in action, see the airline booking system validators at [airline chat-agent database validators python script](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/validators/data_validators.py). This example includes validators for:
 - User ID validation (preventing duplicate users)
 - Flight ID validation (ensuring unique flight numbers)
 - Flight validation (verifying flight details in reservations)

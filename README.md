@@ -70,8 +70,8 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
   Overview of the system's main components.
 
 - [Running Examples](./docs/examples.md)  
-  Running examples from various agents, including [airline agent](./docs/examples/airline.md), including [retail agent](./docs/examples/retail.md),[langgraph agent](./docs/examples/langraph.md) 
- 
+  Running examples of various chat-agents, including [airline agent](./docs/examples/airline.md), [retail agent](./docs/examples/retail.md), [langgraph agent](./docs/examples/langgraph.md)
+
 ## Features
 
 - 🔬 Simulates thousands of edge-case events tailored to your chatbot agent

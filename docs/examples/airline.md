@@ -6,9 +6,9 @@ Edit the `config/config_airline.yml` file to set the paths for the airline agent
 ```yaml
 environment:
     prompt_path: 'examples/input/airline/wiki.md'  # Path to your agent's wiki/documentation
-    tools_folder: 'examples/input/airline/tools'   # Path to your agent's tools
+    tools_file: 'examples/input/airline/tools/agent_tools.py'   # Path to your agent's tools 
     database_folder: 'examples/input/airline/data' # Path to your data schema
-    task_description:  # Infered automatically from the input data ; If you don't want to infer you can simply provide it in the field 'content'
+    database_validators: 'examples/airline/input/validators/data_validators.py' # Optional! Path to the file with the validators functions
 ```
 The `examples/input/airline` folder contains the following structure:
 
