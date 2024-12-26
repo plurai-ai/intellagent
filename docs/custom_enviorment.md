@@ -6,7 +6,7 @@ You should create a new config_env.yml file and define there the chatbot environ
 ```python
 environment:
     prompt_path:  # Path to prompt
-    tools_script: # Path to a script that include the tools functions 
+    tools_file: # Path to a python script that include all the tools functions 
     database_folder: # Path to database folder
     database_validators: # Optional! Path to the file with the validators functions
 ```
@@ -19,17 +19,46 @@ python run --config_path <path to the config_env.yml file>
 ## Environment Variables
 
 ### `prompt_path`
-This variable specifies the path to a prompt file. The file should be a simple text file (`.txt`) containing the desired prompt.
+This variable specifies the path to a prompt file. The file should be a simple text file (`.txt`) or a markdown file (`.md`) containing the desired prompt.
+
+**Example of prompt file:**
+```yaml
+prompt_path: './examples/airline/input/wiki.md'
+```
 
 ---
 
 ### `database_folder`
 This variable specifies the path to a folder containing CSV files. Each CSV file represents a database table used by the system and must include at least one row as an example. It is recommended to provide meaningful and indicative names for the columns in each CSV file.
 
----
+**Example of database_folder:**
+```yaml
+database_folder: './examples/airline/input/data'
+```
+
+The folder should contain CSV files that define your database tables. Here's an example structure from an airline booking system:
+
+**flights.csv**
+
+| flight_number | origin | destination | scheduled_departure_time_est | scheduled_arrival_time_est | dates |
+|--------------|---------|-------------|----------------------------|--------------------------|--------|
+| HAT001 | PHL | LGA | 06:00:00 | 07:00:00 | {"2024-05-16": {"status": "available", "available_seats": {"basic_economy": 16, "economy": 10, "business": 13}, "prices": {"basic_economy": 87, "economy": 122, "business": 471}}} |
+
+**reservations.csv**
+
+| reservation_id | user_id | origin | destination | flight_type | cabin | flights | passengers | payment_history | created_at | total_baggages | nonfree_baggages | insurance |
+|---------------|----------|---------|-------------|-------------|--------|----------|------------|-----------------|------------|----------------|------------------|-----------|
+| 4WQ150 | chen_jackson_3290 | DFW | LAX | round_trip | business | [{"origin": "DFW", "destination": "LAX", "flight_number": "HAT170", "date": "2024-05-22"}] | [{"first_name": "Chen", "last_name": "Jackson", "dob": "1956-07-07"}] | [{"payment_id": "gift_card_3576581", "amount": 4986}] | 2024-05-02 03:10:19 | 5 | 0 | no |
+
+**users.csv**
+
+| user_id | name | address | email | dob | payment_methods | saved_passengers | membership | reservations |
+|---------|------|---------|-------|-----|-----------------|------------------|------------|--------------|
+| mia_li_3668 | {"first_name": "Mia", "last_name": "Li"} | {"address1": "975 Sunset Drive", "city": "Austin", "country": "USA"} | mia.li@example.com | 1990-04-05 | {"credit_card_4421486": {"source": "credit_card", "last_four": "7447"}} | [] | gold | ["NO6JO3"] |
+
 
 ### `tools_file`
-This variable specifies the path to a Python script containing all the agent tool functions. 
+This variable specifies the path to a python script containing all the agent tool functions. 
 
 The tool functions must be implemented using one of the following approaches:
 - **Using LangChain's `@tool` decorator**: [LangChain Tool Decorator Guide](https://python.langchain.com/docs/how_to/custom_tools/#tool-decorator)
@@ -72,3 +101,9 @@ def user_id_validator(new_df, dataset):
 ```
 - The `@validator` decorator requires the table name as an argument.
 - The validator function is applied before new data is inserted into the database.
+
+For a complete example of validators in action, see the airline booking system validators at [examples/airline/input/validators/data_validators.py](examples/airline/input/validators/data_validators.py). This example includes validators for:
+- User ID validation (preventing duplicate users)
+- Flight ID validation (ensuring unique flight numbers)
+- Flight validation (verifying flight details in reservations)
+- User validation (maintaining consistency between reservations and user data)
