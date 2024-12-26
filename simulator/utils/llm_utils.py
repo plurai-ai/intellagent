@@ -75,6 +75,8 @@ def load_tools(tools_path: str):
     """
     Load the agent tools from the function file
     """
+    if not os.path.isfile(tools_path):
+        return [], []
     tools_dir = os.path.dirname(tools_path)
     if tools_dir not in sys.path:
         sys.path.insert(0, tools_dir)
