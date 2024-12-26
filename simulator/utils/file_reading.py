@@ -39,7 +39,7 @@ def get_validators_from_module(file_path, table_name):
     :return: the list of the table validators
     """
     if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"The file '{file_path}' does not exist.")
+        return [] #Validator is optional
 
     # Load the module dynamically
     module_name = os.path.splitext(os.path.basename(file_path))[0]

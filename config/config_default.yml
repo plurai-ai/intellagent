@@ -1,7 +1,8 @@
 environment:
     prompt_path: ''
-    tools_folder: ''
+    tools_file: ''
     database_folder: ''
+    database_validators: ''
     task_description:  # If you don't want to infer you can simply provide it in the field 'content'
         llm:
             type: 'azure'
