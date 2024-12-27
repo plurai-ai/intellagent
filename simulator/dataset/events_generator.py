@@ -102,7 +102,10 @@ class EventsGenerator:
         Generate an event based on the given symbolic_event.
         """
         event_dict = symbolic_event.symbolic_info.dict()
-        policies_constraints = symbolic_event.policies_constraints.split('## rows constraints:\n')[1]
+        if '## Rows Constraints:\n' in symbolic_event.policies_constraints:
+            policies_constraints = symbolic_event.policies_constraints.split('## Rows Constraints:\n')[1]
+        else:
+            policies_constraints = ''
         res = self.agent.invoke(rows_to_generate=event_dict['tables_rows'], rows_generated=[],
                                 event_description=event_dict['enriched_scenario'], variables_definitions='{}',
                                 cur_restrictions=None, dataset={},
@@ -118,7 +121,10 @@ class EventsGenerator:
         Generate an event based on the given symbolic_event.
         """
         event_dict = symbolic_event.symbolic_info.dict()
-        policies_constraints = symbolic_event.policies_constraints.split('## rows constraints:\n')[1]
+        if '## Rows Constraints:\n' in symbolic_event.policies_constraints:
+            policies_constraints = symbolic_event.policies_constraints.split('## Rows Constraints:\n')[1]
+        else:
+            policies_constraints = ''
         res = await self.agent.ainvoke(rows_to_generate=event_dict['tables_rows'], rows_generated=[],
                                        event_description=event_dict['enriched_scenario'], variables_definitions='{}',
                                        cur_restrictions=None, dataset={},
