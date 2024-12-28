@@ -3,12 +3,16 @@
 from typing import Any, Dict
 from langchain.tools import StructuredTool
 import json
+from util import convert_json_strings
 
 class CancelPendingOrder():
     @staticmethod
     def invoke(data: Dict[str, Any], order_id: str, reason: str) -> str:
         # check order exists and is pending
         orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
+        orders = convert_json_strings(orders)
+        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        users = convert_json_strings(users)
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
@@ -30,7 +34,7 @@ class CancelPendingOrder():
             }
             refunds.append(refund)
             if "gift_card" in payment_id:  # refund to gift card immediately
-                payment_method = data["users"][order["user_id"]]["payment_methods"][
+                payment_method = users[order["user_id"]]["payment_methods"][
                     payment_id
                 ]
                 payment_method["balance"] += payment["amount"]

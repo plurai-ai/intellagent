@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-
+from util import convert_json_strings
 
 class ReturnDeliveredOrderItems():
     @staticmethod
@@ -10,7 +10,9 @@ class ReturnDeliveredOrderItems():
         data: Dict[str, Any], order_id: str, item_ids: List[str], payment_method_id: str
     ) -> str:
         orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
-
+        orders = convert_json_strings(orders)
+        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        users = convert_json_strings(users)
         # Check if the order exists and is delivered
         if order_id not in orders:
             return "Error: order not found"
@@ -19,7 +21,7 @@ class ReturnDeliveredOrderItems():
             return "Error: non-delivered order cannot be returned"
 
         # Check if the payment method exists and is either the original payment method or a gift card
-        if payment_method_id not in data["users"][order["user_id"]]["payment_methods"]:
+        if payment_method_id not in users[order["user_id"]]["payment_methods"]:
             return "Error: payment method not found"
         if (
             "gift_card" not in payment_method_id

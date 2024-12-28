@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-
+from util import convert_json_strings
 
 class ExchangeDeliveredOrderItems():
     @staticmethod
@@ -14,8 +14,11 @@ class ExchangeDeliveredOrderItems():
         payment_method_id: str,
     ) -> str:
         orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
+        orders = convert_json_strings(orders)
         products = data["products"].set_index('product_id', drop=False).to_dict(orient='index')
+        products = convert_json_strings(products)
         users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        users = convert_json_strings(users)
 
         # check order exists and is delivered
         if order_id not in orders:

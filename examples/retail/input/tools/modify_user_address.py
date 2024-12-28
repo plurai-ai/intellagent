@@ -3,6 +3,7 @@
 from typing import Any, Dict
 from langchain.tools import StructuredTool
 import json
+from util import convert_json_strings
 
 class ModifyUserAddress():
     @staticmethod
@@ -18,7 +19,7 @@ class ModifyUserAddress():
     ) -> str:
 
         users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
-
+        users = convert_json_strings(users)
         if user_id not in users:
             return "Error: user not found"
         user = users[user_id]
