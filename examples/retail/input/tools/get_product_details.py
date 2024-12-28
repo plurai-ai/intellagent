@@ -2,12 +2,12 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-
+from util import get_dict_json
 
 class GetProductDetails():
     @staticmethod
     def invoke(data: Dict[str, Any], product_id: str) -> str:
-        products = data["products"].set_index('product_id', drop=False).to_dict(orient='index')
+        products = get_dict_json(data['products'], 'product_id')
         if product_id in products:
             return json.dumps(products[product_id])
         return "Error: product not found"

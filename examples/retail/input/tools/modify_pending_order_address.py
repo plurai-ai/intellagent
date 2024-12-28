@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from util import convert_json_strings
+from util import get_dict_json
 
 class ModifyPendingOrderAddress():
     @staticmethod
@@ -17,8 +17,7 @@ class ModifyPendingOrderAddress():
         zip: str,
     ) -> str:
         # Check if the order exists and is pending
-        orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
-        orders = convert_json_strings(orders)
+        orders = get_dict_json(data['orders'], 'order_id')
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
