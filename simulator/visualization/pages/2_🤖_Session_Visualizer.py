@@ -60,6 +60,7 @@ def extract_threads(memory_path):
 
 def update_thread_list():
     # Update the thread list in the session state
+    st.session_state.updated = True
     event_id, thread_list = extract_threads(st.session_state["memory_path"])
     st.session_state["threads"] = thread_list
     st.session_state["event_id"] = event_id
@@ -151,10 +152,13 @@ if "threads" not in st.session_state:
 def main():
     # Set the initial db path to the last run in the default results path
     last_db_path = get_last_db()
+    if 'last_db_path' not in st.session_state:
+        st.session_state.last_db_path = get_last_db()
+        st.session_state["event_id"], st.session_state['threads'] = extract_threads(last_db_path)
 
     st.sidebar.text_input('Memory path', key='memory_path', on_change=update_thread_list,
-                  value=last_db_path)
-    st.session_state["event_id"], st.session_state['threads'] = extract_threads(last_db_path)
+                  value=st.session_state.last_db_path)
+
     st.sidebar.selectbox("Select an event to visualized:", st.session_state["event_id"],
                                   key="selected_event",
                                   on_change=on_select_thread
