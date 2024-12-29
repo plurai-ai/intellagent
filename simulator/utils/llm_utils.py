@@ -13,6 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import yaml
 from simulator.healthcare_analytics import ExceptionEvent, track_event
 from langchain_core.messages import HumanMessage, AIMessage
+
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
 
 
@@ -40,6 +41,7 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
     else:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
+
 def convert_messages_to_str(messages: list) -> str:
     """
     Convert a list of (langchain) messages to a string
@@ -49,6 +51,7 @@ def convert_messages_to_str(messages: list) -> str:
         for msg in messages
     )
     return formatted_string
+
 
 def dict_to_str(d: dict, mode='items') -> str:
     final_str = ''
@@ -161,7 +164,7 @@ def load_yaml_content(yaml_content: str) -> dict:
         return {}
 
 
-def get_llm(config: dict):
+def get_llm(config: dict, timeout=60):
     """
     Returns the LLM model
     :param config: dictionary with the configuration
@@ -181,26 +184,27 @@ def get_llm(config: dict):
             return ChatOpenAI(temperature=temperature, model_name=config['name'],
                               openai_api_key=config.get('openai_api_key', LLM_ENV['openai']['OPENAI_API_KEY']),
                               openai_api_base=config.get('openai_api_base', 'https://api.openai.com/v1'),
-                              model_kwargs=model_kwargs)
+                              model_kwargs=model_kwargs, timeout=timeout)
         else:
             return ChatOpenAI(temperature=temperature, model_name=config['name'],
                               openai_api_key=config.get('openai_api_key', LLM_ENV['openai']['OPENAI_API_KEY']),
                               openai_api_base=config.get('openai_api_base', 'https://api.openai.com/v1'),
                               openai_organization=config.get('openai_organization',
                                                              LLM_ENV['openai']['OPENAI_ORGANIZATION']),
-                              model_kwargs=model_kwargs)
+                              model_kwargs=model_kwargs, timeout=timeout)
     elif config['type'].lower() == 'azure':
         return AzureChatOpenAI(temperature=temperature, azure_deployment=config['name'],
                                openai_api_key=config.get('openai_api_key', LLM_ENV['azure']['AZURE_OPENAI_API_KEY']),
                                azure_endpoint=config.get('azure_endpoint', LLM_ENV['azure']['AZURE_OPENAI_ENDPOINT']),
                                openai_api_version=config.get('openai_api_version',
-                                                             LLM_ENV['azure']['OPENAI_API_VERSION']))
+                                                             LLM_ENV['azure']['OPENAI_API_VERSION']),
+                               timeout=timeout)
 
     elif config['type'].lower() == 'google':
         from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(temperature=temperature, model=config['name'],
                                       google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
-                                      model_kwargs=model_kwargs)
+                                      model_kwargs=model_kwargs, timeout=timeout)
 
 
     elif config['type'].lower() == 'huggingfacepipeline':
