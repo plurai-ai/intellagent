@@ -2,12 +2,13 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
+from util import get_dict_json
 
 
 class GetOrderDetails():
     @staticmethod
     def invoke(data: Dict[str, Any], order_id: str) -> str:
-        orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
+        orders = get_dict_json(data['orders'], 'order_id')
         if order_id in orders:
             return json.dumps(orders[order_id])
         return "Error: order not found"

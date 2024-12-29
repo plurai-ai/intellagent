@@ -11,6 +11,8 @@ import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
 from simulator.utils.parallelism import async_batch_invoke
 from simulator.dialog.utils import intermediate_processing
+
+
 class DialogManager:
     """
     This class is responsible for executing rollout of simulation.
@@ -38,6 +40,7 @@ class DialogManager:
         self.user_prompt = config['user_prompt']
         self.num_workers = config['num_workers']
         self.timeout = config['timeout']
+        self.recursion_limit = config.get('recursion_limit', 25)
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
         self.set_critique(config['critique_config'])
@@ -100,7 +103,7 @@ class DialogManager:
                                          "chatbot_messages": chatbot_messages,
                                          "chatbot_args": chatbot_env_args,
                                          "thread_id": str(uuid.uuid4()),
-                                         "user_thoughts": []})
+                                         "user_thoughts": []}, config={'recursion_limit': self.recursion_limit})
 
     async def arun(self, user_prompt_params=None, chatbot_prompt_params=None,
                    chatbot_env_args=None):
@@ -123,7 +126,7 @@ class DialogManager:
                                                 "chatbot_messages": chatbot_messages,
                                                 "chatbot_args": chatbot_env_args,
                                                 "thread_id": str(uuid.uuid4()),
-                                                "user_thoughts": []})
+                                                "user_thoughts": []}, config={'recursion_limit': self.recursion_limit})
 
     def run_event(self, event: Event):
         """

@@ -2,6 +2,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
+from util import get_dict_json
 
 
 class ModifyPendingOrderPayment():
@@ -11,36 +12,44 @@ class ModifyPendingOrderPayment():
         order_id: str,
         payment_method_id: str,
     ) -> str:
-        orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
-
+        orders = get_dict_json(data['orders'], 'order_id')
+        users = get_dict_json(data['users'], 'user_id')
         # Check if the order exists and is pending
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
+        user = users[order["user_id"]]
         if order["status"] != "pending":
             return "Error: non-pending order cannot be modified"
 
         # Check if the payment method exists
-        if payment_method_id not in data["users"][order["user_id"]]["payment_methods"]:
+        if payment_method_id not in user["payment_methods"]:
             return "Error: payment method not found"
 
         # Check that the payment history should only have one payment
-        if (
-            len(order["payment_history"]) > 1
-            or order["payment_history"][0]["transaction_type"] != "payment"
-        ):
+        if (len(order["payment_history"]) > 1):
             return "Error: there should be exactly one payment for a pending order"
 
         # Check that the payment method is different
-        if order["payment_history"][0]["payment_method_id"] == payment_method_id:
+        if not order["payment_history"]:
+            order["payment_history"] = [{
+                    "transaction_type": "payment",
+                    "amount": 30,
+                    "method": 'credit',
+                }]
+        if order["payment_history"][0]["method"] == payment_method_id:
             return (
                 "Error: the new payment method should be different from the current one"
             )
-
-        amount = order["payment_history"][0]["amount"]
-        payment_method = data["users"][order["user_id"]]["payment_methods"][
+        try:
+            amount = order["payment_history"][0]["amount"]
+        except:
+            amount = 30
+        payment_method = user["payment_methods"][
             payment_method_id
         ]
+        if not 'balance' in payment_method.keys():
+            payment_method['balance'] = 30
 
         # Check if the new payment method has enough balance if it is a gift card
         if (
@@ -60,9 +69,7 @@ class ModifyPendingOrderPayment():
                 {
                     "transaction_type": "refund",
                     "amount": amount,
-                    "payment_method_id": order["payment_history"][0][
-                        "payment_method_id"
-                    ],
+                    "payment_method_id":  order["payment_history"][0]["method"],
                 },
             ]
         )
@@ -73,12 +80,15 @@ class ModifyPendingOrderPayment():
             payment_method["balance"] = round(payment_method["balance"], 2)
 
         # If refund is made to a gift card, update the balance
-        if "gift_card" in order["payment_history"][0]["payment_method_id"]:
-            old_payment_method = data["users"][order["user_id"]]["payment_methods"][
-                order["payment_history"][0]["payment_method_id"]
-            ]
-            old_payment_method["balance"] += amount
-            old_payment_method["balance"] = round(old_payment_method["balance"], 2)
+        if "gift_card" in order["payment_history"][0]["method"]:
+            try:
+                old_payment_method =user["payment_methods"][
+                    order["payment_history"][0]["method"]
+                ]
+                old_payment_method["balance"] += amount
+                old_payment_method["balance"] = round(old_payment_method["balance"], 2)
+            except:
+                pass
 
         return json.dumps(order)
 

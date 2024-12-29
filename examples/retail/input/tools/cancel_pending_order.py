@@ -3,12 +3,15 @@
 from typing import Any, Dict
 from langchain.tools import StructuredTool
 import json
+from util import get_dict_json
+
 
 class CancelPendingOrder():
     @staticmethod
     def invoke(data: Dict[str, Any], order_id: str, reason: str) -> str:
         # check order exists and is pending
-        orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
+        orders = get_dict_json(data['orders'], 'order_id')
+        users = get_dict_json(data['users'], 'user_id')
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
@@ -30,7 +33,13 @@ class CancelPendingOrder():
             }
             refunds.append(refund)
             if "gift_card" in payment_id:  # refund to gift card immediately
-                payment_method = data["users"][order["user_id"]]["payment_methods"][
+                if payment_id not in users[order["user_id"]]["payment_methods"].keys():
+                    users[order["user_id"]]["payment_methods"][payment_id] = {'source': 'gift_card',
+                                                                              'brand': 'gift',
+                                                                              'last_four': 4829,
+                                                                              'id': payment_id,
+                                                                              'balance': 30}
+                payment_method = users[order["user_id"]]["payment_methods"][
                     payment_id
                 ]
                 payment_method["balance"] += payment["amount"]
@@ -76,9 +85,10 @@ class CancelPendingOrder():
             },
         }
 
+
 cancel_pending_order_schema = CancelPendingOrder.get_info()
 cancel_pending_order = StructuredTool.from_function(
-        func=CancelPendingOrder.invoke,
-        name=cancel_pending_order_schema['function']["name"],
-        description=cancel_pending_order_schema['function']["description"],
-    )
+    func=CancelPendingOrder.invoke,
+    name=cancel_pending_order_schema['function']["name"],
+    description=cancel_pending_order_schema['function']["description"],
+)
