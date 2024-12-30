@@ -79,7 +79,7 @@ class DescriptionGenerator:
         self.config = config
         self.total_cost = 0
         self.prompt = environment.prompt
-        self.task_description = environment.task_description
+        self.task_description = environment.get_task_description()
         llm = get_llm(self.config['llm_description'])
         self.llm_description = set_llm_chain(llm, structure=EventDescription,
                                              **self.config['description_config']['prompt'])
