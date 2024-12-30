@@ -11,3 +11,4 @@ __pycache__/
 
 # Python virtual environment
 .venv/
+config/config_anthropic.yml
