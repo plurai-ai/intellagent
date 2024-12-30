@@ -43,7 +43,7 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
 
-def convert_messages_to_str(messages: list, with_tools = False) -> str:
+def convert_messages_to_str(messages: list, with_tools=False) -> str:
     """
     Convert a list of (langchain) messages to a string
     """
@@ -73,10 +73,10 @@ def dict_to_str(d: dict, mode='items') -> str:
             final_str += f'# {key}: \n{value}\n----------------\n'
     return final_str
 
-def data_to_str(data:dict[pd.DataFrame]):
-    return '\n'.join([f"## Table: {name}\n ### Table information:\n{df.to_json(orient='records', lines=True)}" for
-                                   name, df in data.items()])
 
+def data_to_str(data: dict[pd.DataFrame]):
+    return '\n'.join([f"## Table: {name}\n ### Table information:\n{df.to_json(orient='records', lines=True)}" for
+                      name, df in data.items()])
 
 
 def set_llm_chain(llm: BaseChatModel, **kwargs) -> Runnable:
@@ -126,6 +126,29 @@ def load_tools(tools_path: str):
                 if hasattr(schema_parser, f'{attribute}_schema'):
                     tools_schema.append(getattr(schema_parser, f'{attribute}_schema'))
     return tools, tools_schema
+
+
+def convert_to_anthropic_tools(
+        tools_schema: list[dict],
+) -> list[dict]:
+    """Convert an openAI tools schema to anthropic"""
+    # already in Anthropic tool format
+    result_schema = []
+    for tool in tools_schema:
+        if isinstance(tool, dict) and all(
+                k in tool for k in ("name", "description", "input_schema")
+        ):
+            result_schema.append(tool)
+        else:
+            if 'function' not in tool.keys():
+                raise ValueError("not valid openAI schema")
+            oai_formatted = tool["function"]
+            if not all(k in oai_formatted for k in ("name", "description", "parameters")):
+                raise ValueError("not valid openAI schema")
+            result_schema.append({'name': oai_formatted["name"],
+                                  'description': oai_formatted['description'],
+                                  'input_schema': oai_formatted["parameters"]})
+    return result_schema
 
 
 class DummyCallback:
@@ -221,13 +244,19 @@ def get_llm(config: dict, timeout=60):
         return ChatGoogleGenerativeAI(temperature=temperature, model=config['name'],
                                       google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
                                       model_kwargs=model_kwargs, timeout=timeout)
-    
+
     elif config['type'].lower() == 'anthropic_vertex':
         from langchain_google_vertexai.model_garden import ChatAnthropicVertex
         return ChatAnthropicVertex(temperature=temperature, model=config['name'],
-                                      project=LLM_ENV['anthropic_vertex']['PROJECT_ID'],
-                                      location = LLM_ENV['anthropic_vertex']['REGION'],                 
-                                      model_kwargs=model_kwargs, timeout=timeout)
+                                   project=LLM_ENV['anthropic_vertex']['PROJECT_ID'],
+                                   location=LLM_ENV['anthropic_vertex']['REGION'],
+                                   model_kwargs=model_kwargs, timeout=timeout)
+
+    elif config['type'].lower() == 'anthropic':
+        from langchain_anthropic import ChatAnthropic
+        return ChatAnthropic(temperature=temperature, model=config['name'],
+                             anthropic_api_key=LLM_ENV['anthropic']['ANTHROPIC_KEY'],
+                             model_kwargs=model_kwargs, timeout=timeout)
 
     elif config['type'].lower() == 'huggingfacepipeline':
         device = config.get('gpu_device', -1)
@@ -242,4 +271,3 @@ def get_llm(config: dict, timeout=60):
         )
     else:
         raise NotImplementedError("LLM not implemented")
-

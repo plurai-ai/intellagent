@@ -8,6 +8,7 @@ from langgraph.store.memory import InMemoryStore
 from langgraph.utils.runnable import RunnableCallable, RunnableConfig
 from langchain_core.runnables.base import Runnable
 from langgraph.graph.message import add_messages
+from simulator.utils.llm_utils import convert_to_anthropic_tools
 import inspect
 import copy
 
@@ -96,6 +97,8 @@ class AgentTools(Runnable):
         if tools_schema is None:
             self.llm = llm.bind_tools(tools)
         else:
+            if 'anthropic-chat' in llm._llm_type:
+                tools_schema = convert_to_anthropic_tools(tools_schema)
             self.llm = llm.bind(tools=tools_schema)
         self.tools = tools
         self.checkpointer = None
