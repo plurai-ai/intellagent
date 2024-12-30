@@ -10,3 +10,4 @@ langchain_community==0.3.5
 networkx==3.2.1
 streamlit==1.39.0
 plotly==5.24.1
+langchain_google_genai==2.0.7
