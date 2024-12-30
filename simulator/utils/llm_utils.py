@@ -205,7 +205,13 @@ def get_llm(config: dict, timeout=60):
         return ChatGoogleGenerativeAI(temperature=temperature, model=config['name'],
                                       google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
                                       model_kwargs=model_kwargs, timeout=timeout)
-
+    
+    elif config['type'].lower() == 'anthropic_vertex':
+        from langchain_google_vertexai.model_garden import ChatAnthropicVertex
+        return ChatAnthropicVertex(temperature=temperature, model=config['name'],
+                                      project=LLM_ENV['anthropic_vertex']['PROJECT_ID'],
+                                      location = LLM_ENV['anthropic_vertex']['REGION'],                 
+                                      model_kwargs=model_kwargs, timeout=timeout)
 
     elif config['type'].lower() == 'huggingfacepipeline':
         device = config.get('gpu_device', -1)
@@ -220,3 +226,4 @@ def get_llm(config: dict, timeout=60):
         )
     else:
         raise NotImplementedError("LLM not implemented")
+
