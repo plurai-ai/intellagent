@@ -60,8 +60,8 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 - [Installation & Quick Start](./docs/installation.md)  
   Step-by-step setup instructions.
 
-- [Creating New Custom Environment](./docs/custom_environment.md)  
-  Comprehensive guide for setting up custom environments, including domain-specific policies, database schemas, tools, and validators.
+- [Creating New Custom Chat-Agent Environment](./docs/custom_environment.md)  
+  Comprehensive guide for setting up custom chat agent environments, including domain-specific policies, database schemas, tools, and validators.
 
 - [How It Works](./docs/how-it-works.md)  
   Detailed explanation of the CHAS pipeline.
@@ -276,7 +276,7 @@ The software is provided "as is", without warranty of any kind, express or impli
 
 ## 🔍 Open Analytics
 
-We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](./simulator/healthcare_analytics.py).
+We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](https://github.com/plurai-ai/simulator/healthcare_analytics.py).
 
 If you prefer not to have your usage tracked, you can disable this feature by setting the `PLURAI_DO_NOT_TRACK` flag to true.
 
