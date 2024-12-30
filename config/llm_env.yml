@@ -16,4 +16,4 @@ anthropic_vertex: # gcloud auth application-default login
   REGION: ''
 
 anthropic:
-  ANTHROPIC_KEY :
+  ANTHROPIC_KEY : ''
