@@ -29,6 +29,9 @@ def product_id_validator(new_df, dataset):
 
 @validator(table='orders')
 def order_validator(new_df, dataset):
+    for index, row in new_df.iterrows():
+        if not row['order_id'].startswith("#"):
+            raise ValueError("There must be a '#' symbol at the beginning of the order id.")
     if 'orders' not in dataset:
         return new_df, dataset
     orders_dataset = dataset['orders']

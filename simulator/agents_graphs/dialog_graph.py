@@ -83,7 +83,7 @@ class Dialog:
         def critique_node(state):
             # Call the simulated user
             user_thought = state['user_thoughts'][-1].split('Thought:')[1]
-            conversation = convert_messages_to_str(state['chatbot_messages'][2:-1])
+            conversation = convert_messages_to_str(state['chatbot_messages'][2:-1], True)
             if '###STOP FAILURE' in state['chatbot_messages'][-1].content:
                 judgement = f"The chatbot failed to adhere the policies\n Reason:{user_thought}"
             else:
@@ -113,7 +113,7 @@ class Dialog:
                     time.sleep(0.001)
                 # inserting the chatbot messages into memory
                 self.memory.insert_dialog(state['thread_id'], 'AI', response['messages'][-1].content)
-            return {"chatbot_messages": [AIMessage(content=response['messages'][-1].content)],
+            return {"chatbot_messages": response['messages'][last_human_message+1:],
                     'user_messages': [HumanMessage(content=response['messages'][-1].content)]}
 
         return chat_bot_node

@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph, START
 from typing_extensions import TypedDict
 from typing import Optional, List
 from simulator.agents_graphs.langgraph_tool import AgentTools
-from simulator.utils.llm_utils import dict_to_str, load_yaml_content
+from simulator.utils.llm_utils import dict_to_str, load_yaml_content, data_to_str
 import yaml
 
 
@@ -94,15 +94,14 @@ class EventGraph:
 
     def get_final_node(self):
         def final_node(state):
-            tables_rows_str = '\n- '.join([f"Table: {k['table_name']}. Row: {k['row']}" for
-                                           k in state['rows_generated']])
+            tables_str = data_to_str(state['dataset'])
             variables_str = dict_to_str(yaml.safe_load(state['variables_definitions']))
             final_res = self.llm_final_response.invoke({'scenario': state['event_description'],
-                                                        'rows': tables_rows_str,
+                                                        'rows': tables_str,
                                                         'values': variables_str})
             final_res = final_res.dict()
             return {"final_response_scenario": final_res['scenario'],
-                    'final_response_table_rows': final_res['tables_rows']}
+                    'final_response_table_rows': tables_str}
 
         return final_node
 

@@ -134,7 +134,7 @@ class DialogManager:
         :param event: The event to run.
         """
         return self.run(user_prompt_params={'scenario': event.scenario,
-                                            'rows': '- ' + '\n- '.join(event.relevant_rows),
+                                            'rows': event.relevant_rows,
                                             'expected_behaviour': event.description.expected_behaviour},
                         chatbot_env_args={'data': event.database})
 
@@ -144,7 +144,7 @@ class DialogManager:
         :param event: The event to run.
         """
         return await self.arun(user_prompt_params={'scenario': event.scenario,
-                                                   'rows': '- ' + '\n- '.join(event.relevant_rows),
+                                                   'rows': event.relevant_rows,
                                                    'expected_behaviour': event.description.expected_behaviour},
                                chatbot_env_args={'data': event.database})
 
