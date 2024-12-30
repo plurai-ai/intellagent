@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-
+from util import get_dict_json
 
 class ModifyPendingOrderItems():
     @staticmethod
@@ -13,9 +13,10 @@ class ModifyPendingOrderItems():
         new_item_ids: List[str],
         payment_method_id: str,
     ) -> str:
-        orders = data["orders"].set_index('order_id', drop=False).to_dict(orient='index')
-        products = data["products"].set_index('product_id', drop=False).to_dict(orient='index')
-        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        orders = get_dict_json(data['orders'], 'order_id')
+        users = get_dict_json(data['users'], 'user_id')
+        products = get_dict_json(data['products'], 'product_id')
+
         # Check if the order exists and is pending
         if order_id not in orders:
             return "Error: order not found"
@@ -53,6 +54,8 @@ class ModifyPendingOrderItems():
 
         # If the new item is more expensive, check if the gift card has enough balance
         payment_method = users[order["user_id"]]["payment_methods"][payment_method_id]
+        if payment_method["source"] == "gift_card" and 'balance' not in payment_method.keys():
+            payment_method['balance'] = 30
         if (
             payment_method["source"] == "gift_card"
             and payment_method["balance"] < diff_price

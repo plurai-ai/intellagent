@@ -2,12 +2,11 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-
-
+from util import get_dict_json
 class ListAllProductTypes():
     @staticmethod
     def invoke(data: Dict[str, Any]) -> str:
-        products = data["products"].set_index('product_id', drop=False).to_dict(orient='index')
+        products = get_dict_json(data['products'], 'product_id')
         product_dict = {
             product["name"]: product["product_id"] for product in products.values()
         }

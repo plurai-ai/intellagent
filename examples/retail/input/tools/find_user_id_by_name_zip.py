@@ -2,12 +2,12 @@
 
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-
+from util import get_dict_json
 
 class FindUserIdByNameZip():
     @staticmethod
     def invoke(data: Dict[str, Any], first_name: str, last_name: str, zip: str) -> str:
-        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        users = get_dict_json(data['users'], 'user_id')
         for user_id, profile in users.items():
             if (
                 profile["name"]["first_name"].lower() == first_name.lower()
