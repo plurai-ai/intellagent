@@ -11,6 +11,9 @@ azure:
 google:
   GOOGLE_API_KEY: ''
 
-anthropic_vertex: # gcloud auth application-default login 
+anthropic_vertex: # gcloud auth application-default login
   PROJECT_ID: ''
   REGION: ''
+
+anthropic:
+  ANTHROPIC_KEY :
