@@ -59,7 +59,15 @@ def convert_messages_to_str(messages: list, with_tools=False) -> str:
             if with_tools:
                 formatted_string += f"chatbot tool_response: {msg.content}\n"
             continue
-        msg_content = msg.content.rstrip('\n')
+
+        if isinstance(msg.content, list):
+            if (not msg.content) or ('text' not in msg.content[0].keys()):
+                continue
+            msg_content = msg.content[0]['text']
+        else:
+            msg_content = msg.content
+        msg_content = msg_content.rstrip('\n')
+
         formatted_string += f"{'user' if isinstance(msg, HumanMessage) else 'chatbot'}: {msg_content}\n"
     return formatted_string
 
