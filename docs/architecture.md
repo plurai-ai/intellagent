@@ -86,7 +86,7 @@ The Dialog Graph implements a state machine that manages the conversation flow b
   - Handles conversation termination conditions
   - Supports conversation feedback loops through critique evaluation
 
-### Dialog Manager (`simulator/dialog/dialog_manager.py`)
+### Dialog Manager
 
 The Dialog Manager controls the execution of dialogs and provides the infrastructure for running simulations. Key features include:
 
