@@ -1,5 +1,5 @@
 # Architecture System Overview 
-<img src="./figures/arch_overview.png" alt="Architecture System overview" width="70%">
+<img src="./figures/arch_overview.png" alt="Architecture System overview" width="90%">
 
 The CHAS system pipeline consists of three main components:
 
@@ -62,14 +62,11 @@ The `EventsGenerator` class transforms descriptions into concrete events by:
    - Validation of referential integrity
    - Parallel processing of multiple events
 
-The system uses LangChain and structured agents to maintain consistency between the natural language scenario, database state, and policy constraints.
-
-
 ## Dialog Simulation Architecture
 
-The Dialog Simulation system orchestrates conversations between simulated users and chatbots through a sophisticated state machine implementation. The system consists of two main components: the Dialog Graph and Dialog Manager.
+The Dialog Simulation system orchestrates conversations between simulated users and chatbots. The system consists of two main components: the Dialog Graph and Dialog Manager.
 
-### Dialog Graph (`simulator/agents_graphs/dialog_graph.py`)
+### Dialog Graph 
 
 The Dialog Graph implements a state machine that manages the conversation flow between the simulated user and chatbot. Key features include:
 
