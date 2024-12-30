@@ -68,7 +68,7 @@ event_generator:
         prompt_restrictions:
             prompt_hub_name: 'eladlev/filter_restrictions'
         prompt_final_res:
-            prompt_hub_name: 'eladlev/event_final:10606bb9'
+            prompt_hub_name: 'eladlev/event_final'
         prompt_executors:
             prompt_hub_name: 'eladlev/event_executor'
         num_workers: 3

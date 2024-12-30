@@ -113,7 +113,7 @@ class Dialog:
                     time.sleep(0.001)
                 # inserting the chatbot messages into memory
                 self.memory.insert_dialog(state['thread_id'], 'AI', response['messages'][-1].content)
-            return {"chatbot_messages": [AIMessage(content=response['messages'][-1].content)],
+            return {"chatbot_messages": response['messages'][last_human_message+1:],
                     'user_messages': [HumanMessage(content=response['messages'][-1].content)]}
 
         return chat_bot_node

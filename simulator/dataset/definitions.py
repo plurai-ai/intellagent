@@ -53,7 +53,6 @@ class Event:
 
 class FinalResult(BaseModel):
     scenario: str = Field(description="The scenario with the symbolic variables replaced with their values")
-    tables_rows: List[str] = Field(description="The rows with the symbolic variables replaced with their values")
 
 
 @dataclass

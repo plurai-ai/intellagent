@@ -13,6 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import yaml
 from simulator.healthcare_analytics import ExceptionEvent, track_event
 from langchain_core.messages import HumanMessage, AIMessage
+import pandas as pd
 
 LLM_ENV = yaml.safe_load(open('config/llm_env.yml', 'r'))
 
@@ -42,14 +43,24 @@ def get_prompt_template(args: dict) -> ChatPromptTemplate:
         raise ValueError("Either prompt or prompt_hub_name should be provided")
 
 
-def convert_messages_to_str(messages: list) -> str:
+def convert_messages_to_str(messages: list, with_tools = False) -> str:
     """
     Convert a list of (langchain) messages to a string
     """
-    formatted_string = "\n".join(
-        f"{'user' if isinstance(msg, HumanMessage) else 'chatbot'}: {msg.content}"
-        for msg in messages
-    )
+    formatted_string = ''
+    for msg in messages:
+        if hasattr(msg, 'tool_calls'):
+            if with_tools:
+                for tool_call in msg.tool_calls:
+                    formatted_string += f"chatbot calling function: {tool_call['name']}, with args: {str(tool_call['args'])}\n"
+            if msg.content == '':
+                continue
+        if msg.type == 'tool':
+            if with_tools:
+                formatted_string += f"chatbot tool_response: {msg.content}\n"
+            continue
+        msg_content = msg.content.rstrip('\n')
+        formatted_string += f"{'user' if isinstance(msg, HumanMessage) else 'chatbot'}: {msg_content}\n"
     return formatted_string
 
 
@@ -61,6 +72,11 @@ def dict_to_str(d: dict, mode='items') -> str:
         elif mode == 'rows':
             final_str += f'# {key}: \n{value}\n----------------\n'
     return final_str
+
+def data_to_str(data:dict[pd.DataFrame]):
+    return '\n'.join([f"## Table: {name}\n ### Table information:\n{df.to_json(orient='records', lines=True)}" for
+                                   name, df in data.items()])
+
 
 
 def set_llm_chain(llm: BaseChatModel, **kwargs) -> Runnable:
