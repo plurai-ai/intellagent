@@ -104,7 +104,7 @@ def user_id_validator(new_df, dataset):
 - The `@validator` decorator requires the table name as an argument.
 - The validator function is applied before new data is inserted into the database.
 
-For a complete example of validators in action, see the airline booking system validators at [airline chat-agent database validators python script](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/retail/input/validators/data_validators.py). This example includes validators for:
+For a complete example of validators in action, see the airline booking system validators at [airline chat-agent database validators python script](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/validators/data_validators.py). This example includes validators for:
 - User ID validation (preventing duplicate users)
 - Flight ID validation (ensuring unique flight numbers)
 - Flight validation (verifying flight details in reservations)
