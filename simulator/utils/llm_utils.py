@@ -49,6 +49,8 @@ def convert_messages_to_str(messages: list, with_tools=False) -> str:
     """
     formatted_string = ''
     for msg in messages:
+        if msg.type == 'system':
+            continue
         if hasattr(msg, 'tool_calls'):
             if with_tools:
                 for tool_call in msg.tool_calls:

@@ -76,12 +76,13 @@ class DialogManager:
         chatbot_prompt_params = chatbot_prompt_params if chatbot_prompt_params is not None else {}
         llm_chat = get_llm(self.config['llm_chat'])
         self.chatbot = AgentTools(llm=llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
-        chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
-        chatbot_prompt = get_prompt_template(chatbot_prompt_args)
-        chatbot_messages = chatbot_prompt.format_messages(**chatbot_prompt_params)
-        if len(chatbot_messages) == 1:
-            chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
-        self.chatbot_initial_messages = chatbot_messages
+        if self.chatbot_initial_messages is None:
+            chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
+            chatbot_prompt = get_prompt_template(chatbot_prompt_args)
+            chatbot_messages = chatbot_prompt.format_messages(**chatbot_prompt_params)
+            if len(chatbot_messages) == 1:
+                chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
+            self.chatbot_initial_messages = chatbot_messages
 
     def init_dialog(self, experiment_path: str):
         """

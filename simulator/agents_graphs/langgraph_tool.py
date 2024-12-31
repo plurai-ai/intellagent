@@ -43,7 +43,7 @@ class MessageGraph(StateGraph):
 
 class MessagesState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
-    args: dict
+    args: dict[Any]
 
 
 class ToolNode(RunnableCallable):

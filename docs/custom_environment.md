@@ -22,6 +22,7 @@ python run.py \
 
 ### `prompt_path`
 This variable specifies the path to a prompt file. The file should be a simple text file (`.txt`) or a markdown file (`.md`) containing the desired prompt.
+The prompt doesn't have to be the exact chatbot system prompt, it can also be a document that describes the list of policies that should be tested. In this case the chatbot system prompt should be also provided (see [tool chatbot modification](./custom_chatbot.md#Setting-the-system-prompt)).
 
 **Example of prompt file:**
 For a complete example of a prompt file, see the [airline chat-agent system prompt](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/wiki.md).
