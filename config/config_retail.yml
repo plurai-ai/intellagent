@@ -1,0 +1,5 @@
+environment:
+    prompt_path: './examples/retail/input/wiki.md'
+    tools_file: './examples/retail/input/tools/agent_tools.py'
+    database_folder: './examples/retail/input/data'
+    database_validators: './examples/retail/input/validators/validators.py'

@@ -36,10 +36,12 @@ class FlowsList(BaseModel):
 
 class Policy(BaseModel):
     """The policy"""
-    policy: str = Field(description="The policy")
-    category: str = Field(description="The category of the policy")
-    challenge_score: int = Field(description="The challenge score of the policy")
-
+    policy: str = Field(description="A short, descriptive policy name")
+    category: str = Field(description="The fine-grained category of the policy")
+    challenge_score: int = Field(description="The challenge score of the policy between 1-5")
+    policy_reference: str = Field(description="A direct quote or paraphrase from the System Prompt reflecting the policy")
+    reason_for_relevance: str = Field(description="Explain why this policy matters for the user flow")
+    
 
 class PoliciesList(BaseModel):
     """The policies list"""
