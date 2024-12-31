@@ -75,6 +75,9 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 - [Running Examples](./docs/examples.md)  
   Running examples of various chat-agents, including [airline agent](./docs/examples/airline.md) and [retail agent](./docs/examples/retail.md)
 
+- [Understanding Different Checkpoints](./docs/checkpoints.md)  
+  An overview of the various types of checkpoints provided by CHAS for cost optimization.
+
 - [Creating New Custom Chat-Agent Environment](./docs/custom_environment.md)  
   Comprehensive guide for setting up custom chat-agent environments, including domain-specific policies, database schemas, tools, and validators.
 
