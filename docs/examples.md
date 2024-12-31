@@ -10,6 +10,3 @@ This document offers practical illustrations of utilizing the Chat-Agent-Simulat
 
 ## 3. LangGraph Agent
 [LangGraph Agent Examples](./examples/langgraph.md).
-
-## 4. CrewAI Agent
-[CrewAI Agent Examples](./examples/crewai.md).

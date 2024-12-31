@@ -1,90 +1,146 @@
-# Architecture Guide
-<img src="./arch_overview.png" alt="Architecture overview" width="70%">
+# Architecture System Overview 
+<img src="./figures/arch_overview.png" alt="Architecture System overview" width="90%">
 
-This document outlines the system design of Chat-Agent-Simulator, which is built around four primary components: Event Generation, Dialog Management, Simulation Execution, and Results Analysis.
+The CHAS system pipeline consists of three main components:
 
-## System Design
+1. **Event Generation**
+   - Input: Database schema and either:
+     - Chatbot system prompt, or
+     - Company policy documentation
+   - Output:
+     - Policy graph representation
+     - Generated events with varying complexity levels, including:
+       - Scenario descriptions
+       - User requests
+       - Initial database states
+    
+2. **Dialog Simulation**
+   - Input: Generated events and configured agents
+   - Output: 
+     - Complete conversation transcripts
+     - Tool usage logs
+     - Agent reasoning traces
 
-### 1. Event Generation
-The Event Generation system consists of two main components:
+3. **Fine-Grained Analysis**
+   - Input: Dialog transcripts and policy requirements
+   - Output:
+     - Detailed performance metrics
+     - Policy compliance analysis
+     - Complexity-based evaluation reports
 
-- **Description Generator**: Generates structured descriptions of events using LLM-based policies and guidelines.
-  - Builds a policy graph to maintain relationships between different policies
-  - Handles policy extraction and scoring
-  - Reference: `simulator/descriptor_generator.py`
+## 1. Event Generation
+The CHAS Event Generator creates realistic chatbot interactions through a multi-stage pipeline that transforms high-level policies into concrete scenarios with corresponding database states. The process consists of three main components:
 
-- **Events Generator**: Converts descriptions into actionable events
-  - Manages database operations and event validation
-  - Handles parallel event processing
-  - Reference: `simulator/events_generator.py`
+### 1.1 Policy Analysis & Graph Construction
+The `DescriptionGenerator` class handles the initial policy analysis through these steps:
 
-### 2. Dialog Management
-The Dialog Management system orchestrates conversations between simulated users and chatbots:
+1. **Flow Extraction**: Breaks down the system prompt into distinct flows
+2. **Policy Extraction**: Analyzes each flow to identify individual policies and assigns complexity scores
+3. **Graph Construction**: Creates a weighted graph where:
+   - Nodes: Individual policies with complexity scores
+   - Edges: Weighted connections (1-10) indicating the likelihood of two policies appearing together in the same task
+   - Edge weights are determined through LLM evaluation of policy pairs
 
-- **Dialog Graph**: Implements a state machine for conversation flow
-  - Manages message passing between user and chatbot
+### 1.2 Event Generation Pipeline
+
+#### 1.2.1 Description Generation
+The system generates event descriptions through:
+1. Sampling policies based on target complexity:
+   - Starts with a random policy node
+   - Performs weighted random walks based on edge weights
+   - Continues until reaching desired complexity threshold
+2. Converting selected policies into natural language scenarios
+3. Generating expected chatbot behaviors
+4. (Optional) Refining expected behaviors through feedback iterations
+
+#### 1.2.2 Symbolic Representation
+The `EventsGenerator` class transforms descriptions into concrete events by:
+1. Creating symbolic representations of entities and relationships
+2. Defining database constraints based on policies
+3. Converting symbolic representations into actual database states through:
+   - Table-specific insertion tools
+   - Validation of referential integrity
+   - Parallel processing of multiple events
+
+## Dialog Simulation Architecture
+
+The Dialog Simulation system orchestrates conversations between simulated users and chatbots. The system consists of two main components: the Dialog Graph and Dialog Manager.
+
+### Dialog Graph 
+
+The Dialog Graph implements a state machine that manages the conversation flow between the simulated user and chatbot. Key features include:
+
+- **State Management**: Uses `DialogState` to track:
+  - User and chatbot message history
+  - User thoughts and reasoning
+  - Critique feedback
+  - Stop signals for conversation termination
+
+- **Node Types**:
+  - User Node: Simulates user responses and tracks reasoning
+  - Chatbot Node: Handles chatbot responses and tool interactions
+  - Critique Node: Evaluates conversation adherence to policies
+
+- **Flow Control**:
+  - Manages message passing between participants
   - Handles conversation termination conditions
-  - Reference: `simulator/dialog_graph.py`
+  - Supports conversation feedback loops through critique evaluation
 
-- **Dialog Manager**: Controls the execution of dialogs
-  - Configures LLM models for both user and chatbot
-  - Manages parallel dialog execution
-  - Reference: `simulator/dialog_manager.py`
+### Dialog Manager
 
-### 3. Simulation Execution
-The Simulation Executor coordinates the entire simulation process:
+The Dialog Manager controls the execution of dialogs and provides the infrastructure for running simulations. Key features include:
 
-- **Environment Setup**: Manages configuration and resources
-  - Loads prompts, tools, and databases
-  - Configures LLM settings
-  - Reference: `simulator/env.py`
+- **Configuration Management**:
+  - Configures LLM models for user, chatbot, and critique agents
+  - Sets up environment tools and schemas
+  - Manages prompt templates and parsing functions
 
-- **Execution Flow**: Handles the simulation lifecycle
-  - Coordinates between components
-  - Manages batch processing
-  - Reference: `simulator/simulator_executor.py`
+- **Execution Modes**:
+  - Synchronous execution (`run`)
+  - Asynchronous execution (`arun`)
+  - Batch processing of multiple events (`run_events`)
 
-### 4. Results Analysis and Visualization
-The system includes comprehensive analysis and visualization tools:
+- **Memory Management**:
+  - SQLite-based conversation storage
+  - Tracks tool calls and their outputs
+  - Maintains conversation history
 
-- **Analytics**: Tracks and analyzes simulation metrics
-  - Monitors costs and performance
-  - Generates success/failure statistics
-  - Reference: `simulator/healthcare_analytics.py`
+### Simulation Flow
 
-- **Visualization**: Provides interactive dashboards
-  - Experiments reporting
-  - Session visualization
-  - Reference: `simulator/visualization/`
+1. The Dialog Manager initializes the environment and agents
+2. For each event:
+   - User agent receives event details and expected behaviors
+   - Conversation alternates between user and chatbot
+   - Critique agent evaluates responses against policies
+   - Conversation continues until success or policy violation
 
-## Design Considerations
+### Key Features
 
-### 1. Scalability
-- **Parallel Processing**: The system implements batch processing and parallel execution patterns for handling multiple simulations simultaneously.
-- **Modular Architecture**: Components are designed to be independent and easily scalable.
+- **Policy Enforcement**: Built-in critique system to evaluate chatbot adherence to defined policies
+- **Parallel Processing**: Support for parallel execution of multiple conversations
+- **Extensible Architecture**: Modular design allowing for custom LLMs, tools, and evaluation criteria
+- **Comprehensive Logging**: Detailed tracking of conversations, tool usage, and agent reasoning
 
-### 2. Extensibility
-- **Plugin System**: Tools and validators can be dynamically loaded and configured
-- **Configurable Components**: Most components accept configuration dictionaries for easy modification
+![Dialog Simulation Architecture](./figures/dialog_architecture.png)
 
-### 3. Monitoring and Debugging
-- **Comprehensive Logging**: Structured logging system with different severity levels
-  
-- **Analytics Events**: Tracking system for monitoring performance and errors
-  
-### 4. Cost Management
-- **Cost Tracking**: Built-in cost monitoring for LLM usage
-- **Batch Processing**: Optimized processing to minimize API calls
-- **Caching**: Implementation of caching strategies for expensive operations
+### 3. Fine-Grained Analysis
+The Dialog critique component performs a detailed evaluation of the conversation by analyzing:
 
-### 5. Error Handling
-- **Graceful Degradation**: System continues functioning even if some components fail
-- **Error Tracking**: Comprehensive error tracking and reporting system
-  
-### 6. Security
-- **Environment Configuration**: Sensitive configuration managed through environment variables
-- **Input Validation**: Structured validation of inputs and outputs
-- **Database Security**: Proper handling of database connections and queries
+1. The user-chatbot dialog history
+2. The chatbot's system prompt
+3. The termination reason provided by the user agent
 
-This architecture provides a robust foundation for simulating and analyzing chat agent interactions while maintaining flexibility for future extensions and modifications.
+The critique process follows these steps:
+
+1. **Termination Validation**: Verifies if the stated reason for dialog termination is accurate
+   - If incorrect: Provides feedback through `critique_feedback` and continues the dialog
+   - If correct: Proceeds with policy analysis
+
+2. **Multi-Level Policy Coverage Analysis**: 
+   - Identifies which event policies were tested during the conversation
+   - Determines which policies were violated (if any)
+   - Evaluates policies across different complexity levels, ranging from straightforward tasks to highly complex and nuanced edge-case scenarios  
+3. **Report Generation**: Creates a detailed performance assessment based on the above analysis, with insights categorized by policies and complexity level
+
+
 

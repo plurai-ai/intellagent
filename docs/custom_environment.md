@@ -1,4 +1,4 @@
-# Custom Environment Setup
+# Custom Chat-Agent Environment Setup
 
 This guide provides instructions for setting up a custom environment.
 

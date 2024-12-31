@@ -42,12 +42,12 @@ CHAS operates through an AI pipeline of components powered by LLMs and AI Agents
 
 | **Step** | **Description** | **Illustration** |
 |----------|-----------------|------------------|
-| 1. **Input Context** | Analyze the agent's context, including task description, tools, and database schema. | <img src="./docs/input_context.png" alt="Input Context" width="300"> |
-| 2. **Flow and Policies Generation** | Decompose the agent's task into sub-flows and extract relevant policies. | <img src="./docs/flow_and_policies_decomposition.png" alt="Flow and Policies Generation" width="300"> |
-| 3. **Policies Graph Generation** | Create a weighted graph representing relationships between policies to identify complex scenarios. | <img src="./docs/policies_graph_generation.png" alt="Policies Graph Generation" width="300"> |
-| 4. **Generate Dataset Event** | Create a dataset of scenario events with varying challenge scores for thorough testing. | <img src="./docs/generate_dataset_event.png" alt="Generate Dataset Event" width="300"> |
-| 5. **Run Simulation Events** | Execute simulation events through an interactive dialog system, capturing performance insights. | <img src="./docs/run_simulation_events.png" alt="Run Simulation Events" width="300"> |
-| 6. **Report (Comprehensive Evaluation)** | Generate a detailed evaluation report analyzing performance and failure points. | <img src="./docs/report_comprehensive_evaluation.png" alt="Report Comprehensive Evaluation" width="300"> |
+| 1. **Input Context** | Analyze the agent's context, including task description, tools, and database schema. | <img src="./docs/figures/input_context.png" alt="Input Context" width="300"> |
+| 2. **Flow and Policies Generation** | Decompose the agent's task into sub-flows and extract relevant policies. | <img src="./docs/figures/flow_and_policies_decomposition.png" alt="Flow and Policies Generation" width="300"> |
+| 3. **Policies Graph Generation** | Create a weighted graph representing relationships between policies to identify complex scenarios. | <img src="./docs/figures/policies_graph_generation.png" alt="Policies Graph Generation" width="300"> |
+| 4. **Generate Dataset Event** | Create a dataset of scenario events with varying challenge scores for thorough testing. | <img src="./docs/figures/generate_dataset_event.png" alt="Generate Dataset Event" width="300"> |
+| 5. **Run Simulation Events** | Execute simulation events through an interactive dialog system, capturing performance insights. | <img src="./docs/figures/run_simulation_events.png" alt="Run Simulation Events" width="300"> |
+| 6. **Report (Comprehensive Evaluation)** | Generate a detailed evaluation report analyzing performance and failure points. | <img src="./docs/figures/report_comprehensive_evaluation.png" alt="Report Comprehensive Evaluation" width="300"> |
 
 For more details, refer to the [How it works](docs/how-it-works.md) (Explanation of AI Pipeline).
 
@@ -60,8 +60,8 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 - [Installation & Quick Start](./docs/installation.md)  
   Step-by-step setup instructions.
 
-- [Creating New Custom Environment](./docs/custom_environment.md)  
-  Comprehensive guide for setting up custom environments, including domain-specific policies, database schemas, tools, and validators.
+- [Creating New Custom Chat-Agent Environment](./docs/custom_environment.md)  
+  Comprehensive guide for setting up custom chat agent environments, including domain-specific policies, database schemas, tools, and validators.
 
 - [How It Works](./docs/how-it-works.md)  
   Detailed explanation of the CHAS pipeline.
@@ -276,7 +276,7 @@ The software is provided "as is", without warranty of any kind, express or impli
 
 ## 🔍 Open Analytics
 
-We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](./simulator/healthcare_analytics.py).
+We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](https://github.com/plurai-ai/simulator/healthcare_analytics.py).
 
 If you prefer not to have your usage tracked, you can disable this feature by setting the `PLURAI_DO_NOT_TRACK` flag to true.
 
