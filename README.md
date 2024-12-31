@@ -175,7 +175,7 @@ Key points to configure:
        name: 'gpt-4o'   # or other model names as gpt-4o-mini
    ```
 
-3. **Configure worker settings** based on your system's capabilities:
+3. **Configure worker settings** based on your system's capabilities. This parameter is highly important in cases of **rate-limit** responses:
    ```yaml
    num_workers: 3    # Number of parallel workers
    timeout: 10       # Timeout in seconds
