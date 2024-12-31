@@ -16,7 +16,7 @@ description_generator:
             prompt_hub_name: 'eladlev/flows_extraction'
     policies_config:
         prompt:
-            prompt_hub_name: 'eladlev/policies_extraction'
+            prompt_hub_name: 'ilank/policies_extraction:8d23f8e5'
         num_workers: 3
         timeout: 10 # in seconds
     edge_config:
