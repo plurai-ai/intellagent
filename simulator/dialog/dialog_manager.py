@@ -11,7 +11,7 @@ import uuid
 from simulator.utils.sqlite_handler import SqliteSaver
 from simulator.utils.parallelism import async_batch_invoke
 from simulator.dialog.utils import intermediate_processing
-
+from simulator.utils.logger_config import get_logger, ConsoleColor
 
 class DialogManager:
     """
@@ -24,8 +24,8 @@ class DialogManager:
         :param config: The config of the class
         :param environment (Env): The environment of the dialog.
         """
+        self.config = config
         self.llm_user = get_llm(config['llm_user'])
-        self.llm_chat = get_llm(config['llm_chat'])
         self.llm_user = self.llm_user | self.get_user_parsing_function(
             parsing_mode=config['user_parsing_mode'])  # The user language model
         self.callbacks = [set_callback(t) for t in
@@ -37,18 +37,17 @@ class DialogManager:
         self.env_tools_schema = None
         self.dialog = None
         self.environment_prompt = environment.prompt
-        self.user_prompt = config['user_prompt']
-        self.num_workers = config['num_workers']
-        self.timeout = config['timeout']
-        self.recursion_limit = config.get('recursion_limit', 25)
         if environment.tools_schema is not None and environment.tools_schema:
             self.env_tools_schema = environment.tools_schema
-        self.set_critique(config['critique_config'])
+        self.set_critique()
+        self.chatbot = None
+        self.chatbot_initial_messages = None
 
-    def set_critique(self, config: dict):
+    def set_critique(self):
         # set the critique model
-        self.llm_critique = get_llm(config['llm'])
-        critique_prompt = get_prompt_template(config['prompt'])
+        critique_config = self.config['critique_config']
+        self.llm_critique = get_llm(critique_config['llm'])
+        critique_prompt = get_prompt_template(critique_config['prompt'])
         critique_prompt = critique_prompt.partial(prompt=self.environment_prompt)
         self.llm_critique = critique_prompt | self.llm_critique
 
@@ -69,64 +68,76 @@ class DialogManager:
 
         return parse_user_message
 
+    def set_agent_tool_chatbot(self, chatbot_prompt_params=None):
+        """
+        Setting the default agent tool chatbot (llm with function calling)
+        :param chatbot_prompt_params: The parameters for the chatbot prompt.
+        """
+        chatbot_prompt_params = chatbot_prompt_params if chatbot_prompt_params is not None else {}
+        llm_chat = get_llm(self.config['llm_chat'])
+        self.chatbot = AgentTools(llm=llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
+        if self.chatbot_initial_messages is None:
+            chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
+            chatbot_prompt = get_prompt_template(chatbot_prompt_args)
+            chatbot_messages = chatbot_prompt.format_messages(**chatbot_prompt_params)
+            if len(chatbot_messages) == 1:
+                chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
+            self.chatbot_initial_messages = chatbot_messages
+
     def init_dialog(self, experiment_path: str):
         """
         Initialize the dialog graph.
         :param experiment_path: The path of the experiment.
         """
-        chatbot_prompt_args = {'from_str': {'template': self.environment_prompt}}
         self.memory = SqliteSaver(os.path.join(experiment_path, 'memory.db'))
-        chatbot = AgentTools(llm=self.llm_chat, tools=self.env_tools, tools_schema=self.env_tools_schema)
-        self.dialog = Dialog(self.llm_user, chatbot, critique=self.llm_critique,
+        if self.chatbot is None:
+            self.set_agent_tool_chatbot()  # Set the default agent chatbot
+        if self.chatbot_initial_messages is None:
+            logger = get_logger()
+            logger.warning(
+                f"{ConsoleColor.RED}Initial messages for the chatbot were not provided. "
+                f"Using empty list{ConsoleColor.RESET}")
+            self.chatbot_initial_messages = []
+
+        self.dialog = Dialog(self.llm_user, self.chatbot, critique=self.llm_critique,
                              intermediate_processing=intermediate_processing,
                              memory=self.memory)
-        self.user_prompt = get_prompt_template(self.user_prompt)
-        self.chatbot_prompt = get_prompt_template(chatbot_prompt_args)
+        self.user_prompt = get_prompt_template(self.config['user_prompt'])
 
-    def run(self, user_prompt_params=None, chatbot_prompt_params=None,
-            chatbot_env_args=None):
+    def run(self, user_prompt_params=None, chatbot_env_args=None):
         """
         Run the simulation.
         :param user_prompt_params: The parameters for the user prompt.
-        :param chatbot_prompt_params: The parameters for the chatbot prompt.
         :param chatbot_env_args: The arguments for the chatbot environment, for example db setting for the scenario
         """
         if self.dialog is None:
             raise ValueError("The dialog is not initialized. Please run init_dialog first.")
         user_prompt_params = user_prompt_params if user_prompt_params is not None else {}
-        chatbot_prompt_params = chatbot_prompt_params if chatbot_prompt_params is not None else {}
         user_messages = self.user_prompt.format_messages(**user_prompt_params)
-        chatbot_messages = self.chatbot_prompt.format_messages(**chatbot_prompt_params)
-        if len(chatbot_messages) == 1:
-            chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
+        recursion_limit = self.config.get('recursion_limit', 25)
         return self.dialog.invoke(input={"user_messages": user_messages,
-                                         "chatbot_messages": chatbot_messages,
+                                         "chatbot_messages": self.chatbot_initial_messages,
                                          "chatbot_args": chatbot_env_args,
                                          "thread_id": str(uuid.uuid4()),
-                                         "user_thoughts": []}, config={'recursion_limit': self.recursion_limit})
+                                         "user_thoughts": []}, config={'recursion_limit': recursion_limit})
 
-    async def arun(self, user_prompt_params=None, chatbot_prompt_params=None,
-                   chatbot_env_args=None):
+    async def arun(self, user_prompt_params=None, chatbot_env_args=None):
         """
         Run the simulation asynchronously.
         :param user_prompt_params:
-        :param chatbot_prompt_params:
         :param chatbot_env_args:
         :return:
         """
         if self.dialog is None:
             raise ValueError("The dialog is not initialized. Please run init_dialog first.")
         user_prompt_params = user_prompt_params if user_prompt_params is not None else {}
-        chatbot_prompt_params = chatbot_prompt_params if chatbot_prompt_params is not None else {}
         user_messages = self.user_prompt.format_messages(**user_prompt_params)
-        chatbot_messages = self.chatbot_prompt.format_messages(**chatbot_prompt_params)
-        if len(chatbot_messages) == 1:
-            chatbot_messages.append(AIMessage(content="Hello! 👋 I'm here to help with any request you might have."))
+        recursion_limit = self.config.get('recursion_limit', 25)
         return await self.dialog.ainvoke(input={"user_messages": user_messages,
-                                                "chatbot_messages": chatbot_messages,
+                                                "chatbot_messages": self.chatbot_initial_messages,
                                                 "chatbot_args": chatbot_env_args,
                                                 "thread_id": str(uuid.uuid4()),
-                                                "user_thoughts": []}, config={'recursion_limit': self.recursion_limit})
+                                                "user_thoughts": []}, config={'recursion_limit': recursion_limit})
 
     def run_event(self, event: Event):
         """
@@ -153,8 +164,8 @@ class DialogManager:
         Run the dialog between the user and the chatbot on the events.
         :param events: The events to run.
         """
-        res = async_batch_invoke(self.arun_event, events, num_workers=self.num_workers,
-                                 callbacks=self.callbacks, timeout=self.timeout)
+        res = async_batch_invoke(self.arun_event, events, num_workers=self.config['num_workers'],
+                                 callbacks=self.callbacks, timeout=self.config['timeout'])
         final_result = [{'res': r['result'], 'event_id': events[r['index']].id} for r in res if r['error'] is None]
         cost = sum([r['usage'] for r in res if r['error'] is None])
         return final_result, cost

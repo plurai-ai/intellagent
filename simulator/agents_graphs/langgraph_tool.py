@@ -11,7 +11,7 @@ from langgraph.graph.message import add_messages
 from simulator.utils.llm_utils import convert_to_anthropic_tools
 import inspect
 import copy
-
+from langchain_core.runnables.utils import Input, Output
 
 from langchain_core.messages import (
     AIMessage,
@@ -43,7 +43,7 @@ class MessageGraph(StateGraph):
 
 class MessagesState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
-    args: dict
+    args: dict[Any]
 
 
 class ToolNode(RunnableCallable):
@@ -146,14 +146,9 @@ class AgentTools(Runnable):
         workflow.add_edge("tools", 'agent')
         return workflow.compile(checkpointer=self.checkpointer, store=self.store)
 
-    def invoke(self, user_message=None, messages=None, config=None, additional_args=None):
+    def invoke(self, input: Input, config: Optional[RunnableConfig] = None, **kwargs: Any) -> Output:
         """Invoke the agent with the messages
-        :param user_message: The user message
-        :param messages: The messages to invoke the agent with
+        :param input: The input for the graph, should be a dictionary {'messages': messages, 'args': additional_args}
         :param config: The configuration for the agent
-        :param additional_args: Additional args arguments for the agent
         """
-        if self.system_prompt is not None and user_message is not None:
-            messages = self.system_prompt + [HumanMessage(
-                content=user_message)]
-        return self.graph.invoke({'messages': messages, 'args': additional_args}, config=config)
+        return self.graph.invoke(input=input, config=config)
