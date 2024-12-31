@@ -36,6 +36,14 @@ CHAS turns the traditional "restrict-by-default" approach into a data-driven "en
 
 Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
 
+## Features
+
+- 🔬 Simulates thousands of edge-case events tailored to your chatbot agent
+- 🤖 Simulates user interactions with your agent based on generated events
+- 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
+- 🚀 Enables confident deployment of more reliable chatbot agents
+
+
 ## 🚀 How CHAS AI Pipeline Works
 
 CHAS operates through an AI pipeline of components powered by LLMs and AI Agents that work together to test and evaluate chatbot agents. The pipeline is outlined below:
@@ -74,13 +82,6 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 
 - [Customizing Chat Agents](./docs/custom_chatbot.md)  
   Guide for configuring custom chatbot agents, including LLM selection and LangGraph integration.
-
-## Features
-
-- 🔬 Simulates thousands of edge-case events tailored to your chatbot agent
-- 🤖 Simulates user interactions with your agent based on generated events
-- 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
-- 🚀 Enables confident deployment of more reliable chatbot agents
 
 ## :fire: QuickStart
 Chat-Agent-Simulator (CHAS) requires `python == 3.10`
