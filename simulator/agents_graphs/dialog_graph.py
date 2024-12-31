@@ -97,7 +97,7 @@ class Dialog:
         def chat_bot_node(state):
             messages = state["chatbot_messages"]
             # Call the chatbot
-            response = self.chatbot.invoke(messages=messages, additional_args=state['chatbot_args'])
+            response = self.chatbot.invoke({'messages': messages, 'args': state['chatbot_args']})
             last_human_message = max([i for i, v in enumerate(response['messages']) if v.type == 'human'])
             all_tool_calls = {}
             if self.memory is not None:

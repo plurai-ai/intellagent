@@ -61,8 +61,8 @@ class EventGraph:
             executor_system_prompt = self.executors[cur_row['table_name']].system_prompt
             executor_messages = executor_system_prompt.format_messages(**{'row': cur_row['row'],
                                                                           'restrictions': cur_restrictions})
-            res = self.executors[cur_row['table_name']].invoke(messages=executor_messages,
-                                                               additional_args={'dataset': state['dataset']})
+            res = self.executors[cur_row['table_name']].invoke({'messages': executor_messages,
+                                                               'args': {'dataset': state['dataset']}})
             state['rows_generated'].append(cur_row)
             cur_dataset = res['args']['dataset']
             last_var = load_yaml_content(res['messages'][-1].content)
