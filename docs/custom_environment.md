@@ -56,7 +56,7 @@ The folder should contain CSV files that define your database tables. Here's an 
 | mia_li_3668 | {"first_name": "Mia", "last_name": "Li"} | {"address1": "975 Sunset Drive", "city": "Austin", "country": "USA"} | mia.li@example.com | 1990-04-05 | {"credit_card_4421486": {"source": "credit_card", "last_four": "7447"}} | [] | gold | ["NO6JO3"] |
 
 
-### `tools_file`
+### `tools_file` (optional)
 This variable specifies the path to a python script containing all the agent tool functions. 
 
 The tool functions must be implemented using one of the following approaches:
@@ -78,9 +78,12 @@ See [airline chat-agent tools python script](https://github.com/plurai-ai/chatbo
 ---
 
 ### `database_validators` (optional)
-This variable specifies the path to a Python script containing validation functions for database operations. These functions help validate the data before it is inserted into the database. 
+Data validators are crucial components of the system.  
+These functions guide the database generation pipeline, ensuring data integrity and consistency. They are particularly important when dealing with duplicate information across different tables, as they allow for consistency checks.
 
-To define a validation function, use the `@validator` decorator and specify the table the function applies to. Validation functions ensure data integrity by checking conditions such as duplicate entries or invalid formats.
+The `database_validators` variable specifies the path to a Python script that contains the data validation functions.
+
+To define a validation function, use the `@validator` decorator and specify the table to which the function applies.
 
 **Example Validator Function:**
 
@@ -101,7 +104,7 @@ def user_id_validator(new_df, dataset):
 - The `@validator` decorator requires the table name as an argument.
 - The validator function is applied before new data is inserted into the database.
 
-For a complete example of validators in action, see the airline booking system validators at [airline chat-agent database validators python script](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/validators/data_validators.py). This example includes validators for:
+For a complete example of validators in action, see the airline booking system validators at [airline chat-agent database validators python script](https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/retail/input/validators/data_validators.py). This example includes validators for:
 - User ID validation (preventing duplicate users)
 - Flight ID validation (ensuring unique flight numbers)
 - Flight validation (verifying flight details in reservations)
