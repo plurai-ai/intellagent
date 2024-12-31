@@ -15,7 +15,12 @@
 
 **CHat-Agent-Simulator (CHAS)** is an AI-powered diagnostic framework driven by Large Language Models (LLMs) and AI agents. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
 
-**Our mission:** To revolutionize chatbot development by providing comprehensive testing that enables developers to deploy with confidence.
+**Features:**
+
+- 🔬 Simulates thousands of **realistic** edge-case events tailored to your chatbot agent and system data schema
+- 🤖 Simulates user interactions with your agent based on generated events
+- 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
+- 💪 Enables confident deployment of more reliable chatbot agents
 
 # Why CHAS?
 
@@ -35,13 +40,6 @@ This is where CHAS transforms the landscape. Instead of restricting your agent's
 CHAS turns the traditional "restrict-by-default" approach into a data-driven "enable-with-confidence" strategy. By thoroughly simulating and analyzing your agent's behavior, you can expand its capabilities while maintaining strict reliability standards.
 
 Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
-
-## Features
-
-- 🔬 Simulates thousands of edge-case events tailored to your chatbot agent
-- 🤖 Simulates user interactions with your agent based on generated events
-- 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
-- 🚀 Enables confident deployment of more reliable chatbot agents
 
 
 ## 🚀 How CHAS AI Pipeline Works
