@@ -249,9 +249,26 @@ This will launch a Streamlit dashboard showing detailed analytics and visualizat
 
 ![Simulator Results](./docs/simulator_recording.gif)
 
+## Roadmap
+
+- [x] **Beta Release**
+- [ ] Expand Integration with More Agent Platforms
+    - [ ] CrewAI
+    - [ ] AutoGen
+- [ ] Enable Event Generation from Existing Databases
+- [ ] Implement API Integration for External Chatbot Agents
+- [ ] Add Personality Dimensions to User Agents
+- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Access now by joining our [premium program](TODO))
+    - [ ] System Prompt Optimization
+    - [ ] Tools Optimization
+    - [ ] Graph structure Optimization
+
+**Join our [Discord community](TODO) to shape our roadmap!**
+
+
 ## 🚀 Community & Contributing
 
-Your contributions are greatly appreciated! If you're eager to contribute, kindly refer to our [Contributing Guidelines](docs/contributing.md)) for detailed information.
+Your contributions are greatly appreciated! If you're eager to contribute, kindly refer to our [Contributing Guidelines](docs/contributing.md)) for detailed information. We’re particularly keen on receiving new examples and environments to enrich the project.
 
 If you wish to be a part of our journey, we invite you to connect with us through our [Discord Community](TODO). We're excited to have you onboard! 
 
