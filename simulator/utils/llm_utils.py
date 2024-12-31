@@ -209,7 +209,6 @@ def load_yaml_content(yaml_content: str) -> dict:
         # Load the YAML content
         return yaml.safe_load(yaml_content)
     except yaml.YAMLError as e:
-        print(f"Error loading YAML: {e}")
         return {}
 
 
