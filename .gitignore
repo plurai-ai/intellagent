@@ -12,3 +12,4 @@ __pycache__/
 # Python virtual environment
 .venv/
 config/config_anthropic.yml
+config/config_airline_gemini.yml

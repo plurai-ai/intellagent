@@ -62,6 +62,8 @@ The `EventsGenerator` class transforms descriptions into concrete events by:
    - Validation of referential integrity
    - Parallel processing of multiple events
 
+![Event Generation Architecture](./figures/event_generator_architecture.png)
+
 ## Dialog Simulation Architecture
 
 The Dialog Simulation system orchestrates conversations between simulated users and chatbots. The system consists of two main components: the Dialog Graph and Dialog Manager.

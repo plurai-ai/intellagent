@@ -60,9 +60,6 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
 - [Installation & Quick Start](./docs/installation.md)  
   Step-by-step setup instructions.
 
-- [Creating New Custom Chat-Agent Environment](./docs/custom_environment.md)  
-  Comprehensive guide for setting up custom chat agent environments, including domain-specific policies, database schemas, tools, and validators.
-
 - [How It Works](./docs/how-it-works.md)  
   Detailed explanation of the CHAS pipeline.
 
@@ -70,7 +67,13 @@ For more details, refer to the [How it works](docs/how-it-works.md) (Explanation
   Overview of the system's main components.
 
 - [Running Examples](./docs/examples.md)  
-  Running examples of various chat-agents, including [airline agent](./docs/examples/airline.md), [retail agent](./docs/examples/retail.md), [langgraph agent](./docs/examples/langgraph.md)
+  Running examples of various chat-agents, including [airline agent](./docs/examples/airline.md) and [retail agent](./docs/examples/retail.md)
+
+- [Creating New Custom Chat-Agent Environment](./docs/custom_environment.md)  
+  Comprehensive guide for setting up custom chat-agent environments, including domain-specific policies, database schemas, tools, and validators.
+
+- [Customizing Chat Agents](./docs/custom_chatbot.md)  
+  Guide for configuring custom chatbot agents, including LLM selection and LangGraph integration.
 
 ## Features
 
