@@ -31,7 +31,7 @@ class Rank(BaseModel):
 
 class FlowsList(BaseModel):
     """The list of flows"""
-    sub_flows: List[str] = Field(description="A list of sub-flows")
+    flows: List[str] = Field(description="A list of flows")
 
 
 class Policy(BaseModel):
@@ -121,10 +121,10 @@ class DescriptionGenerator:
         flows = result['result']
         error_message = result['error']
         track_event(ExtractFlowEvent(cost=result['usage'],
-                                     n_flows=len(flows.dict()['sub_flows']),
+                                     n_flows=len(flows.dict()['flows']),
                                      prompt_length = len(self.prompt),
                                      error_message = error_message))
-        return flows.dict()['sub_flows']
+        return flows.dict()['flows']
 
     def extract_policies(self):
         """
