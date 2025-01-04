@@ -1,0 +1,1207 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>CHAS: CHat-Agent-Simulator</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chat-agent-simulator-chas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="CHAS: CHat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+      
+  <img src="images/CHAS.webp" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CHAS: CHat-Agent-Simulator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CHat-Agent-Simulator (CHAS)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="quick_start/installation/" class="md-tabs__link">
+          
+  
+    
+  
+  🚀️ Quick Start
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="How_it_Works/how-it-works/" class="md-tabs__link">
+          
+  
+    
+  
+  📘 How CHAS Works
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="customization/custom_environment/" class="md-tabs__link">
+          
+  
+    
+  
+  🛠️ Customization
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="examples/airline/" class="md-tabs__link">
+          
+  
+    
+  
+  📂 Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="contribution/contributing/" class="md-tabs__link">
+          
+  
+    
+  
+  🌟 Contribution
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="CHAS: CHat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+      
+  <img src="images/CHAS.webp" alt="logo">
+
+    </a>
+    CHAS: CHat-Agent-Simulator
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    🚀️ Quick Start
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            🚀️ Quick Start
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quick_start/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quick_start/configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quick_start/Running_the_Simulator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Simulator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    📘 How CHAS Works
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            📘 How CHAS Works
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="How_it_Works/how-it-works/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How it Works
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="How_it_Works/architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    🛠️ Customization
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            🛠️ Customization
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="customization/custom_environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="customization/custom_chatbot/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Chatbot
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="customization/checkpoints/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Checkpoints
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    📂 Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            📂 Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/airline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Airline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    🌟 Contribution
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            🌟 Contribution
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contribution/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="chat-agent-simulator-chas">CHat-Agent-Simulator (CHAS)</h1>
+<p align="center">
+    <!-- community badges -->
+    <a href="https://discord.gg/G2rSbAf8uP"><img src="https://img.shields.io/badge/Join-Discord-blue.svg"/></a>
+    <!-- license badge -->
+    <a href="https://github.com/plurai-ai/Chat-Agent-Simulator/blob/main/LICENSE">
+        <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-blue.svg"></a>
+</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+<p><strong>CHat-Agent-Simulator (CHAS)</strong> is an AI-powered diagnostic framework driven by Large Language Models (LLMs) and AI agents. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>🔬 Simulates thousands of <strong>realistic</strong> edge-case events tailored to your chatbot agent and system data schema</li>
+<li>🤖 Simulates user interactions with your agent based on generated events</li>
+<li>📊 Comprehensive report with evaluation metrics including success rates, policy &amp; tools failure points, complexity-level analysis</li>
+<li>💪 Enables confident deployment of more reliable chatbot agents</li>
+</ul>
+<h1 id="why-chas">Why CHAS?</h1>
+<p>Companies today face a critical challenge when deploying chatbot agents: balancing capability with reliability. Most organizations end up severely limiting their chatbots' capabilities (restricting them to read-only operations or minimal tool access) due to concerns about:</p>
+<ul>
+<li>Policy violations</li>
+<li>Inconsistent responses</li>
+<li>Unexpected edge cases</li>
+</ul>
+<p>This is where CHAS transforms the landscape. Instead of restricting your agent's capabilities due to uncertainty, CHAS empowers you to:</p>
+<ol>
+<li><strong>Discover the Unknown</strong>: Generate thousands of edge-case scenarios that stress-test your agent from every angle</li>
+<li><strong>Identify Failure Points</strong>: Proactively detect and understand where your agent might fail</li>
+<li><strong>Optimize Capabilities</strong>: Find the optimal balance between functionality and reliability</li>
+<li><strong>Deploy with Confidence</strong>: Release chat agents that are both powerful AND reliable</li>
+</ol>
+<p>CHAS turns the traditional "restrict-by-default" approach into a data-driven "enable-with-confidence" strategy. By thoroughly simulating and analyzing your agent's behavior, you can expand its capabilities while maintaining strict reliability standards.</p>
+<p>Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.</p>
+<h2 id="how-chas-ai-pipeline-works">🚀 How CHAS AI Pipeline Works</h2>
+<p>CHAS operates through an AI pipeline of components powered by LLMs and AI Agents that work together to test and evaluate chatbot agents. The pipeline is outlined below:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Illustration</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <strong>Input Context</strong></td>
+<td>Analyze the agent's context, including task description, tools, and database schema.</td>
+<td><img src="./docs/figures/input_context.png" alt="Input Context" width="300"></td>
+</tr>
+<tr>
+<td>2. <strong>Flow and Policies Generation</strong></td>
+<td>Decompose the agent's task into sub-flows and extract relevant policies.</td>
+<td><img src="./docs/figures/flow_and_policies_decomposition.png" alt="Flow and Policies Generation" width="300"></td>
+</tr>
+<tr>
+<td>3. <strong>Policies Graph Generation</strong></td>
+<td>Create a weighted graph representing relationships between policies to identify complex scenarios.</td>
+<td><img src="./docs/figures/policies_graph_generation.png" alt="Policies Graph Generation" width="300"></td>
+</tr>
+<tr>
+<td>4. <strong>Generate Dataset Event</strong></td>
+<td>Create a dataset of scenario events with varying challenge scores for thorough testing.</td>
+<td><img src="./docs/figures/generate_dataset_event.png" alt="Generate Dataset Event" width="300"></td>
+</tr>
+<tr>
+<td>5. <strong>Run Simulation Events</strong></td>
+<td>Execute simulation events through an interactive dialog system, capturing performance insights.</td>
+<td><img src="./docs/figures/run_simulation_events.png" alt="Run Simulation Events" width="300"></td>
+</tr>
+<tr>
+<td>6. <strong>Report (Comprehensive Evaluation)</strong></td>
+<td>Generate a detailed evaluation report analyzing performance and failure points.</td>
+<td><img src="./docs/figures/report_comprehensive_evaluation.png" alt="Report Comprehensive Evaluation" width="300"></td>
+</tr>
+</tbody>
+</table>
+<p>For more details, refer to the <a href="docs/how-it-works.md">How it works</a> (Explanation of AI Pipeline).</p>
+<h2 id="demo">🔍 Demo</h2>
+<p><img alt="simulator_recording" src="./docs/simulator_recording.gif" /></p>
+<h2 id="documentation">📖 Documentation</h2>
+<ul>
+<li>
+<p><a href="./docs/installation.md">Installation &amp; Quick Start</a><br />
+  Step-by-step setup instructions.</p>
+</li>
+<li>
+<p><a href="./docs/how-it-works.md">How It Works</a><br />
+  Detailed explanation of the CHAS pipeline.</p>
+</li>
+<li>
+<p><a href="./docs/architecture.md">Architecture Guide</a><br />
+  Overview of the system's main components.</p>
+</li>
+<li>
+<p><a href="./docs/examples.md">Running Examples</a><br />
+  Running examples of various chat-agents, including <a href="./docs/examples/airline.md">airline agent</a> and <a href="./docs/examples/retail.md">retail agent</a></p>
+</li>
+<li>
+<p><a href="./docs/checkpoints.md">Understanding Different Checkpoints</a><br />
+  An overview of the various types of checkpoints provided by CHAS for cost optimization.</p>
+</li>
+<li>
+<p><a href="./docs/custom_environment.md">Creating New Custom Chat-Agent Environment</a><br />
+  Comprehensive guide for setting up custom chat-agent environments, including domain-specific policies, database schemas, tools, and validators.</p>
+</li>
+<li>
+<p><a href="./docs/custom_chatbot.md">Customizing Chat Agents</a><br />
+  Guide for configuring custom chatbot agents, including LLM selection and LangGraph integration.</p>
+</li>
+</ul>
+<h2 id="quickstart"><img alt="🔥" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f525.svg" title=":fire:" /> QuickStart</h2>
+<p>Chat-Agent-Simulator (CHAS) requires <code>python == 3.10</code>
+<br /></p>
+<blockquote>
+<p><strong>Step 1</strong> - Download the project</p>
+</blockquote>
+<pre><code class="language-bash">git clone git@github.com:plurai-ai/Chat-Agent-Simulator.git
+cd Chat-Agent-Simulator
+</code></pre>
+<p><br /></p>
+<blockquote>
+<p><strong>Step 2</strong> - Install dependencies</p>
+</blockquote>
+<p>Use either Conda, pip, or pipenv, depending on your preference.</p>
+<p>Using Conda:</p>
+<pre><code class="language-bash">conda env create -f environment_dev.yml
+conda activate Chat-Agent-Simulator
+</code></pre>
+<p>Using pip: </p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>Using pipenv:</p>
+<pre><code class="language-bash">pip install pipenv
+pipenv install
+</code></pre>
+<p><br /></p>
+<blockquote>
+<p><strong>Step 3</strong> - Configure your LLM API Key</p>
+</blockquote>
+<p>Edit the <code>config/llm_env.yml</code> file to set up your LLM configuration:</p>
+<pre><code class="language-yaml">openai:
+  OPENAI_API_KEY: &quot;your-api-key-here&quot;
+  OPENAI_API_BASE: ''
+  OPENAI_ORGANIZATION: ''
+
+azure:
+  AZURE_OPENAI_API_KEY: &quot;your-api-key-here&quot;
+  AZURE_OPENAI_ENDPOINT: &quot;your-endpoint&quot;
+  OPENAI_API_VERSION: &quot;your-api-version&quot;
+
+</code></pre>
+<p><br /></p>
+<blockquote>
+<p><strong>Step 4</strong> - Configure the simulator run parameters</p>
+</blockquote>
+<p>Before running the simulator, you need to configure the <code>config_default.yml</code> file located in the <code>config</code> folder. This file contains important settings for the simulator. Here's an overview of the main sections and their purposes:</p>
+<ul>
+<li>
+<p><code>environment</code>: Specifies paths for the prompt, tools, and data-scheme folders, as well as the task description. For example:
+  <code>yaml
+  environment:
+      prompt_path: 'examples/airline/wiki.md'
+      tools_folder: 'examples/airline/tools/agent_tools.py'
+      database_folder: 'examples/airline/data_scheme'</code></p>
+</li>
+<li>
+<p><code>description_generator</code>: Contains settings for various components of the description generation process, including flow extraction, policies extraction, edge configuration, and description refinement.</p>
+</li>
+<li>
+<p><code>event_generator</code>: Configures the event generation process, including the LLM to use and worker settings.</p>
+</li>
+<li>
+<p><code>dialog_manager</code>: Sets up the simulator dialog management system, including user parsing mode, memory path, and LLM configurations for user simulation and chat.</p>
+</li>
+<li>
+<p><code>dataset</code>: Defines parameters for dataset generation, such as difficulty levels, number of samples, and cost limits in $.</p>
+</li>
+</ul>
+<p>Key points to configure:</p>
+<ol>
+<li>
+<p><strong>Update file paths</strong> in the <code>environment</code> section to match your project structure:
+   <code>yaml
+   prompt_path: 'examples/airline/wiki.md'  # Path to your agent's wiki/documentation
+   tools_folder: 'examples/airline/tools'   # Path to your agent's tools
+   database_folder: 'examples/airline/data' # Path to your data schema</code></p>
+</li>
+<li>
+<p><strong>Adjust LLM configurations</strong> throughout the file:
+   <code>yaml
+   llm:
+       type: 'openai'  # or 'azure'
+       name: 'gpt-4o'   # or other model names as gpt-4o-mini</code></p>
+</li>
+<li>
+<p><strong>Configure worker settings</strong> based on your system's capabilities. This parameter is highly important in cases of <strong>rate-limit</strong> responses:
+   <code>yaml
+   num_workers: 3    # Number of parallel workers
+   timeout: 10       # Timeout in seconds</code></p>
+</li>
+<li>
+<p><strong>Set appropriate cost limits</strong> to control API usage:
+   <code>yaml
+   cost_limit: 30    # In dollars, for simulator dialog manager</code></p>
+</li>
+</ol>
+<p>For a complete example configuration, check the <code>config/config_default.yml</code> file in the repository.</p>
+<p><br /></p>
+<blockquote>
+<p><strong>Step 5</strong> - Run the Simulator</p>
+</blockquote>
+<h2 id="running-the-simulation-script">Running the Simulation Script</h2>
+<p>The <code>run.py</code> script is designed to execute a simulation using a specified configuration and dataset. Follow the steps below to run the script:</p>
+<h3 id="usage">Usage</h3>
+<p>To run the script, use the following command:</p>
+<pre><code class="language-bash">python run.py --output_path &lt;output_path&gt; [--config_path &lt;config_path&gt;] [--dataset &lt;dataset&gt;]
+</code></pre>
+<h3 id="arguments">Arguments</h3>
+<ul>
+<li><code>--output_path</code>: (Required) Specify the path where the output file will be saved.</li>
+<li><code>--config_path</code>: (Optional) Specify the path to the configuration file. Defaults to <code>config/config_default.yml</code>.</li>
+<li><code>--dataset</code>: (Optional) Specify the dataset name. If set to <code>'latest'</code>, the latest dataset will be loaded. Defaults to <code>'latest'</code>.</li>
+</ul>
+<h3 id="example">Example</h3>
+<pre><code class="language-bash">python run.py --output_path ./examples/airline/output/run_1 --config_path ./config/config_airline.yml 
+</code></pre>
+<p>This command will run the simulation using the specified configuration and dataset, and save the results to <code>../output/exp1</code>.</p>
+<p><br /></p>
+<blockquote>
+<p><strong>Step 6</strong> - Analyze Simulator Results</p>
+</blockquote>
+<p>After the simulation completes, you can find the results in the specified output path directory with the following structure:</p>
+<pre><code>experiments/
+├── dataset__[timestamp]__exp_[n]/    # Experiment run folder
+│   ├── experiment.log                # Detailed experiment execution logs
+│   ├── config.yaml                   # Configuration used for this run
+│   ├── prompt.txt                    # Prompt template used
+│   ├── memory.db                     # Dialog memory database
+│   └── results.csv                   # Evaluation results and metrics
+│
+datasets/
+├── dataset__[timestamp].pickle       # Generated dataset snapshot
+└── dataset.log                       # Dataset generation logs
+│
+policies_graph/
+├── graph.log                         # Policy graph generation logs
+└── descriptions_generator.pickle     # Generated descriptions and policies
+</code></pre>
+<p>Each experiment run creates a timestamped folder containing all relevant files for analysis and reproduction. The results.csv file contains the comprehensive evaluation metrics discussed in Step #6 of the System Overview.</p>
+<p>To visualize the simulation results using streamlit, run:</p>
+<pre><code class="language-bash">streamlit run simulator/visualization/Simulator_Visualizer.py
+</code></pre>
+<p>This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.</p>
+<p><img alt="Simulator Results" src="./docs/simulator_recording.gif" /></p>
+<h2 id="roadmap">Roadmap</h2>
+<ul>
+<li>[x] <strong>Beta Release</strong></li>
+<li>[ ] Expand Integration with More Agent Platforms<ul>
+<li>[ ] CrewAI</li>
+<li>[ ] AutoGen</li>
+</ul>
+</li>
+<li>[ ] Enable Event Generation from Existing Databases</li>
+<li>[ ] Implement API Integration for External Chatbot Agents</li>
+<li>[ ] Add Personality Dimensions to User Agents</li>
+<li>[ ] Optimize Chatbot Performance Using Simulator Diagnostics (Access now by joining our <a href="TODO">premium program</a>)<ul>
+<li>[ ] System Prompt Optimization</li>
+<li>[ ] Tools Optimization</li>
+<li>[ ] Graph structure Optimization</li>
+</ul>
+</li>
+</ul>
+<p><strong>Join our <a href="TODO">Discord community</a> to shape our roadmap!</strong></p>
+<h2 id="community-contributing">🚀 Community &amp; Contributing</h2>
+<p>Your contributions are greatly appreciated! If you're eager to contribute, kindly refer to our <a href="docs/contributing.md">Contributing Guidelines</a>) for detailed information. We’re particularly keen on receiving new examples and environments to enrich the project.</p>
+<p>If you wish to be a part of our journey, we invite you to connect with us through our <a href="TODO">Discord Community</a>. We're excited to have you onboard! </p>
+<h2 id="disclaimer">🛡 Disclaimer</h2>
+<p>The Chat-Agent-Simulator (CHAS) project is provided on an "as-is" basis without any guarantees or warranties, either expressed or implied. By using this software, you acknowledge that:</p>
+<ul>
+<li>The developers and contributors are not responsible for any damages or losses that may arise from the use or inability to use the software.</li>
+<li>The software is intended for testing and evaluation purposes only and should not be used in production environments without thorough testing and validation.</li>
+<li>The accuracy, reliability, and performance of the software are not guaranteed, and users should exercise caution and perform their own assessments before relying on the software for critical applications.</li>
+<li>Any modifications or customizations made to the software are the sole responsibility of the user, and the developers are not liable for any issues that may result from such changes.</li>
+</ul>
+<p>By downloading or using the Chat-Agent-Simulator, you agree to these terms and conditions. If you do not agree, please refrain from using the software.</p>
+<h2 id="citation">Citation</h2>
+<p>TODO</p>
+<h2 id="license">License</h2>
+<p>This framework is licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p>Under this license, you are free to use, modify, and distribute the software, provided that you include a copy of the license and any notices in any copies or substantial portions of the software. </p>
+<p>The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. See the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> for the full text and more details.</p>
+<h2 id="open-analytics">🔍 Open Analytics</h2>
+<p>We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. <strong>Plurai does not track any information that can identify you or your company.</strong> You can review the specific metrics we track in the <a href="https://github.com/plurai-ai/simulator/healthcare_analytics.py">code</a>.</p>
+<p>If you prefer not to have your usage tracked, you can disable this feature by setting the <code>PLURAI_DO_NOT_TRACK</code> flag to true.</p>
+<h2 id="support-contact-us">✉️ Support / Contact us</h2>
+<ul>
+<li>Join our Community for discussions, updates and announcements <a href="TODO">Community Discord</a></li>
+<li>Our email: <a href="mailto:chas@plurai.ai">‫chas@plurai.ai‬</a></li>
+<li><a href="https://github.com/plurai-ai/Chat-Agent-Simulator/issues">GitHub Issues</a> for bug reports and feature requests</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", null], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
