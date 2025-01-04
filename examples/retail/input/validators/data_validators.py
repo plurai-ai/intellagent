@@ -69,12 +69,22 @@ def order_user_alignment_validator(new_df, dataset):
 
 @validator(table='orders')
 def order_products_alignment_validator(new_df, dataset):
+    if 'products' not in dataset:
+        dataset['products'] = pd.DataFrame()
     products_dataset = dataset['products']
-    product_id_list = list(products_dataset['product_id'])
+    product_id_list = list(products_dataset['product_id']) if 'product_id' in products_dataset else []
     for index, row in new_df.iterrows():
-        items_list = ast.literal_eval(row['items'])
+        update_item_list = False
+        if isinstance(row['items'], dict):
+            update_item_list = True
+            items_list = row['items']
+        else:
+            items_list = ast.literal_eval(row['items'])
         for item in items_list:
             if str(item['product_id']) not in product_id_list:
+                if 'color' not in item['options']:
+                    update_item_list = True
+                    item['options']['color'] = 'blue'
                 item_copy = copy.deepcopy(item)
                 hard_coded_variants = {'1011121319': {'item_id': item['item_id'], 'options': item['options'],
                                                       'available': True, 'price': item['price']},
@@ -90,5 +100,13 @@ def order_products_alignment_validator(new_df, dataset):
                            'variants': hard_coded_variants}
                 dataset['products'] = pd.concat([dataset['products'], pd.DataFrame([new_row])], ignore_index=True)
             else:
-                products_dataset.loc[products_dataset['product_id'] == str(item['product_id']), 'name'] = item['name']
+                if 'name' not in item.keys():
+                    update_item_list = True
+                    item['name'] = products_dataset.loc[products_dataset['product_id'] ==
+                                                        str(item['product_id']), 'name'].iloc[0]
+                else:
+                    products_dataset.loc[products_dataset['product_id'] ==
+                                         str(item['product_id']), 'name'] = item['name']
+        if update_item_list:
+            row['items'] = str(items_list)
     return new_df, dataset

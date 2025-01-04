@@ -47,6 +47,11 @@ def get_dialog_policies(config: dict, simulator_res: list[dict], events: list[Ev
     for r in res:
         if r['error'] is not None:
             continue
+        cur_event = events[simulator_res[r['index']]['event_id'] - 1]
+        cur_policies = cur_event.description.policies
+        simulator_res[r['index']]['tested_challenge_level'] = sum([cur_policies[l]['score'] for
+                                                                   l in r['result'].conversation_policies
+                                                                   if l < len(cur_policies)])
         simulator_res[r['index']]['tested_policies'] = r['result'].conversation_policies
         simulator_res[r['index']]['violated_policies'] = r['result'].violated_policies
     return simulator_res

@@ -187,6 +187,7 @@ class SimulatorExecutor:
                     'scenario': getattr(cur_event, 'scenario', None),
                     'expected_behaviour': getattr(cur_event.description, 'expected_behaviour', None),
                     'challenge_level': getattr(cur_event.description, 'challenge_level', None),
+                    'tested_challenge_level': r.get('tested_challenge_level', None),
                     'policies': getattr(cur_event.description, 'policies', None),
                     'policies_in_dialog': r.get('tested_policies', None),
                     'violated_policies': r.get('violated_policies', [])
