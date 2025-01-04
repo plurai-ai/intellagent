@@ -31,16 +31,14 @@ class Rank(BaseModel):
 
 class FlowsList(BaseModel):
     """The list of flows"""
-    sub_flows: List[str] = Field(description="A list of sub-flows")
+    flows: List[str] = Field(description="A list of flows families")
 
 
 class Policy(BaseModel):
     """The policy"""
-    policy: str = Field(description="A short, descriptive policy name")
+    policy: str = Field(description="The policy")
     category: str = Field(description="The fine-grained category of the policy")
     challenge_score: int = Field(description="The challenge score of the policy between 1-5")
-    policy_reference: str = Field(description="A direct quote or paraphrase from the System Prompt reflecting the policy")
-    reason_for_relevance: str = Field(description="Explain why this policy matters for the user flow")
     
 
 class PoliciesList(BaseModel):
@@ -121,10 +119,10 @@ class DescriptionGenerator:
         flows = result['result']
         error_message = result['error']
         track_event(ExtractFlowEvent(cost=result['usage'],
-                                     n_flows=len(flows.dict()['sub_flows']),
+                                     n_flows=len(flows.dict()['flows']),
                                      prompt_length = len(self.prompt),
                                      error_message = error_message))
-        return flows.dict()['sub_flows']
+        return flows.dict()['flows']
 
     def extract_policies(self):
         """

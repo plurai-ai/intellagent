@@ -64,8 +64,6 @@ def read_experiment_data(exp_path: str):
     for flow, policies in policies_info.items():
         for policy in policies:
             policies_info_list.append({'name': flow + ': ' + policy['policy'], 'category': policy['category']})
-    scores = df['score'].tolist() + err_df['score'].tolist()
-    challenge = df['challenge_level'].tolist() + err_df['challenge_level'].tolist()
     all_policies_list = []
     for i, row in df.iterrows():
         policies = ast.literal_eval(row['policies'])
@@ -76,11 +74,15 @@ def read_experiment_data(exp_path: str):
             policies_sublist = []
             violated_policies = []
         for j in policies_sublist:
+            if j > len(policies)-1:
+                continue
             score = 0 if j in violated_policies else 1
             all_policies_list.append({'policy': policies[j]['flow'] + ': ' + policies[j]['policy'],
                                       'score': score, 'challenge_level': row['challenge_level']})
 
     success_rate = []
+    scores = df['score'].tolist() + err_df['score'].tolist()
+    challenge = df['challenge_level'].tolist() + err_df['challenge_level'].tolist()
     for policy_info in policies_info_list:
         cur_policies = [policy for policy in all_policies_list if policy['policy'] == policy_info['name']]
         if len(cur_policies) < 3:
