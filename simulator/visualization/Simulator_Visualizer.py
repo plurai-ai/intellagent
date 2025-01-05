@@ -11,7 +11,7 @@ st.write("# Welcome to Plurai Chat-Agent-Simulator (CHAS)!")
 
 st.markdown(
     """
-    **CHat-Agent-Simulator (CHAS)** is an AI-powered diagnostic framework driven by Large Language Models (LLMs) and AI agents. 
+    **Chat-Agent-Simulator (CHAS)** is an AI-powered diagnostic framework driven by Large Language Models (LLMs) and AI agents. 
     This demo allows you to explore the capabilities of Plurai's chatbot simulator, which simulates thousands of edge-case scenarios to evaluate chatbot agents comprehensively.
     
     ### Why CHAS?
