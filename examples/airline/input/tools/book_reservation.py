@@ -4,7 +4,7 @@ import json
 from copy import deepcopy
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-
+from util import get_dict_json
 class BookReservation():
     @staticmethod
     def invoke(
@@ -21,8 +21,8 @@ class BookReservation():
         nonfree_baggages: int,
         insurance: str,
     ) -> str:
-        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
-        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        reservations = get_dict_json(data['reservations'], 'reservation_id')
+        users = get_dict_json(data['users'], 'user_id')
         if user_id not in users:
             return "Error: user not found"
         user = users[user_id]

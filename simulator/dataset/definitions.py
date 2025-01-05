@@ -17,7 +17,7 @@ class info_symbolic(BaseModel):
     variables_list: List[str] = Field(description="The list of the symbolic variables and their descriptions")
     enriched_scenario: str = Field(description="The enriched scenario with the symbolic variables")
     symbolic_relations: List[str] = Field(description="The relations between the symbolic variables")
-    tables_rows: List[row_info] = Field(description="The rows to insert to the tables")
+    tables_rows: List[row_info] = Field(description="The rows to insert to the tables. You must insert them according to the insertrion order")
 
 
 @tool

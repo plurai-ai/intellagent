@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-
+from util import get_dict_json
 class SendCertificate():
     @staticmethod
     def invoke(
@@ -10,7 +10,7 @@ class SendCertificate():
         user_id: str,
         amount: int,
     ) -> str:
-        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        users = get_dict_json(data['users'], 'user_id')
         if user_id not in users:
             return "Error: user not found"
         user = users[user_id]
