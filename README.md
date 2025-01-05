@@ -89,7 +89,7 @@ openai:
 ####  Step 3 - Run the Simulator
 
 ```bash
-python run.py --output_path ./examples/airline/output/run_1 --config_path ./config/config_airline.yml 
+python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 ```
 
 Explore all the [Customization](TODO add reference) options to configure the simulation for your environment.
