@@ -1,6 +1,59 @@
 from simulator.utils.file_reading import validator
 import ast
 
+airports_dict = {
+    "JFK": "New York",
+    "LGA": "New York",
+    "EWR": "New York",
+    "LAX": "Los Angeles",
+    "ORD": "Chicago",
+    "MDW": "Chicago",
+    "YYZ": "Toronto",
+    "YVR": "Vancouver",
+    "MEX": "Mexico City",
+    "LHR": "London",
+    "LGW": "London",
+    "STN": "London",
+    "CDG": "Paris",
+    "ORY": "Paris",
+    "BER": "Berlin",
+    "MAD": "Madrid",
+    "FCO": "Rome",
+    "AMS": "Amsterdam",
+    "NRT": "Tokyo",
+    "HND": "Tokyo",
+    "PEK": "Beijing",
+    "PKX": "Beijing",
+    "DXB": "Dubai",
+    "BKK": "Bangkok",
+    "SIN": "Singapore",
+    "ICN": "Seoul",
+    "GRU": "São Paulo",
+    "EZE": "Buenos Aires",
+    "LIM": "Lima",
+    "GIG": "Rio de Janeiro",
+    "CAI": "Cairo",
+    "JNB": "Johannesburg",
+    "CPT": "Cape Town",
+    "NBO": "Nairobi",
+    "SYD": "Sydney",
+    "MEL": "Melbourne",
+    "AKL": "Auckland",
+    "WLG": "Wellington",
+    "BOS": "Boston",
+    "MIA": "Miami",
+    "ATL": "Atlanta",
+    "DFW": "Dallas",
+    "DEN": "Denver",
+    "SEA": "Seattle",
+    "PHX": "Phoenix",
+    "SFO": "San Francisco",
+    "IAH": "Houston",
+    "LAS": "Las Vegas",
+    "MCO": "Orlando",
+    "PHL": "Philadelphia"
+}
+
 @validator(table='users')
 def user_id_validator(new_df, dataset):
     for index, row in new_df.iterrows():
@@ -22,6 +75,9 @@ def flight_id_validator(new_df, dataset):
     for index, row in new_df.iterrows():
         if isinstance(row['dates'], dict):
             new_df['dates'].iloc[index] = str(row['dates'])
+        if row['origin'] not in airports_dict.keys() or row['destination'] not in airports_dict.keys():
+            raise ValueError("Origin or destination airport is not a valid IATA airport code")
+
     if 'flights' not in dataset:
         return new_df, dataset
     flights_dataset = dataset['flights']
@@ -49,6 +105,8 @@ def flight_validator(new_df, dataset):
                 error_message += f"Flight number {flight['flight_number']} is not in the flights data."
                 continue
             relevant_flight_row = flights_dataset.loc[flights_dataset['flight_number'] == flight['flight_number']]
+            if flight['origin'] not in airports_dict.keys() or flight['destination'] not in airports_dict.keys():
+                raise ValueError("Origin or destination airport is not a valid IATA airport code")
             if relevant_flight_row['origin'].values[0] != flight['origin']:
                 relevant_flight_row['origin'].values[0] = flight['origin']
             if relevant_flight_row['destination'].values[0] != flight['destination']:
@@ -78,7 +136,8 @@ def user_validator(new_df, dataset):
             raise ValueError(error_message)
         relevant_rows = users_dataset.loc[users_dataset['user_id'] == row['user_id']]
         if relevant_rows.empty:
-            raise ValueError(f"User id {row['user_id']} is not in the users data.")
+            raise ValueError(f"User id {row['user_id']} is not in the users data."
+                             f"Available users are: {users_dataset['user_id'].to_list()}")
         user_row = relevant_rows.iloc[0]
         payment_history = str(row['payment_history'])
         payment_history = ast.literal_eval(payment_history)

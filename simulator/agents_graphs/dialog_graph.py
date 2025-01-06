@@ -82,7 +82,10 @@ class Dialog:
     def get_critique_node(self):
         def critique_node(state):
             # Call the simulated user
-            user_thought = state['user_thoughts'][-1].split('Thought:')[1]
+            if 'Thought:' in state['user_thoughts'][-1]:
+                user_thought = state['user_thoughts'][-1].split('Thought:')[1]
+            else:
+                user_thought = state['user_thoughts'][-1]
             conversation = convert_messages_to_str(state['chatbot_messages'][:-1], True)
             if '###STOP FAILURE' in state['chatbot_messages'][-1].content:
                 judgement = f"The chatbot failed to adhere the policies\n Reason:{user_thought}"
