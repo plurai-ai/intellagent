@@ -101,5 +101,5 @@ def user_validator(new_df, dataset):
         if row['reservation_id'] not in reservations:
             reservations.append(row['reservation_id'])
         user_row['reservations'] = str(reservations)
-        users_dataset.loc[users_dataset['user_id'] == row['user_id'], :] = user_row
+        users_dataset.loc[users_dataset['user_id'] == row['user_id'], :] = relevant_rows
     return new_df, dataset
