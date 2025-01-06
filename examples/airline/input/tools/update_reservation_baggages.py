@@ -3,7 +3,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-
+from util import get_dict_json
 class UpdateReservationBaggages():
     @staticmethod
     def invoke(
@@ -13,8 +13,8 @@ class UpdateReservationBaggages():
         nonfree_baggages: int,
         payment_id: str,
     ) -> str:
-        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
-        users = data["users"].set_index('user_id', drop=False).to_dict(orient='index')
+        reservations = get_dict_json(data['reservations'], 'reservation_id')
+        users = get_dict_json(data['users'], 'user_id')
         if reservation_id not in reservations:
             return "Error: reservation not found"
         reservation = reservations[reservation_id]

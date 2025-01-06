@@ -2,12 +2,13 @@
 from langchain.tools import StructuredTool
 import json
 from typing import Any, Dict
+from util import get_dict_json
 
 
 class GetReservationDetails():
     @staticmethod
     def invoke(data: Dict[str, Any], reservation_id: str) -> str:
-        reservations = data["reservations"].set_index('reservation_id', drop=False).to_dict(orient='index')
+        reservations = get_dict_json(data['reservations'], 'reservation_id')
         if reservation_id in reservations:
             return json.dumps(reservations[reservation_id])
         return "Error: user not found"
