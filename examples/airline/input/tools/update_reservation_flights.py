@@ -16,6 +16,7 @@ class UpdateReservationFlights():
     ) -> str:
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         users = get_dict_json(data['users'], 'user_id')
+        data_flights = get_dict_json(data['flights'], 'flight_number')
         if reservation_id not in reservations:
             return "Error: reservation not found"
         reservation = reservations[reservation_id]
@@ -38,9 +39,9 @@ class UpdateReservationFlights():
                 flight["destination"] = _[0]["destination"]
                 continue
             flight_number = flight["flight_number"]
-            if flight_number not in data["flights"]:
+            if flight_number not in data_flights:
                 return f"Error: flight {flight_number} not found"
-            flight_data = data["flights"][flight_number]
+            flight_data = data_flights[flight_number]
             if flight["date"] not in flight_data["dates"]:
                 return (
                     f"Error: flight {flight_number} not found on date {flight['date']}"

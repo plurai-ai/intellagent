@@ -9,15 +9,17 @@ class SearchDirectFlight():
     def invoke(data: Dict[str, Any], origin: str, destination: str, date: str) -> str:
         flights = get_dict_json(data['flights'], 'flight_number')
         results = []
+        results_backup = []
         for flight in flights.values():
             if flight["origin"] == origin and flight["destination"] == destination:
-                if (
-                    date in flight["dates"]
-                    and flight["dates"][date]["status"] == "available"
-                ):
-                    # results add flight except dates, but add flight["datas"][date]
+                if date not in flight['dates']:
+                    results_backup.append({k: v for k, v in flight.items() if k != "dates"})
+                    results_backup[-1].update({'status': 'available', 'available_seats': {'basic_economy': 20, 'economy': 15, 'business': 10}, 'prices': {'basic_economy': 99, 'economy': 150, 'business': 500}})
+                elif flight['dates'][date]['status'] == 'available':
                     results.append({k: v for k, v in flight.items() if k != "dates"})
-                    results[-1].update(flight["dates"][date])
+                    results[-1].update(flight['dates'][date])
+        if not results:
+            return json.dumps(results_backup)
         return json.dumps(results)
 
     @staticmethod

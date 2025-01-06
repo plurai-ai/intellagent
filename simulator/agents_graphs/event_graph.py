@@ -63,7 +63,7 @@ class EventGraph:
                                                                           'restrictions': cur_restrictions})
             res = self.executors[cur_row['table_name']].invoke({'messages': executor_messages,
                                                                'args': {'dataset': state['dataset']}},
-                                                               config={'recursion_limit': 10})
+                                                               config={'recursion_limit': 15})
             state['rows_generated'].append(cur_row)
             cur_dataset = res['args']['dataset']
             last_var = load_yaml_content(res['messages'][-1].content)
