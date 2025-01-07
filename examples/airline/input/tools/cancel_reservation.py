@@ -10,7 +10,7 @@ class CancelReservation():
         data: Dict[str, Any],
         reservation_id: str,
     ) -> str:
-        if 'reservation' not in data:
+        if 'reservations' not in data:
             return "Error: reservation not found, if you just created the reservation it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         if reservation_id not in reservations:
