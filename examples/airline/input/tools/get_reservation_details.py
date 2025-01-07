@@ -8,10 +8,14 @@ from util import get_dict_json
 class GetReservationDetails():
     @staticmethod
     def invoke(data: Dict[str, Any], reservation_id: str) -> str:
+        if 'reservations' not in data:
+            return "Error: reservation not found, if you just created the resevation" \
+                   " it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         if reservation_id in reservations:
             return json.dumps(reservations[reservation_id])
-        return "Error: user not found"
+        return "Error: reservation not found, if you just created the reservation" \
+               " it might take a few minutes to be available."
 
     @staticmethod
     def get_info() -> Dict[str, Any]:

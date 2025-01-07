@@ -11,13 +11,23 @@ class UpdateReservationPassengers():
         reservation_id: str,
         passengers: List[Dict[str, Any]],
     ) -> str:
+        if 'reservations' not in data:
+            return "Error: reservation not found, if you just created the resevation" \
+                   " it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         if reservation_id not in reservations:
             return "Error: reservation not found"
         reservation = reservations[reservation_id]
         if len(passengers) != len(reservation["passengers"]):
             return "Error: number of passengers does not match"
-        reservation["passengers"] = passengers
+        for key, value in reservation.items():
+            if key in data['reservations'].columns:
+                if isinstance(value, dict) or isinstance(value, list):
+                    value = json.dumps(value)
+                data['reservations'].loc[
+                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
+
+        reservation['passengers'] = passengers
         return json.dumps(reservation)
 
     @staticmethod

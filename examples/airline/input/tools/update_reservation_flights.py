@@ -14,6 +14,8 @@ class UpdateReservationFlights():
         flights: List[Dict[str, Any]],
         payment_id: str,
     ) -> str:
+        if 'reservation' not in data:
+            return "Error: reservation not found, if you just created the reservation it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         users = get_dict_json(data['users'], 'user_id')
         data_flights = get_dict_json(data['flights'], 'flight_number')
@@ -85,6 +87,12 @@ class UpdateReservationFlights():
                     "amount": total_price,
                 }
             )
+        for key, value in reservation.items():
+            if key in data['reservations'].columns:
+                if isinstance(value, dict) or isinstance(value, list):  # Check if the value is a dictionary
+                    value = json.dumps(value)
+                data['reservations'].loc[
+                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
         # do not make flight database update here, assume it takes time to be updated
         return json.dumps(reservation)
 

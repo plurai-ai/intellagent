@@ -10,6 +10,8 @@ class CancelReservation():
         data: Dict[str, Any],
         reservation_id: str,
     ) -> str:
+        if 'reservation' not in data:
+            return "Error: reservation not found, if you just created the reservation it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         if reservation_id not in reservations:
             return "Error: reservation not found"
@@ -26,6 +28,13 @@ class CancelReservation():
             )
         reservation["payment_history"].extend(refunds)
         reservation["status"] = "cancelled"
+
+        for key, value in reservation.items():
+            if key in data['reservations'].columns:
+                if isinstance(value, dict) or isinstance(value, list):  # Check if the value is a dictionary
+                    value = json.dumps(value)
+                data['reservations'].loc[
+                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
         return json.dumps(reservation)
 
     @staticmethod

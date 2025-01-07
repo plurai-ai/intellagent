@@ -7,12 +7,15 @@ from util import get_dict_json
 class UpdateReservationBaggages():
     @staticmethod
     def invoke(
-        data: Dict[str, Any],
-        reservation_id: str,
-        total_baggages: int,
-        nonfree_baggages: int,
-        payment_id: str,
+            data: Dict[str, Any],
+            reservation_id: str,
+            total_baggages: int,
+            nonfree_baggages: int,
+            payment_id: str,
     ) -> str:
+        if 'reservations' not in data:
+            return "Error: reservation not found, if you just created the reservation" \
+                   " it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         users = get_dict_json(data['users'], 'user_id')
         if reservation_id not in reservations:
@@ -26,8 +29,8 @@ class UpdateReservationBaggages():
         if payment_method["source"] == "certificate":
             return "Error: certificate cannot be used to update reservation"
         elif (
-            payment_method["source"] == "gift_card"
-            and payment_method["amount"] < total_price
+                payment_method["source"] == "gift_card"
+                and payment_method["amount"] < total_price
         ):
             return "Error: gift card balance is not enough"
 
@@ -43,7 +46,12 @@ class UpdateReservationBaggages():
                     "amount": total_price,
                 }
             )
-
+        for key, value in reservation.items():
+            if key in data['reservations'].columns:
+                if isinstance(value, dict) or isinstance(value, list):  # Check if the value is a dictionary
+                    value = json.dumps(value)
+                data['reservations'].loc[
+                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
         return json.dumps(reservation)
 
     @staticmethod
@@ -83,9 +91,10 @@ class UpdateReservationBaggages():
             },
         }
 
+
 update_reservation_baggage_schema = UpdateReservationBaggages.get_info()
 update_reservation_baggage = StructuredTool.from_function(
-        func=UpdateReservationBaggages.invoke,
-        name=update_reservation_baggage_schema['function']["name"],
-        description=update_reservation_baggage_schema['function']["description"],
-    )
+    func=UpdateReservationBaggages.invoke,
+    name=update_reservation_baggage_schema['function']["name"],
+    description=update_reservation_baggage_schema['function']["description"],
+)

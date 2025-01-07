@@ -24,6 +24,7 @@ class SendCertificate():
                     "amount": amount,
                     "id": payment_id,
                 }
+                data['users'].loc[data['users']['user_id'] == user['user_id'], 'payment_methods'] = str(user["payment_methods"])
                 return f"Certificate {payment_id} added to user {user_id} with amount {amount}."
 
     @staticmethod

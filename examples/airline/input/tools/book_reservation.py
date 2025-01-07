@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
 from util import get_dict_json
+import pandas as pd
 class BookReservation():
     @staticmethod
     def invoke(
@@ -21,7 +22,7 @@ class BookReservation():
         nonfree_baggages: int,
         insurance: str,
     ) -> str:
-        if 'reservation' in data:
+        if 'reservations' in data:
             reservations = get_dict_json(data['reservations'], 'reservation_id')
         else:
             reservations = {}
@@ -103,8 +104,14 @@ class BookReservation():
             elif user["payment_methods"][payment_id]["source"] == "certificate":
                 del user["payment_methods"][payment_id]
 
+
+        if not 'reservations' in data:
+            data['reservations'] = pd.DataFrame([reservation])
+        else:
+            data['reservations'].loc[len(reservations)] = reservation
         reservations[reservation_id] = reservation
         user["reservations"].append(reservation_id)
+        data['users'].loc[data['users']['user_id'] == user['user_id'], 'reservations'] = str(user["reservations"])
         return json.dumps(reservation)
 
     @staticmethod
