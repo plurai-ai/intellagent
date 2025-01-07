@@ -10,15 +10,25 @@ class SearchDirectFlight():
         flights = get_dict_json(data['flights'], 'flight_number')
         results = []
         results_backup = []
+        backup_flights = []
         for flight in flights.values():
             if flight["origin"] == origin and flight["destination"] == destination:
                 if date not in flight['dates']:
+                    flight['dates'][date] = {'status': 'available', 'available_seats': {'basic_economy': 20, 'economy': 15, 'business': 10}, 'prices': {'basic_economy': 99, 'economy': 150, 'business': 500}}
                     results_backup.append({k: v for k, v in flight.items() if k != "dates"})
-                    results_backup[-1].update({'status': 'available', 'available_seats': {'basic_economy': 20, 'economy': 15, 'business': 10}, 'prices': {'basic_economy': 99, 'economy': 150, 'business': 500}})
+                    results_backup[-1].update(flight['dates'][date])
+                    backup_flights.append(flight)
                 elif flight['dates'][date]['status'] == 'available':
                     results.append({k: v for k, v in flight.items() if k != "dates"})
                     results[-1].update(flight['dates'][date])
         if not results:
+            for flight in backup_flights:
+                for key, value in flight.items():
+                    if key in data['flights'].columns:
+                        if isinstance(value, dict) or isinstance(value, list):
+                            value = json.dumps(value)
+                        data['flights'].loc[
+                            data['flights']['flight_number'] == flight['flight_number'], key] = value
             return json.dumps(results_backup)
         return json.dumps(results)
 
