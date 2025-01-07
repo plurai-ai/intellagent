@@ -14,7 +14,7 @@ class UpdateReservationFlights():
         flights: List[Dict[str, Any]],
         payment_id: str,
     ) -> str:
-        if 'reservation' not in data:
+        if 'reservations' not in data:
             return "Error: reservation not found, if you just created the reservation it might take a few minutes to be available."
         reservations = get_dict_json(data['reservations'], 'reservation_id')
         users = get_dict_json(data['users'], 'user_id')
