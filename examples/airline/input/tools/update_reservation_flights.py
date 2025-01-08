@@ -4,7 +4,7 @@ import json
 from copy import deepcopy
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 class UpdateReservationFlights():
     @staticmethod
     def invoke(
@@ -87,12 +87,7 @@ class UpdateReservationFlights():
                     "amount": total_price,
                 }
             )
-        for key, value in reservation.items():
-            if key in data['reservations'].columns:
-                if isinstance(value, dict) or isinstance(value, list):  # Check if the value is a dictionary
-                    value = json.dumps(value)
-                data['reservations'].loc[
-                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
+        update_df(data['reservations'], reservation, 'reservation_id')
         # do not make flight database update here, assume it takes time to be updated
         return json.dumps(reservation)
 
