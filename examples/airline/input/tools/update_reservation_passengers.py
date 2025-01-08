@@ -3,7 +3,7 @@
 import json
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 class UpdateReservationPassengers():
     @staticmethod
     def invoke(
@@ -20,14 +20,8 @@ class UpdateReservationPassengers():
         reservation = reservations[reservation_id]
         if len(passengers) != len(reservation["passengers"]):
             return "Error: number of passengers does not match"
-        for key, value in reservation.items():
-            if key in data['reservations'].columns:
-                if isinstance(value, dict) or isinstance(value, list):
-                    value = json.dumps(value)
-                data['reservations'].loc[
-                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
-
         reservation['passengers'] = passengers
+        update_df(data['reservations'], reservation, 'reservation_id')
         return json.dumps(reservation)
 
     @staticmethod

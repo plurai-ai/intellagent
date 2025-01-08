@@ -1,5 +1,5 @@
 # Copyright Sierra
-
+import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
 from util import get_dict_json
@@ -24,7 +24,8 @@ class SendCertificate():
                     "amount": amount,
                     "id": payment_id,
                 }
-                data['users'].loc[data['users']['user_id'] == user['user_id'], 'payment_methods'] = str(user["payment_methods"])
+                payment_str = json.dumps(user["payment_methods"])
+                data['users'].loc[data['users']['user_id'] == user['user_id'], 'payment_methods'] = payment_str
                 return f"Certificate {payment_id} added to user {user_id} with amount {amount}."
 
     @staticmethod

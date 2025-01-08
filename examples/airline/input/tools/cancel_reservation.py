@@ -3,7 +3,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 class CancelReservation():
     @staticmethod
     def invoke(
@@ -28,13 +28,7 @@ class CancelReservation():
             )
         reservation["payment_history"].extend(refunds)
         reservation["status"] = "cancelled"
-
-        for key, value in reservation.items():
-            if key in data['reservations'].columns:
-                if isinstance(value, dict) or isinstance(value, list):  # Check if the value is a dictionary
-                    value = json.dumps(value)
-                data['reservations'].loc[
-                    data['reservations']['reservation_id'] == reservation['reservation_id'], key] = value
+        update_df(data['reservations'], reservation, 'reservation_id')
         return json.dumps(reservation)
 
     @staticmethod

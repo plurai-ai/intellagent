@@ -3,7 +3,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 class SearchDirectFlight():
     @staticmethod
     def invoke(data: Dict[str, Any], origin: str, destination: str, date: str) -> str:
@@ -23,12 +23,7 @@ class SearchDirectFlight():
                     results[-1].update(flight['dates'][date])
         if not results:
             for flight in backup_flights:
-                for key, value in flight.items():
-                    if key in data['flights'].columns:
-                        if isinstance(value, dict) or isinstance(value, list):
-                            value = json.dumps(value)
-                        data['flights'].loc[
-                            data['flights']['flight_number'] == flight['flight_number'], key] = value
+                update_df(data['flights'], flight, 'flight_number')
             return json.dumps(results_backup)
         return json.dumps(results)
 
