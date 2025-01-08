@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 
 class ModifyPendingOrderItems():
     @staticmethod
@@ -21,7 +21,7 @@ class ModifyPendingOrderItems():
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
-        if order["status"] != "pending":
+        if order["status"].lower() != "pending":
             return "Error: non-pending order cannot be modified"
 
         # Check if the items to be modified exist
@@ -85,6 +85,7 @@ class ModifyPendingOrderItems():
                 "options"
             ]
         order["status"] = "pending (item modified)"
+        update_df(data['orders'], order, 'order_id')
 
         return json.dumps(order)
 

@@ -3,7 +3,7 @@
 from typing import Any, Dict
 from langchain.tools import StructuredTool
 import json
-from util import get_dict_json
+from util import get_dict_json, update_df
 
 class ModifyUserAddress():
     @staticmethod
@@ -30,6 +30,7 @@ class ModifyUserAddress():
             "country": country,
             "zip": zip,
         }
+        update_df(data['users'], user, 'user_id')
         return json.dumps(user)
 
     @staticmethod

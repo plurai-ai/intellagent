@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 
 class ModifyPendingOrderAddress():
     @staticmethod
@@ -21,7 +21,7 @@ class ModifyPendingOrderAddress():
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
-        if order["status"] != "pending":
+        if order["status"].lower() != "pending":
             return "Error: non-pending order cannot be modified"
 
         # Modify the address
@@ -33,6 +33,7 @@ class ModifyPendingOrderAddress():
             "country": country,
             "zip": zip,
         }
+        update_df(data['orders'], order, 'order_id')
         return json.dumps(order)
 
     @staticmethod
