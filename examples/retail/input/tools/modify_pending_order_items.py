@@ -25,6 +25,8 @@ class ModifyPendingOrderItems():
             return "Error: non-pending order cannot be modified"
 
         # Check if the items to be modified exist
+        if len(order['items']) == 1 and 'item_id' not in order['items'][0].keys():
+            order['items'][0]['item_id'] = item_ids[0]
         all_item_ids = [item["item_id"] for item in order["items"]]
         for item_id in item_ids:
             if item_ids.count(item_id) > all_item_ids.count(item_id):
@@ -43,7 +45,8 @@ class ModifyPendingOrderItems():
                 and products[product_id]["variants"][new_item_id]["available"]
             ):
                 return f"Error: new item {new_item_id} not found or available"
-
+            if 'price' not in item.keys():
+                item['price'] = 50
             old_price = item["price"]
             new_price = products[product_id]["variants"][new_item_id]["price"]
             diff_price += new_price - old_price

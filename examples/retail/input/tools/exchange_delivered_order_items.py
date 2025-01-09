@@ -55,6 +55,9 @@ class ExchangeDeliveredOrderItems():
             return "Error: payment method not found"
 
         payment_method = users[order["user_id"]]["payment_methods"][payment_method_id]
+        if payment_method["source"] == "gift_card":
+            if 'balance' not in payment_method.keys():
+                payment_method['balance'] = 50 # should be moved to the validator
         if (
             payment_method["source"] == "gift_card"
             and payment_method["balance"] < diff_price

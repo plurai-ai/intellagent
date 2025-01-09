@@ -42,6 +42,8 @@ class CancelPendingOrder():
                 payment_method = users[order["user_id"]]["payment_methods"][
                     payment_id
                 ]
+                if 'balance' not in payment_method.keys():
+                    payment_method['balance'] = 30
                 payment_method["balance"] += payment["amount"]
                 payment_method["balance"] = round(payment_method["balance"], 2)
 

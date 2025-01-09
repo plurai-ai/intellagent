@@ -37,6 +37,8 @@ class ModifyPendingOrderPayment():
                     "amount": 30,
                     "method": 'credit',
                 }]
+        if 'method' not in order["payment_history"][0].keys():
+            order["payment_history"][0]['method'] = 'credit'
         if order["payment_history"][0]["method"] == payment_method_id:
             return (
                 "Error: the new payment method should be different from the current one"
