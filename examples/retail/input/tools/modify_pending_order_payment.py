@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 
 
 class ModifyPendingOrderPayment():
@@ -19,7 +19,7 @@ class ModifyPendingOrderPayment():
             return "Error: order not found"
         order = orders[order_id]
         user = users[order["user_id"]]
-        if order["status"] != "pending":
+        if order["status"].lower() != "pending":
             return "Error: non-pending order cannot be modified"
 
         # Check if the payment method exists
@@ -37,6 +37,8 @@ class ModifyPendingOrderPayment():
                     "amount": 30,
                     "method": 'credit',
                 }]
+        if 'method' not in order["payment_history"][0].keys():
+            order["payment_history"][0]['method'] = 'credit'
         if order["payment_history"][0]["method"] == payment_method_id:
             return (
                 "Error: the new payment method should be different from the current one"
@@ -89,7 +91,7 @@ class ModifyPendingOrderPayment():
                 old_payment_method["balance"] = round(old_payment_method["balance"], 2)
             except:
                 pass
-
+        update_df(data['orders'], order, 'order_id')
         return json.dumps(order)
 
     @staticmethod

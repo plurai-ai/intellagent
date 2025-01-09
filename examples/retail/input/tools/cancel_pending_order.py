@@ -3,7 +3,7 @@
 from typing import Any, Dict
 from langchain.tools import StructuredTool
 import json
-from util import get_dict_json
+from util import get_dict_json, update_df
 
 
 class CancelPendingOrder():
@@ -15,7 +15,7 @@ class CancelPendingOrder():
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
-        if order["status"] != "pending":
+        if order["status"].lower() != "pending":
             return "Error: non-pending order cannot be cancelled"
 
         # check reason
@@ -42,6 +42,8 @@ class CancelPendingOrder():
                 payment_method = users[order["user_id"]]["payment_methods"][
                     payment_id
                 ]
+                if 'balance' not in payment_method.keys():
+                    payment_method['balance'] = 30
                 payment_method["balance"] += payment["amount"]
                 payment_method["balance"] = round(payment_method["balance"], 2)
 
@@ -49,6 +51,8 @@ class CancelPendingOrder():
         order["status"] = "cancelled"
         order["cancel_reason"] = reason
         order["payment_history"].extend(refunds)
+        update_df(data['orders'], order, 'order_id')
+        update_df(data['users'], users[order["user_id"]], 'user_id')
 
         return json.dumps(order)
 

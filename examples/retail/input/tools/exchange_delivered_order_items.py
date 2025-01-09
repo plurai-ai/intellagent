@@ -2,7 +2,7 @@
 import json
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 
 class ExchangeDeliveredOrderItems():
     @staticmethod
@@ -21,7 +21,7 @@ class ExchangeDeliveredOrderItems():
         if order_id not in orders:
             return "Error: order not found"
         order = orders[order_id]
-        if order["status"] != "delivered":
+        if order["status"].lower() != "delivered":
             return "Error: non-delivered order cannot be exchanged"
 
         # check the items to be exchanged exist
@@ -55,6 +55,9 @@ class ExchangeDeliveredOrderItems():
             return "Error: payment method not found"
 
         payment_method = users[order["user_id"]]["payment_methods"][payment_method_id]
+        if payment_method["source"] == "gift_card":
+            if 'balance' not in payment_method.keys():
+                payment_method['balance'] = 50 # should be moved to the validator
         if (
             payment_method["source"] == "gift_card"
             and payment_method["balance"] < diff_price
@@ -69,7 +72,7 @@ class ExchangeDeliveredOrderItems():
         order["exchange_new_items"] = sorted(new_item_ids)
         order["exchange_payment_method_id"] = payment_method_id
         order["exchange_price_difference"] = diff_price
-
+        update_df(data['orders'], order, 'order_id')
         return json.dumps(order)
 
     @staticmethod

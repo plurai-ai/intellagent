@@ -1,6 +1,8 @@
 import ast
 import random
 import string
+import json
+
 
 def convert_json_strings(input_dict):
     """
@@ -23,6 +25,8 @@ def convert_json_strings(input_dict):
             # Recursively process nested dictionaries
             convert_json_strings(value)
     return input_dict
+
+
 def fix_duplicate_indices_with_random_strings(df, length=6):
     """
     Modify duplicate indices in a DataFrame by assigning random strings.
@@ -37,6 +41,7 @@ def fix_duplicate_indices_with_random_strings(df, length=6):
     - pandas.DataFrame
       A DataFrame with a unique index.
     """
+
     def generate_random_string(length=6):
         """Generate a random string of given length."""
         return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
@@ -60,9 +65,28 @@ def fix_duplicate_indices_with_random_strings(df, length=6):
     df = df.copy()
     df.index = new_index
     return df
+
+
 def get_dict_json(df, index_column):
-    #It's better to replace it with data validators!!
     df = df.set_index(index_column, drop=False)
-    df = fix_duplicate_indices_with_random_strings(df)
     js = df.to_dict(orient='index')
     return convert_json_strings(js)
+
+
+def update_df(df, row, index_key):
+    """
+    Updates a row in a DataFrame based on the provided row dictionary.
+
+    Parameters:
+        df (pd.DataFrame): The DataFrame that should be updated .
+        row (dict): The row data to update.
+        index_key (str): The column name that identifies the index.
+
+    Returns:
+        None
+    """
+    for key, value in row.items():
+        if key in df.columns:
+            if isinstance(value, dict) or isinstance(value, list):
+                value = json.dumps(value)  # Convert dictionaries or lists to JSON strings
+            df.loc[df[index_key] == row[index_key], key] = value

@@ -152,14 +152,11 @@ def load_data(database_path=None):
     merged_df = policies_datasets[0]
     for df in policies_datasets[1:]:
         merged_df = pd.merge(merged_df, df, on=["policy","category"], how="outer")
-
     score_columns = [col for col in merged_df.columns if "success_rate" in col]
-    # Filter out any columns that do not have a valid integer after the underscore
-    score_columns = [col for col in score_columns if len(col.split('_')) > 1 and col.split('_')[1].isdigit()]
 
-    # Sort score_columns, but handle cases where the second part is not a digit
-    score_columns = sorted(score_columns,
-                           key=lambda x: (int(x.split('_')[1]) if x.split('_')[1].isdigit() else float('inf')))
+    # Sort according to string order
+    score_columns = sorted(score_columns, key=lambda x: x.split('_')[1])
+
     mean_scores = merged_df[score_columns].apply(lambda row: row[row >= 0].mean(), axis=1)
     styled_col = []
     for col in score_columns:
@@ -243,7 +240,8 @@ def main():
         score_columns_filter = [col for col in events_df.columns if
                                 'score' in col and any(expr in col for expr in unique_exp)]
 
-        exp_columns = [col for col in events_df.columns if 'exp_' in col]
+        exp_columns = [col for col in events_df.columns if ('_score' in col) or ('_reason' in col) or
+                       ('_violated_policies' in col)]
         exp_columns_filter = [col for col in exp_columns if any(expr in col for expr in unique_exp)]
         cur_events_df = events_df.drop(columns=[col for col in exp_columns if col not in exp_columns_filter])
         cur_events_df = cur_events_df.style.format(_format_binary, subset=score_columns_filter).map(_color_binary,

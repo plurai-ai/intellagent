@@ -12,7 +12,7 @@ class FindUserIdByNameZip():
             if (
                 profile["name"]["first_name"].lower() == first_name.lower()
                 and profile["name"]["last_name"].lower() == last_name.lower()
-                and profile["address"]["zip"] == zip
+                and str(profile["address"]["zip"]) == str(zip)
             ):
                 return user_id
         return "Error: user not found"

@@ -67,7 +67,7 @@ class BookReservation():
                     f"Error: flight {flight_number} not found on date {flight['date']}"
                 )
             flight_date_data = flight_data["dates"][flight["date"]]
-            if flight_date_data["status"] != "available":
+            if flight_date_data["status"].lower() != "available":
                 return f"Error: flight {flight_number} not available on date {flight['date']}"
             if flight_date_data["available_seats"][cabin] < len(passengers):
                 return f"Error: not enough seats on flight {flight_number}"
