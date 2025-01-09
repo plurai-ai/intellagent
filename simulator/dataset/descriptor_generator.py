@@ -231,6 +231,7 @@ class DescriptionGenerator:
         while path_sum < threshold:
             # Get neighbors and weights for current node
             neighbors = list(self.graph_info['G'].neighbors(current_node))
+            neighbors = [neighbor for neighbor in neighbors if neighbor not in path]
             weights = [self.graph_info['G'][current_node][neighbor]['weight'] for neighbor in neighbors]
 
             # Weighted choice of the next node
