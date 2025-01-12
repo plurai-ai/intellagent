@@ -8,7 +8,7 @@
 
 <p align="center">
     <!-- community badges -->
-    <a href="https://discord.gg/G2rSbAf8uP"><img src="https://img.shields.io/badge/Join-Discord-blue.svg"/></a>
+    <a href="https://discord.gg/YWbT87vAau"><img src="https://img.shields.io/badge/Join-Discord-blue.svg"/></a>
     <!-- license badge -->
     <a href="https://github.com/plurai-ai/Chat-Agent-Simulator/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-green.svg"></a>
@@ -87,13 +87,16 @@ openai:
 ```
 
 ####  Step 3 - Run the Simulator
-
+For fast simple environment without database, run the following command:
+```bash
+python run.py --output_path results/education --config_path ./config/config_education.yml 
+```
+For more complex environment with database, run the following command:
 ```bash
 python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 ```
 
-Explore all the [Customization](TODO add reference) options to configure the simulation for your environment.
-
+Explore the [Customization](TODO add reference) options to configure the simulation for your environment, or delve into the [examples](TODO add reference) we provide to learn more about its capabilities.
 #### Step 4 - See the Results
 
 To visualize the simulation results using streamlit, run:
@@ -116,14 +119,14 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
     - [ ] Tools Optimization
     - [ ] Graph structure Optimization
 
-**Join our [Discord community](TODO) to shape our roadmap!**
+**Join our [Discord community](https://discord.gg/YWbT87vAau) to shape our roadmap!**
 
 
 ## 🚀 Community & Contributing
 
 Your contributions are greatly appreciated! If you're eager to contribute, kindly refer to our [Contributing Guidelines](docs/contributing.md)) for detailed information. We’re particularly keen on receiving new examples and environments to enrich the project.
 
-If you wish to be a part of our journey, we invite you to connect with us through our [Discord Community](TODO). We're excited to have you onboard! 
+If you wish to be a part of our journey, we invite you to connect with us through our [Discord Community](https://discord.gg/YWbT87vAau). We're excited to have you onboard! 
 
 ## Citation
 
@@ -138,7 +141,7 @@ We collect basic usage metrics to better understand our users' needs and improve
 If you prefer not to have your usage tracked, you can disable this feature by setting the `PLURAI_DO_NOT_TRACK` flag to true.
 
 ## ✉️ Support / Contact us
-- Join our Community for discussions, updates and announcements [Community Discord](TODO)
+- Join our Community for discussions, updates and announcements [Community Discord](https://discord.gg/YWbT87vAau)
 - Our email: [‫chas@plurai.ai‬](mailto:chas@plurai.ai)
 - [GitHub Issues](https://github.com/plurai-ai/Chat-Agent-Simulator/issues) for bug reports and feature requests
 

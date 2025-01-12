@@ -10,6 +10,9 @@ from simulator.utils.file_reading import get_validators_from_module
 class Env:
     def __init__(self, config):
         self.config = config
+        self.data_schema = {}
+        self.data_examples = {}
+        self.database_validators = {}
         self.load_database()
         self.load_prompt()
         self.load_tools()
@@ -62,6 +65,11 @@ class Env:
         Load the database from the database folder. Assuming each database is in a separate json file
         :return:
         """
+        logger = get_logger()
+        if 'database_folder' not in self.config or not os.path.exists(self.config['database_folder']):
+            logger.warning(
+                f"{ConsoleColor.RED}Database folder not found. No database loaded.{ConsoleColor.RESET}")
+            return {}
         all_data_files = [file for file in os.listdir(self.config['database_folder'])
                           if file.endswith('.json') or file.endswith('.csv')]
         all_data = {}
