@@ -8,6 +8,7 @@ from typing import List, Tuple
 from statistics import mean, stdev
 from simulator.healthcare_analytics import GenerateDatasetEvent, track_event
 
+
 class Dataset:
     """
     This class store and manage all the dataset records (including annotations, predictions, etc.).
@@ -52,15 +53,20 @@ class Dataset:
         # Step 1: Generate descriptions
         descriptions, description_cost = self.descriptions_generator.sample_description(challenge_complexity,
                                                                                         num_samples=batch_size)
-        # Step 2: Generate symbolic variables
-        logger.info(f'{ConsoleColor.CYAN}- Generate symbolic representation{ConsoleColor.RESET}')
-        event_symbols, symbols_cost = self.event_generator.descriptions_to_symbolic(descriptions)
-        # Step 3: Get symbols constraints
-        logger.info(f'{ConsoleColor.CYAN}- Generate symbolic constraints{ConsoleColor.RESET}')
-        event_symbols, events_constraints_cost = self.event_generator.get_symbolic_constraints(event_symbols)
-        # Step 4: Generate the event (with the dataset)
-        logger.info(f'{ConsoleColor.CYAN}- Generate the event (This would take a while...){ConsoleColor.RESET}')
-        events, events_cost = self.event_generator.symbolics_to_events(event_symbols)
+        if self.event_generator.env.data_schema:
+            # Step 2: Generate symbolic variables
+            logger.info(f'{ConsoleColor.CYAN}- Generate symbolic representation{ConsoleColor.RESET}')
+            event_symbols, symbols_cost = self.event_generator.descriptions_to_symbolic(descriptions)
+            # Step 3: Get symbols constraints
+            logger.info(f'{ConsoleColor.CYAN}- Generate symbolic constraints{ConsoleColor.RESET}')
+            event_symbols, events_constraints_cost = self.event_generator.get_symbolic_constraints(event_symbols)
+            # Step 4: Generate the event (with the dataset)
+            logger.info(f'{ConsoleColor.CYAN}- Generate the event (This would take a while...){ConsoleColor.RESET}')
+            events, events_cost = self.event_generator.symbolics_to_events(event_symbols)
+        else:  # No database!
+            events = [Event(description=description,
+                            database={}, scenario=descriptions[0].event_description) for description in descriptions]
+            events_cost, symbols_cost, events_constraints_cost = 0, 0, 0
 
         minibatch_cost = description_cost + symbols_cost + events_constraints_cost + events_cost
         return events, minibatch_cost
@@ -93,8 +99,8 @@ class Dataset:
             logger.info(f'{ConsoleColor.WHITE}Iteration {iteration_num} started{ConsoleColor.RESET}')
             cur_iteration_sample_size = min(self.config['mini_batch_size'], n_samples)
             events, minibatch_cost = self.generate_mini_batch(cur_iteration_sample_size)
-            dataset_cost+=minibatch_cost
-            dataset_generation_cost+=minibatch_cost
+            dataset_cost += minibatch_cost
+            dataset_generation_cost += minibatch_cost
             for i, e in enumerate(events):
                 e.id = len(self.records) + i + 1
             self.records.extend(events)
@@ -103,15 +109,15 @@ class Dataset:
             pickle.dump((self.records, iteration_num, dataset_cost), open(path, 'wb'))
         challenge_scores = [r.description.challenge_level for r in self.records]
         average_challenge_level = mean(challenge_scores)
-        std_challenge_level = stdev(challenge_scores) if len(challenge_scores) > 1 else 0  
+        std_challenge_level = stdev(challenge_scores) if len(challenge_scores) > 1 else 0
         avg_n_policies = mean(len(r.description.policies) for r in self.records)
-        track_event(GenerateDatasetEvent(cost = dataset_generation_cost,
-                                         initial_n_samples = initial_n_samples,
-                                         total_n_samples = len(self.records),
-                                         initial_n_iterations = initial_n_iterations,
-                                         total_n_iterations = iteration_num,
-                                         avg_challenge_score = average_challenge_level,
-                                         std_challenge_score = std_challenge_level,
-                                         avg_n_policies = avg_n_policies)
-        )
+        track_event(GenerateDatasetEvent(cost=dataset_generation_cost,
+                                         initial_n_samples=initial_n_samples,
+                                         total_n_samples=len(self.records),
+                                         initial_n_iterations=initial_n_iterations,
+                                         total_n_iterations=iteration_num,
+                                         avg_challenge_score=average_challenge_level,
+                                         std_challenge_score=std_challenge_level,
+                                         avg_n_policies=avg_n_policies)
+                    )
         logger.info(f'{ConsoleColor.CYAN}Finish building the dataset{ConsoleColor.RESET}')

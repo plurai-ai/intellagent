@@ -94,7 +94,9 @@ class AgentTools(Runnable):
         :param save_memory (bool, optional): Whether to use memory. Defaults to False.
         :param template (ChatPromptTemplate, optional): The template to use. Defaults to None.
         """
-        if tools_schema is None:
+        if not tools:
+            self.llm = llm
+        elif tools_schema is None:
             self.llm = llm.bind_tools(tools)
         else:
             if 'anthropic-chat' in llm._llm_type:

@@ -10,7 +10,6 @@ from simulator.env import Env
 from dataclasses import dataclass
 from simulator.utils.logger_config import ConsoleColor, get_logger
 
-
 from simulator.healthcare_analytics import (
     ExtractFlowEvent,
     ExtractFlowPoliciesEvent,
@@ -19,10 +18,10 @@ from simulator.healthcare_analytics import (
 )
 
 
-
 def policies_list_to_str(policies):
     return "\n".join([f"Policy {i} flow: {policy['flow']}\nPolicy {i} content: {policy['policy']}\n------" for
                       i, policy in enumerate(policies)])
+
 
 class Rank(BaseModel):
     """The Rank"""
@@ -39,7 +38,7 @@ class Policy(BaseModel):
     policy: str = Field(description="The policy")
     category: str = Field(description="The fine-grained category of the policy")
     challenge_score: int = Field(description="The challenge score of the policy between 1-5")
-    
+
 
 class PoliciesList(BaseModel):
     """The policies list"""
@@ -110,18 +109,20 @@ class DescriptionGenerator:
         """
         Extract the flows from the prompt
         """
+        if len(self.prompt.split(' ')) < 300:  # Very short prompt, no need to split to flows. TODO: Change magic number
+            return ['Conversation with the chatbot']
         llm = get_llm(self.config['llm_policy'])
         flow_extractor = set_llm_chain(llm, structure=FlowsList, **self.config['flow_config']['prompt'])
         result = batch_invoke(flow_extractor.invoke,
-                           [{'user_prompt': self.prompt}], num_workers=1,
+                              [{'user_prompt': self.prompt}], num_workers=1,
                               callbacks=[set_callback(self.config['llm_policy']['type'])])[0]
         self.total_cost += result['usage']
         flows = result['result']
         error_message = result['error']
         track_event(ExtractFlowEvent(cost=result['usage'],
                                      n_flows=len(flows.dict()['flows']),
-                                     prompt_length = len(self.prompt),
-                                     error_message = error_message))
+                                     prompt_length=len(self.prompt),
+                                     error_message=error_message))
         return flows.dict()['flows']
 
     def extract_policies(self):
@@ -135,8 +136,8 @@ class DescriptionGenerator:
         for flow in self.flows:
             batch.append({'user_prompt': self.prompt, 'flow': flow})
         res = batch_invoke(policy_extractor.invoke, batch,
-                                 num_workers=self.config['policies_config']['num_workers'],
-                                 callbacks=[set_callback(self.config['llm_policy']['type'])])
+                           num_workers=self.config['policies_config']['num_workers'],
+                           callbacks=[set_callback(self.config['llm_policy']['type'])])
         extract_policies_cost = 0
         batch_error_message = None
         n_policies_per_flow = []
@@ -158,10 +159,10 @@ class DescriptionGenerator:
         # Update the total cost
         self.total_cost += extract_policies_cost
         track_event(ExtractFlowPoliciesEvent(cost=extract_policies_cost,
-                                     n_policies_per_flow = n_policies_per_flow,
-                                     error_message = batch_error_message
-                                     )
-        )
+                                             n_policies_per_flow=n_policies_per_flow,
+                                             error_message=batch_error_message
+                                             )
+                    )
         return flows_policies
 
     def extract_graph(self):
@@ -211,10 +212,10 @@ class DescriptionGenerator:
         self.graph_info['G'].add_edges_from(all_edges)
         track_event(GenerateRelationsGraphEvent(cost=graph_creation_cost,
                                                 n_edges=n_edges,
-                                                avg_edge_weight = avg_edge_weight,
-                                                std_edge_weight = std_edge_weight,
-                                                error_message = batch_error_message
-                                     ))
+                                                avg_edge_weight=avg_edge_weight,
+                                                std_edge_weight=std_edge_weight,
+                                                error_message=batch_error_message
+                                                ))
 
     def sample_from_graph(self, threshold) -> Tuple[list, int]:
         """
@@ -283,7 +284,7 @@ class DescriptionGenerator:
         all_policies = [policy for policy in all_policies if 'description' in policy]
         descriptions = [Description(event_description=policy['description'],
                                     expected_behaviour=policy['expected_behaviour'],
-                                    policies= policy['policies'],
+                                    policies=policy['policies'],
                                     challenge_level=policy['path_sum']) for policy in all_policies]
         refinement_cost = 0
         if self.config['refinement_config']['do_refinement']:
@@ -291,7 +292,8 @@ class DescriptionGenerator:
         cost += refinement_cost
         return descriptions, cost
 
-    def expected_behaviour_refinement(self, descriptions: list[Description], num_iterations=1) -> Tuple[list[Description], float]:
+    def expected_behaviour_refinement(self, descriptions: list[Description], num_iterations=1) -> Tuple[
+        list[Description], float]:
         """
         Verify the expected behaviour of the chatbot according to each policy
         :param descriptions:

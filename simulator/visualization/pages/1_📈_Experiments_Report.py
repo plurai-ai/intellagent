@@ -58,7 +58,10 @@ def extract_violated_policies_str(row):
 # Load or generate experimental data
 def read_experiment_data(exp_path: str):
     df = pd.read_csv(exp_path + '/results.csv')
-    err_df = pd.read_csv(exp_path + '/err_events.csv')
+    try:
+        err_df = pd.read_csv(exp_path + '/err_events.csv')
+    except:
+        err_df = pd.DataFrame(columns=['score', 'challenge_level'])
     policies_info = json.load(open(exp_path + '/policies_info.json', 'r'))
     policies_info_list = []
     for flow, policies in policies_info.items():

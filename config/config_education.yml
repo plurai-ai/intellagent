@@ -1,0 +1,5 @@
+environment:
+    prompt_path: 'examples/education/input/wiki.md'
+    tools_file: ''
+    database_folder: ''
+    database_validators: ''
