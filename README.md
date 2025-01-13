@@ -10,7 +10,7 @@
     <!-- community badges -->
     <a href="https://discord.gg/YWbT87vAau"><img src="https://img.shields.io/badge/Join-Discord-blue.svg"/></a>
     <!-- license badge -->
-    <a href="https://github.com/plurai-ai/chatbot_simulator/blob/main/LICENSE">
+    <a href="https://github.com/plurai-ai/chas/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-green.svg"></a>
 </p>
 
@@ -65,7 +65,7 @@ Chat-Agent-Simulator (CHAS) requires `python == 3.10`
 #### Step 1 - Download and install
 
 ```bash
-git clone git@github.com:plurai-ai/Chat-Agent-Simulator.git
+git clone git@github.com:plurai-ai/chas.git
 cd Chat-Agent-Simulator
 ```
 
@@ -136,13 +136,13 @@ TODO
 
 ## 🔍 Open Analytics
 
-We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](https://github.com/plurai-ai/simulator/healthcare_analytics.py).
+We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](https://github.com/plurai-ai/chas/healthcare_analytics.py).
 
 If you prefer not to have your usage tracked, you can disable this feature by setting the `PLURAI_DO_NOT_TRACK` flag to true.
 
 ## ✉️ Support / Contact us
 - Join our Community for discussions, updates and announcements [Community Discord](https://discord.gg/YWbT87vAau)
 - Our email: [‫chas@plurai.ai‬](mailto:chas@plurai.ai)
-- [GitHub Issues](https://github.com/plurai-ai/Chat-Agent-Simulator/issues) for bug reports and feature requests
+- [GitHub Issues](https://github.com/plurai-ai/chas/issues) for bug reports and feature requests
 
 
