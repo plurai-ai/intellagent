@@ -87,6 +87,8 @@ openai:
 ```
 
 ####  Step 3 - Run the Simulator
+If you're utilizing Azure OpenAI services for the `user_llm`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
+
 For fast simple environment without a database, run the following command:
 ```bash
 python run.py --output_path results/education --config_path ./config/config_education.yml 
