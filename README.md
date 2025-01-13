@@ -87,11 +87,11 @@ openai:
 ```
 
 ####  Step 3 - Run the Simulator
-For fast simple environment without database, run the following command:
+For fast simple environment without a database, run the following command:
 ```bash
 python run.py --output_path results/education --config_path ./config/config_education.yml 
 ```
-For more complex environment with database, run the following command:
+For more complex (slower) environment with a database, run the following command:
 ```bash
 python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 ```
