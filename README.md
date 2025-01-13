@@ -10,7 +10,7 @@
     <!-- community badges -->
     <a href="https://discord.gg/YWbT87vAau"><img src="https://img.shields.io/badge/Join-Discord-blue.svg"/></a>
     <!-- license badge -->
-    <a href="https://github.com/plurai-ai/Chat-Agent-Simulator/blob/main/LICENSE">
+    <a href="https://github.com/plurai-ai/chatbot_simulator/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-green.svg"></a>
 </p>
 
