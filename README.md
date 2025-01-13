@@ -66,7 +66,7 @@ Chat-Agent-Simulator (CHAS) requires `python == 3.10`
 
 ```bash
 git clone git@github.com:plurai-ai/chas.git
-cd Chat-Agent-Simulator
+cd chas
 ```
 
 You can use Conda, pip, or pipenv to install the dependencies.
