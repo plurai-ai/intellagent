@@ -47,6 +47,8 @@ class Logger:
 
 def extract_threads(memory_path):
     # Extract unique thread ids from the database
+    if memory_path is None:
+        return [], []
     dir_name = os.path.dirname(memory_path)
     results_path = os.path.join(dir_name, 'results.csv')
     if not os.path.isfile(results_path):

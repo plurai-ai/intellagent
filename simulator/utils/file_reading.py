@@ -99,9 +99,12 @@ def get_last_db(base_path = "./results"):
     last_dir = last_dir/'experiments'
     # Get the last created database file in the last created directory
     last_exp = get_last_created_directory(last_dir)
-    if os.path.isfile(last_exp / "memory.db"):
-        last_db = last_exp / "memory.db"
-        return str(last_db)
+    try:
+        if os.path.isfile(last_exp / "memory.db"):
+            last_db = last_exp / "memory.db"
+            return str(last_db)
+    except:
+        pass
     return None
 
 def get_latest_dataset(base_path = "./results"):
