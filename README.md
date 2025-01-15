@@ -78,15 +78,27 @@ pip install -r requirements.txt
 
 #### Step 2 - Set your LLM API Key
 
-Edit the `config/llm_env.yml` file to set up your LLM configuration:
+Edit the `config/llm_env.yml` file to set up your LLM configuration (OpenAI/Azure/Vertex/Anthropic):
 
 ```yaml
 openai:
   OPENAI_API_KEY: "your-api-key-here"
 ```
 
+To change the default LLM provider or model for either the CHAS system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_edcation.yml` file:
+
+
+```yaml
+llm_chas:
+    type: 'azure'
+
+llm_chatbot:
+    type: 'azure'
+```
+
+
 ####  Step 3 - Run the Simulator
-If you're utilizing Azure OpenAI services for the `user_llm`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
+If you're utilizing Azure OpenAI services for the `llm_chas`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
 
 For fast simple environment without a database, run the following command:
 ```bash
