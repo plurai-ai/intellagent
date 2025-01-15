@@ -1,0 +1,28 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="15">
+            <item index="0" class="java.lang.String" itemvalue="tiktoken" />
+            <item index="1" class="java.lang.String" itemvalue="openai" />
+            <item index="2" class="java.lang.String" itemvalue="langchain" />
+            <item index="3" class="java.lang.String" itemvalue="langchain-openai" />
+            <item index="4" class="java.lang.String" itemvalue="ipykernel" />
+            <item index="5" class="java.lang.String" itemvalue="langchain-community" />
+            <item index="6" class="java.lang.String" itemvalue="yfiles_jupyter_graphs" />
+            <item index="7" class="java.lang.String" itemvalue="jupyter" />
+            <item index="8" class="java.lang.String" itemvalue="graspologic" />
+            <item index="9" class="java.lang.String" itemvalue="future" />
+            <item index="10" class="java.lang.String" itemvalue="tenacity" />
+            <item index="11" class="java.lang.String" itemvalue="anthropic" />
+            <item index="12" class="java.lang.String" itemvalue="grpcio-status" />
+            <item index="13" class="java.lang.String" itemvalue="pip-chill" />
+            <item index="14" class="java.lang.String" itemvalue="llama-index-graph-stores-neo4j" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

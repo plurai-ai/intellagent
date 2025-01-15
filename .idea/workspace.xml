@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b00e2257-6a83-41c9-8030-bd965b92fc0d" name="Changes" comment="changing to docs" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2regrgZZNWF4nVvK8IAx7EWmQAg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/eladl/Documents/gar/gar_release/chas/docs",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
+      <recent name="$PROJECT_DIR$/docs/figures" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b00e2257-6a83-41c9-8030-bd965b92fc0d" name="Changes" comment="" />
+      <created>1736925154510</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1736925154510</updated>
+      <workItem from="1736925155654" duration="6499000" />
+      <workItem from="1736936823641" duration="13665000" />
+    </task>
+    <task id="LOCAL-00001" summary="changing gif">
+      <created>1736925296391</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736925296391</updated>
+    </task>
+    <task id="LOCAL-00002" summary="first page visualizer refactor">
+      <created>1736931477819</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1736931477819</updated>
+    </task>
+    <task id="LOCAL-00003" summary="simpler llm replacement">
+      <created>1736938353347</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1736938353347</updated>
+    </task>
+    <task id="LOCAL-00004" summary="adding conda env">
+      <created>1736938825958</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1736938825958</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fixing url">
+      <created>1736943548323</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736943548323</updated>
+    </task>
+    <task id="LOCAL-00006" summary="contact us">
+      <created>1736946507895</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1736946507895</updated>
+    </task>
+    <task id="LOCAL-00007" summary="chatbot-&gt;chat">
+      <created>1736947349817</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1736947349817</updated>
+    </task>
+    <task id="LOCAL-00008" summary="paper (blog placeholder)">
+      <created>1736951957698</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1736951957698</updated>
+    </task>
+    <task id="LOCAL-00009" summary="adding site pages">
+      <created>1736955646197</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1736955646197</updated>
+    </task>
+    <task id="LOCAL-00010" summary="updating site">
+      <created>1736955948908</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1736955948908</updated>
+    </task>
+    <task id="LOCAL-00011" summary="changing to docs">
+      <created>1736956149517</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1736956149517</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="changing gif" />
+    <MESSAGE value="first page visualizer refactor" />
+    <MESSAGE value="simpler llm replacement" />
+    <MESSAGE value="adding conda env" />
+    <MESSAGE value="fixing url" />
+    <MESSAGE value="contact us" />
+    <MESSAGE value="chatbot-&gt;chat" />
+    <MESSAGE value="paper (blog placeholder)" />
+    <MESSAGE value="adding site pages" />
+    <MESSAGE value="updating site" />
+    <MESSAGE value="changing to docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="changing to docs" />
+  </component>
+</project>

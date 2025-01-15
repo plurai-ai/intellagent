@@ -1,5 +1,0 @@
-environment:
-    prompt_path: './examples/airline/input/wiki.md'
-    tools_file: './examples/airline/input/tools/agent_tools.py'
-    database_folder: './examples/airline/input/data'
-    database_validators: './examples/airline/input/validators/validators.py'

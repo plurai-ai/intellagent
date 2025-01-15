@@ -1,2 +1,0 @@
-user_id,name,address,email,payment_methods,orders
-noah_brown_6181,"{'first_name': 'Noah', 'last_name': 'Brown'}","{'address1': '986 Sunset Drive', 'address2': 'Suite 259', 'city': 'Denver', 'country': 'USA', 'province': 'CO', 'zip': '80279'}",noah.brown7922@example.com,"{'paypal_5727330': {'source': 'paypal', 'id': 'paypal_5727330'}, 'credit_card_7815826': {'source': 'credit_card', 'brand': 'mastercard', 'last_four': '9212', 'id': 'credit_card_7815826'}}",['#W7678072']
