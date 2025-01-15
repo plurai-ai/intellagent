@@ -24,12 +24,15 @@ def get_latest_file(directory_path, extension='pickle') -> str:
         return None
     return latest_file.name
 
+
 def validator(table=None):
     def decorator(func):
         func.is_collected = True  # Add a custom attribute to the function
         func.table = table  # Add a category or variable to the function
         return func
+
     return decorator
+
 
 def get_validators_from_module(file_path, table_name):
     """
@@ -39,7 +42,7 @@ def get_validators_from_module(file_path, table_name):
     :return: the list of the table validators
     """
     if not os.path.isfile(file_path):
-        return [] #Validator is optional
+        return []  # Validator is optional
 
     # Load the module dynamically
     module_name = os.path.splitext(os.path.basename(file_path))[0]
@@ -51,6 +54,38 @@ def get_validators_from_module(file_path, table_name):
         if getattr(obj, "is_collected", False) and obj.table == table_name:
             collected.append(obj)
     return collected
+
+
+def update_dict_keys_if_exists(dict1, dict2):
+    """
+    Update the keys of dict1 with the values from dict2 only if the keys exist in dict2.
+
+    Args:
+        dict1 (dict): The first dictionary to be updated.
+        dict2 (dict): The second dictionary providing update values.
+    """
+    for key in dict1.keys():
+        if key in dict2:
+            dict1[key] = dict2[key]
+
+
+def override_llm(config, llm_config):
+    """
+    Override all the LLMs configuration with the new LLM type
+    :param config: The configuration dictionary
+    :param llm_config: The override configuration dictionary
+    """
+    update_dict_keys_if_exists(config['environment']['task_description']['llm'], llm_config)
+    update_dict_keys_if_exists(config['description_generator']['llm_policy'], llm_config)
+    update_dict_keys_if_exists(config['description_generator']['llm_edge'], llm_config)
+    update_dict_keys_if_exists(config['description_generator']['llm_description'], llm_config)
+    update_dict_keys_if_exists(config['description_generator']['llm_refinement'], llm_config)
+    update_dict_keys_if_exists(config['event_generator']['event_graph']['llm'], llm_config)
+    update_dict_keys_if_exists(config['dialog_manager']['critique_config']['llm'], llm_config)
+    update_dict_keys_if_exists(config['dialog_manager']['llm_user'], llm_config)
+    update_dict_keys_if_exists(config['analysis']['llm'], llm_config)
+    return config
+
 
 def override_config(override_config_file, config_file='config/config_default.yml'):
     """
@@ -75,7 +110,12 @@ def override_config(override_config_file, config_file='config/config_default.yml
     with open(override_config_file, 'r') as file:
         override_config_dict = yaml.safe_load(file)
     config_dict = override_dict(default_config_dict, override_config_dict)
+    if 'llm_chas' in config_dict:
+        override_llm(config_dict, config_dict['llm_chas'])
+    if 'llm_chat' in config_dict:
+        update_dict_keys_if_exists(config_dict['dialog_manager']['llm_chat'], config_dict['llm_chat'])
     return config_dict
+
 
 def get_last_created_directory(path):
     # Convert path to Path object for convenience
@@ -91,12 +131,13 @@ def get_last_created_directory(path):
 
     return last_created_dir
 
-def get_last_db(base_path = "./results"):
+
+def get_last_db(base_path="./results"):
     # Get the last created db in the default result path
     last_dir = get_last_created_directory(base_path)
     if last_dir is None:
         return None
-    last_dir = last_dir/'experiments'
+    last_dir = last_dir / 'experiments'
     # Get the last created database file in the last created directory
     last_exp = get_last_created_directory(last_dir)
     try:
@@ -107,12 +148,13 @@ def get_last_db(base_path = "./results"):
         pass
     return None
 
-def get_latest_dataset(base_path = "./results"):
+
+def get_latest_dataset(base_path="./results"):
     # Get the last created db in the default result path
     last_dir = get_last_created_directory(base_path)
     if last_dir is None:
         return None
-    last_dir = last_dir/'datasets'
+    last_dir = last_dir / 'datasets'
     # Get the last created database file in the last created directory
     last_dataset = get_latest_file(str(last_dir))
     if last_dataset is None:

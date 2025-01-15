@@ -16,10 +16,10 @@
 
 <h4 align="center">
     <p>
-        <a href="">Documentation</a> |
+        <a href="https://plurai-ai.github.io/chas/">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
-        <a href="">NewsLetter</a> |
-        <a href="">Paper</a>
+        <a href="https://plurai.substack.com/">NewsLetter</a> |
+        <a href="https://plurai.ai/blog/chas-announcement">Paper</a>
  </p>
 </h4>
 
@@ -30,8 +30,7 @@
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 
-
-**Chat-Agent-Simulator (CHAS)** is an AI-powered diagnostic framework driven by Large Language Models (LLMs) and AI agents. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
+**Chat-Agent-Simulator (CHAS)** a cutting-edge multi-agent framework designed to provide fine-grained diagnostics for chatbot systems. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
 
 Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
 
@@ -59,7 +58,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 
 
-Chat-Agent-Simulator (CHAS) requires `python == 3.10`
+Chat-Agent-Simulator (CHAS) requires `python >= 3.9`
 <br />
 
 #### Step 1 - Download and install
@@ -69,7 +68,7 @@ git clone git@github.com:plurai-ai/chas.git
 cd chas
 ```
 
-You can use Conda, pip, or pipenv to install the dependencies.
+You can use Conda or pip to install the dependencies.
 
 Using pip: 
 ```bash
@@ -79,15 +78,33 @@ pip install -r requirements.txt
 
 #### Step 2 - Set your LLM API Key
 
-Edit the `config/llm_env.yml` file to set up your LLM configuration:
+Edit the `config/llm_env.yml` file to set up your LLM configuration (OpenAI/Azure/Vertex/Anthropic):
 
 ```yaml
 openai:
   OPENAI_API_KEY: "your-api-key-here"
 ```
 
+To change the default LLM provider or model for either the CHAS system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_edcation.yml` file:
+
+
+```yaml
+llm_chas:
+    type: 'azure'
+
+llm_chat:
+    type: 'azure'
+```
+
+To change the number of samples in the database you should modify the `num_samples` in the config file:
+```yaml
+dataset:
+    num_samples: 30
+```
+
+
 ####  Step 3 - Run the Simulator
-If you're utilizing Azure OpenAI services for the `user_llm`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
+If you're utilizing Azure OpenAI services for the `llm_chas`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
 
 For fast simple environment without a database, run the following command:
 ```bash
@@ -110,13 +127,14 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 ## Roadmap
 
 - [x] **Beta Release**
-- [ ] Expand Integration with More Agent Platforms
+- [ ] Integration Agent Platforms
+    - [X] LangGraph
     - [ ] CrewAI
     - [ ] AutoGen
 - [ ] Enable Event Generation from Existing Databases
 - [ ] Implement API Integration for External Chatbot Agents
 - [ ] Add Personality Dimensions to User Agents
-- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Access now by joining our [premium program](TODO))
+- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/contact-us) access)
     - [ ] System Prompt Optimization
     - [ ] Tools Optimization
     - [ ] Graph structure Optimization
@@ -132,7 +150,11 @@ If you wish to be a part of our journey, we invite you to connect with us throug
 
 ## Citation
 
-TODO
+If you have used our code in your research, please cite our [paper](https://plurai.ai/blog/chas-announcement):
+
+```
+@misc{TODO}
+```
 
 
 

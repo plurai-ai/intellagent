@@ -3,3 +3,7 @@ environment:
     tools_file: ''
     database_folder: ''
     database_validators: ''
+
+dataset:
+    num_samples: 20
+
