@@ -92,7 +92,7 @@ To change the default LLM provider or model for either the CHAS system or the ch
 llm_chas:
     type: 'azure'
 
-llm_chatbot:
+llm_chat:
     type: 'azure'
 ```
 

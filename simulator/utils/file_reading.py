@@ -112,8 +112,8 @@ def override_config(override_config_file, config_file='config/config_default.yml
     config_dict = override_dict(default_config_dict, override_config_dict)
     if 'llm_chas' in config_dict:
         override_llm(config_dict, config_dict['llm_chas'])
-    if 'llm_chatbot' in config_dict:
-        update_dict_keys_if_exists(config_dict['dialog_manager']['llm_chat'], config_dict['llm_chatbot'])
+    if 'llm_chat' in config_dict:
+        update_dict_keys_if_exists(config_dict['dialog_manager']['llm_chat'], config_dict['llm_chat'])
     return config_dict
 
 
