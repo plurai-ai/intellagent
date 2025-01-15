@@ -134,7 +134,7 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 - [ ] Enable Event Generation from Existing Databases
 - [ ] Implement API Integration for External Chatbot Agents
 - [ ] Add Personality Dimensions to User Agents
-- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/#products) access)
+- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/contact-us) access)
     - [ ] System Prompt Optimization
     - [ ] Tools Optimization
     - [ ] Graph structure Optimization

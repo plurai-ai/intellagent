@@ -40,6 +40,6 @@ st.markdown(
     - Check out [Plurai Booster](https://plurai.ai/#products)
 
     #### Want to learn more? Or need help with integration?
-    - Contact us [Plurai.ai](https://plurai.ai/#products)
+    - Contact us [Plurai.ai](https://plurai.ai/contact-us)
 """
 )
