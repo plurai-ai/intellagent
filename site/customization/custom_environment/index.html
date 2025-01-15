@@ -20,7 +20,7 @@
     
     
       
-        <title>Custom Environment - CHAS: CHat-Agent-Simulator</title>
+        <title>Custom Environment - CHAS: Chat-Agent-Simulator</title>
       
     
     
@@ -86,9 +86,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CHAS: CHat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
       
-  <img src="../../images/CHAS.webp" alt="logo">
+  <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -99,7 +99,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            CHAS: CHat-Agent-Simulator
+            CHAS: Chat-Agent-Simulator
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -209,7 +209,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../quick_start/installation/" class="md-tabs__link">
+        <a href="../../quick_start/very_quick/" class="md-tabs__link">
           
   
     
@@ -271,7 +271,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/airline/" class="md-tabs__link">
+        <a href="../../examples/education/" class="md-tabs__link">
           
   
     
@@ -326,12 +326,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CHAS: CHat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
       
-  <img src="../../images/CHAS.webp" alt="logo">
+  <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
-    CHAS: CHat-Agent-Simulator
+    CHAS: Chat-Agent-Simulator
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -344,6 +344,8 @@
   
     
     
+      
+        
       
         
       
@@ -383,6 +385,27 @@
             🚀️ Quick Start
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick_start/very_quick/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5 Minute Version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -774,6 +797,8 @@
       
         
       
+        
+      
     
     
       
@@ -814,11 +839,32 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/education/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Education (Basic)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/airline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Airline
+    Airline (Advance)
   </span>
   
 
@@ -1000,12 +1046,14 @@
 
 
 <h1 id="custom-chat-agent-environment-setup">Custom Chat-Agent Environment Setup</h1>
-<p>This guide provides instructions for setting up a custom environment.</p>
+<p>This guide provides instructions for setting up a custom environment.
+We also provide two examples of custom environments: <a href="../../examples/education/">Education (basic)</a> and <a href="../../examples/airline/">Airline (advanced)</a>.</p>
+<p>If you have a complex environment and need assistance with the integration, we offer this service. Feel free to reach out to us via  <a href="https://plurai.ai/contact-us">Plurai.ai</a> for more information.</p>
 <p>You should create a new config_env.yml file and define there the chatbot environment variables</p>
 <pre><code class="language-python">environment:
     prompt_path:  # Path to prompt
-    tools_file: # Path to a python script that include all the tools functions 
-    database_folder: # Path to database folder
+    tools_file: # Optional! Path to a python script that include all the tools functions 
+    database_folder: #  Optional! Path to database folder
     database_validators: # Optional! Path to the file with the validators functions
 </code></pre>
 <p>After defining properly all the variables, you can run the simulator on the new custom environment:</p>
@@ -1015,16 +1063,16 @@
     --dataset NAME         # Optional: Dataset name to use (default: 'latest')
 </code></pre>
 <h2 id="environment-variables">Environment Variables</h2>
-<h3 id="prompt_path"><code>prompt_path</code></h3>
+<h3 id="prompt_path">prompt_path</h3>
 <p>This variable specifies the path to a prompt file. The file should be a simple text file (<code>.txt</code>) or a markdown file (<code>.md</code>) containing the desired prompt.
-The prompt doesn't have to be the exact chatbot system prompt, it can also be a document that describes the list of policies that should be tested. In this case the chatbot system prompt should be also provided (see <a href="../custom_chatbot/#Setting-the-system-prompt">tool chatbot modification</a>).</p>
+The prompt doesn't have to be the exact chatbot system prompt, it can also be a document that describes the list of policies that should be tested. In this case the chatbot system prompt should be also provided (see <a href="../custom_chatbot/#setting-the-system-prompt">tool chatbot modification</a>).</p>
 <p><strong>Example of prompt file:</strong>
-For a complete example of a prompt file, see the <a href="https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/wiki.md">airline chat-agent system prompt</a>.</p>
+For a complete example of a prompt file, see the <a href="https://github.com/plurai-ai/chas/blob/main/examples/airline/input/wiki.md">airline chat-agent system prompt</a>.</p>
 <hr />
-<h3 id="database_folder"><code>database_folder</code></h3>
+<h3 id="database_folder">database_folder</h3>
 <p>This variable specifies the path to a folder containing CSV files. Each CSV file represents a database table used by the system and must include at least one row as an example. It is recommended to provide meaningful and indicative names for the columns in each CSV file.</p>
 <p><strong>Example of database_folder:</strong>
-For a complete example of a database folder, see the <a href="https://github.com/plurai-ai/chatbot_simulator/tree/main/examples/airline/input/data">airline chat-agent database scheme folder</a>.</p>
+For a complete example of a database folder, see the <a href="https://github.com/plurai-ai/chas/tree/main/examples/airline/input/data">airline chat-agent database scheme folder</a>.</p>
 <p>The folder should contain CSV files that define your database tables. Here's an example structure from an airline booking system:</p>
 <p><strong>flights.csv</strong></p>
 <table>
@@ -1115,7 +1163,7 @@ For a complete example of a database folder, see the <a href="https://github.com
 </tr>
 </tbody>
 </table>
-<h3 id="tools_file-optional"><code>tools_file</code> (optional)</h3>
+<h3 id="tools_file-optional">tools_file (optional)</h3>
 <p>This variable specifies the path to a python script containing all the agent tool functions. </p>
 <p>The tool functions must be implemented using one of the following approaches:
 - <strong>Using LangChain's <code>@tool</code> decorator</strong>: <a href="https://python.langchain.com/docs/how_to/custom_tools/#tool-decorator">LangChain Tool Decorator Guide</a>
@@ -1127,9 +1175,9 @@ In the following way:</p>
 <p><strong>The data variable will contain a dictionary of dataframe, where the name is the table name (according to the csv file name in the database folder).</strong></p>
 <p>Optionally, you can define a tool schema by creating a variable named <code>&lt;function_name&gt;_schema</code>. If no schema variable is provided, the system will infer the schema automatically.</p>
 <p><strong>Example of a valid <code>tools_file</code>:</strong><br />
-See <a href="https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/tools/agent_tools.py">airline chat-agent tools python script</a> for reference.</p>
+See <a href="https://github.com/plurai-ai/chas/blob/main/examples/airline/input/tools/agent_tools.py">airline chat-agent tools python script</a> for reference.</p>
 <hr />
-<h3 id="database_validators-optional"><code>database_validators</code> (optional)</h3>
+<h3 id="database_validators-optional">database_validators (optional)</h3>
 <p>Data validators are crucial components of the system.<br />
 These functions guide the database generation pipeline, ensuring data integrity and consistency. They are particularly important when dealing with duplicate information across different tables, as they allow for consistency checks.</p>
 <p>The <code>database_validators</code> variable specifies the path to a Python script that contains the data validation functions.</p>
@@ -1152,7 +1200,7 @@ def user_id_validator(new_df, dataset):
 <li>The <code>@validator</code> decorator requires the table name as an argument.</li>
 <li>The validator function is applied before new data is inserted into the database.</li>
 </ul>
-<p>For a complete example of validators in action, see the airline booking system validators at <a href="https://github.com/plurai-ai/chatbot_simulator/blob/main/examples/airline/input/validators/data_validators.py">airline chat-agent database validators python script</a>. This example includes validators for:
+<p>For a complete example of validators in action, see the airline booking system validators at <a href="https://github.com/plurai-ai/chas/blob/main/examples/airline/input/validators/data_validators.py">airline chat-agent database validators python script</a>. This example includes validators for:
 - User ID validation (preventing duplicate users)
 - Flight ID validation (ensuring unique flight numbers)
 - Flight validation (verifying flight details in reservations)
@@ -1251,7 +1299,7 @@ def user_id_validator(new_df, dataset):
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", null], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", "cards"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>

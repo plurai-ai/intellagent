@@ -9,6 +9,8 @@
       
       
       
+        <link rel="prev" href="../very_quick/">
+      
       
         <link rel="next" href="../configuration/">
       
@@ -18,7 +20,7 @@
     
     
       
-        <title>Installation - CHAS: CHat-Agent-Simulator</title>
+        <title>Installation - CHAS: Chat-Agent-Simulator</title>
       
     
     
@@ -84,9 +86,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CHAS: CHat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
       
-  <img src="../../images/CHAS.webp" alt="logo">
+  <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -97,7 +99,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            CHAS: CHat-Agent-Simulator
+            CHAS: Chat-Agent-Simulator
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -209,7 +211,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../very_quick/" class="md-tabs__link">
           
   
     
@@ -269,7 +271,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/airline/" class="md-tabs__link">
+        <a href="../../examples/education/" class="md-tabs__link">
           
   
     
@@ -324,12 +326,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CHAS: CHat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
       
-  <img src="../../images/CHAS.webp" alt="logo">
+  <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
-    CHAS: CHat-Agent-Simulator
+    CHAS: Chat-Agent-Simulator
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -344,6 +346,8 @@
   
     
     
+      
+        
       
         
       
@@ -386,6 +390,27 @@
             🚀️ Quick Start
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../very_quick/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5 Minute Version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -486,15 +511,6 @@
   <a href="#using-pip" class="md-nav__link">
     <span class="md-ellipsis">
       Using pip
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#using-pipenv" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using pipenv
     </span>
   </a>
   
@@ -792,6 +808,8 @@
       
         
       
+        
+      
     
     
       
@@ -832,11 +850,32 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/education/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Education (Basic)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/airline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Airline
+    Airline (Advance)
   </span>
   
 
@@ -1005,15 +1044,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#using-pipenv" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using pipenv
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1044,25 +1074,21 @@
 <p>This guide provides detailed instructions for setting up your development environment.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li>Python 3.10</li>
+<li><code>python &gt;= 3.9</code></li>
 </ul>
 <h2 id="step-by-step-installation">Step-by-Step Installation</h2>
 <h3 id="1-clone-the-repository">1. Clone the Repository</h3>
-<pre><code class="language-bash">git clone git@github.com:plurai-ai/Chat-Agent-Simulator.git
-cd Chat-Agent-Simulator
+<pre><code class="language-bash">git clone git@github.com:plurai-ai/chas.git
+cd chas
 </code></pre>
 <h3 id="2-install-dependencies">2. Install Dependencies</h3>
 <p>Choose one of the following methods to install dependencies:</p>
 <h4 id="using-conda">Using Conda</h4>
-<pre><code class="language-bash">conda env create -f environment_dev.yml
-conda activate Chat-Agent-Simulator
+<pre><code class="language-bash">conda env create -f environmen.yml
+conda activate chas
 </code></pre>
 <h4 id="using-pip">Using pip</h4>
 <pre><code class="language-bash">pip install -r requirements.txt
-</code></pre>
-<h4 id="using-pipenv">Using pipenv</h4>
-<pre><code class="language-bash">pip install pipenv
-pipenv install
 </code></pre>
 
 
@@ -1099,6 +1125,22 @@ pipenv install
     
       
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../very_quick/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 5 Minute Version">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                5 Minute Version
+              </div>
+            </div>
+          </a>
         
         
           
@@ -1142,7 +1184,7 @@ pipenv install
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", null], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", "cards"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>

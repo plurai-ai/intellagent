@@ -20,7 +20,7 @@
     
     
       
-        <title>Running the Simulator - CHAS: CHat-Agent-Simulator</title>
+        <title>Running the Simulator - CHAS: Chat-Agent-Simulator</title>
       
     
     
@@ -86,9 +86,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CHAS: CHat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
       
-  <img src="../../images/CHAS.webp" alt="logo">
+  <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -99,7 +99,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            CHAS: CHat-Agent-Simulator
+            CHAS: Chat-Agent-Simulator
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -211,7 +211,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../installation/" class="md-tabs__link">
+        <a href="../very_quick/" class="md-tabs__link">
           
   
     
@@ -271,7 +271,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/airline/" class="md-tabs__link">
+        <a href="../../examples/education/" class="md-tabs__link">
           
   
     
@@ -326,12 +326,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CHAS: CHat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: CHat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
       
-  <img src="../../images/CHAS.webp" alt="logo">
+  <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
-    CHAS: CHat-Agent-Simulator
+    CHAS: Chat-Agent-Simulator
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -346,6 +346,8 @@
   
     
     
+      
+        
       
         
       
@@ -388,6 +390,27 @@
             🚀️ Quick Start
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../very_quick/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5 Minute Version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -489,9 +512,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-view-results" class="md-nav__link">
+  <a href="#2-view-results" class="md-nav__link">
     <span class="md-ellipsis">
-      6. View Results
+      2. View Results
     </span>
   </a>
   
@@ -737,6 +760,8 @@
       
         
       
+        
+      
     
     
       
@@ -777,11 +802,32 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/education/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Education (Basic)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/airline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Airline
+    Airline (Advance)
   </span>
   
 
@@ -904,9 +950,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-view-results" class="md-nav__link">
+  <a href="#2-view-results" class="md-nav__link">
     <span class="md-ellipsis">
-      6. View Results
+      2. View Results
     </span>
   </a>
   
@@ -931,6 +977,7 @@
 
 <p>This guide details the steps required to run the simulator.</p>
 <h3 id="1-run-the-simulator">1. Run the Simulator</h3>
+<p>If you're utilizing Azure OpenAI services for <code>user_llm</code>, ensure you <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters">disable</a> the default <code>jailbreak</code> filter before running the simulator.</p>
 <p>Use the following command to run the simulator:</p>
 <pre><code class="language-bash">python run.py --output_path &lt;output_path&gt; [--config_path &lt;config_path&gt;] [--dataset &lt;dataset&gt;]
 </code></pre>
@@ -939,9 +986,9 @@
 - <code>--config_path</code>: (Optional) Path to config file (default: <code>config/config_default.yml</code>)
 - <code>--dataset</code>: (Optional) Dataset name (default: <code>'latest'</code>)</p>
 <p>Example:</p>
-<pre><code class="language-bash">python run.py --output_path ../output/exp1 --config_path ./config/config_airline.yml
+<pre><code class="language-bash">python run.py --output_path results/airline --config_path ./config/config_airline.yml
 </code></pre>
-<h3 id="6-view-results">6. View Results</h3>
+<h3 id="2-view-results">2. View Results</h3>
 <p>After simulation completion, results will be organized in the following structure:</p>
 <pre><code>experiments/
 ├── dataset__[timestamp]__exp_[n]/    # Experiment run folder
@@ -963,7 +1010,8 @@ policies_graph/
 <pre><code class="language-bash">cd simulator/visualization 
 streamlit run Simulator_Visualizer.py
 </code></pre>
-<p>This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.</p>
+<p>This will launch a Streamlit dashboard showing detailed analytics and visualizations of your simulation results.
+<img alt="Dialog Simulation Architecture" src="../../figures/multi-runs.png" /></p>
 
 
 
@@ -1058,7 +1106,7 @@ streamlit run Simulator_Visualizer.py
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", null], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "header.autohide", "announce.dismiss", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "navigation.tabs.icons", "cards"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
