@@ -58,7 +58,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 
 
-Chat-Agent-Simulator (CHAS) requires `python == 3.10`
+Chat-Agent-Simulator (CHAS) requires `python >= 3.9`
 <br />
 
 #### Step 1 - Download and install
