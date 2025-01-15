@@ -19,7 +19,7 @@
         <a href="https://plurai-ai.github.io/chas/">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
         <a href="https://plurai.substack.com/">NewsLetter</a> |
-        <a href="">Paper</a>
+        <a href="https://plurai.ai/blog/chas-announcement">Paper</a>
  </p>
 </h4>
 
@@ -150,7 +150,11 @@ If you wish to be a part of our journey, we invite you to connect with us throug
 
 ## Citation
 
-TODO
+If you have used our code in your research, please cite our [paper](https://plurai.ai/blog/chas-announcement):
+
+```
+@misc{TODO}
+```
 
 
 
