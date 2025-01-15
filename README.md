@@ -16,7 +16,7 @@
 
 <h4 align="center">
     <p>
-        <a href="">Documentation</a> |
+        <a href="https://plurai-ai.github.io/chas/">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
         <a href="https://plurai.substack.com/">NewsLetter</a> |
         <a href="">Paper</a>
@@ -68,7 +68,7 @@ git clone git@github.com:plurai-ai/chas.git
 cd chas
 ```
 
-You can use Conda, pip, or pipenv to install the dependencies.
+You can use Conda or pip to install the dependencies.
 
 Using pip: 
 ```bash
@@ -94,6 +94,12 @@ llm_chas:
 
 llm_chatbot:
     type: 'azure'
+```
+
+To change the number of samples in the database you should modify the `num_samples` in the config file:
+```yaml
+dataset:
+    num_samples: 30
 ```
 
 
@@ -128,7 +134,7 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 - [ ] Enable Event Generation from Existing Databases
 - [ ] Implement API Integration for External Chatbot Agents
 - [ ] Add Personality Dimensions to User Agents
-- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Access now by joining our [premium program](TODO))
+- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/#products) access)
     - [ ] System Prompt Optimization
     - [ ] Tools Optimization
     - [ ] Graph structure Optimization

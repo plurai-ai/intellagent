@@ -5,4 +5,4 @@ environment:
     database_validators: './examples/airline/input/validators/validators.py'
 
 dataset:
-    num_samples: 20
+    num_samples: 10

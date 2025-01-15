@@ -16,7 +16,7 @@ with open(image_path, "rb") as image_file:
     encoded_image = base64.b64encode(image_file.read()).decode()
 
 # Define the target URL
-target_url = "" # TODO: Replace with your desired URL
+target_url = "https://plurai.ai/"
 
 # Create the HTML code for the clickable image
 html_code = f'''
@@ -37,9 +37,9 @@ st.markdown(
     This demo allows you to explore the capabilities of Plurai's chatbot simulator, which simulates thousands of edge-case scenarios to evaluate chatbot agents comprehensively.
 
     #### Want to optimize your chatbot and take it to the next level?
-    - Check out [Plurai Booster](TODO)
+    - Check out [Plurai Booster](https://plurai.ai/#products)
 
     #### Want to learn more? Or need help with integration?
-    - Contact us [Plurai.ai](TODO)
+    - Contact us [Plurai.ai](https://plurai.ai/#products)
 """
 )
