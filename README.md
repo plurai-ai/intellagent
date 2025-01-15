@@ -18,7 +18,7 @@
     <p>
         <a href="">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
-        <a href="">NewsLetter</a> |
+        <a href="https://plurai.substack.com/">NewsLetter</a> |
         <a href="">Paper</a>
  </p>
 </h4>
@@ -30,8 +30,7 @@
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 
-
-**Chat-Agent-Simulator (CHAS)** is an AI-powered diagnostic framework driven by Large Language Models (LLMs) and AI agents. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
+**Chat-Agent-Simulator (CHAS)** a cutting-edge multi-agent framework designed to provide fine-grained diagnostics for chatbot systems. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
 
 Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
 
@@ -110,7 +109,8 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 ## Roadmap
 
 - [x] **Beta Release**
-- [ ] Expand Integration with More Agent Platforms
+- [ ] Integration Agent Platforms
+    - [X] LangGraph
     - [ ] CrewAI
     - [ ] AutoGen
 - [ ] Enable Event Generation from Existing Databases
