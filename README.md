@@ -48,7 +48,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 ## :fire: Quickstart
 
-> For a more detailed and comprehensive guide, see the [Quickstart Guide](TODO add reference).
+> For a more detailed and comprehensive guide, see the [Start Guide](https://plurai-ai.github.io/chas/quick_start/installation/).
 
 
 
@@ -115,7 +115,7 @@ For more complex (slower) environment with a database, run the following command
 python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 ```
 
-Explore the [Customization](TODO add reference) options to configure the simulation for your environment, or delve into the [examples](TODO add reference) we provide to learn more about its capabilities.
+Explore the [Customization](https://plurai-ai.github.io/chas/customization/custom_environment/) options to configure the simulation for your environment, or delve into the [examples](https://plurai-ai.github.io/chas/examples/education/) we provide to learn more about its capabilities.
 #### Step 4 - See the Results
 
 To visualize the simulation results using streamlit, run:
