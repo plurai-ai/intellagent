@@ -146,7 +146,7 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 
 Your contributions are greatly appreciated! If you're eager to contribute, kindly refer to our [Contributing Guidelines](docs/contributing.md)) for detailed information. We’re particularly keen on receiving new examples and environments to enrich the project.
 
-If you wish to be part of our journey, join our [Discord Community](https://discord.gg/YWbT87vAau) and subscribe to our [Newsletter](https://plurai.substack.com/) for updates on advancements, open-source releases, and cutting-edge tools shaping the future of Conversational AI.We're excited to have you onboard!
+If you wish to be part of our journey, join our [Discord Community](https://discord.gg/YWbT87vAau) and subscribe to our [Newsletter](https://plurai.substack.com/). Stay updated on the latest advancements, open-source releases, and cutting-edge tools driving the future of Conversational AI. We're excited to have you with us!
 
 ## Citation
 
