@@ -30,7 +30,7 @@
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 
-**Chat-Agent-Simulator (CHAS)** a cutting-edge multi-agent framework designed to provide fine-grained diagnostics for chatbot systems. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
+**Chat-Agent-Simulator (CHAS)** is a cutting-edge multi-agent framework designed to provide In-depth automated diagnostics for advanced chatbot systems, particularly those integrated with databases and tools. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
 
 Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
 
