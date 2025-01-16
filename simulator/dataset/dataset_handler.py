@@ -118,6 +118,8 @@ class Dataset:
                                          total_n_iterations=iteration_num,
                                          avg_challenge_score=average_challenge_level,
                                          std_challenge_score=std_challenge_level,
-                                         avg_n_policies=avg_n_policies)
-                    )
+                                         avg_n_policies=avg_n_policies,
+                                         llm_description_generator=self.descriptions_generator.config['llm_description'],
+                                         llm_description_refinement=self.descriptions_generator.config['llm_refinement'],
+                                         llm_event_graph_generator=self.event_generator.config["event_graph"]["llm"]))
         logger.info(f'{ConsoleColor.CYAN}Finish building the dataset{ConsoleColor.RESET}')

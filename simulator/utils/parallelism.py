@@ -5,7 +5,7 @@ import contextlib
 from tqdm import trange, tqdm
 import concurrent.futures
 import asyncio
-from simulator.healthcare_analytics import ExceptionEvent,track_event
+from simulator.healthcare_analytics import ExceptionEvent, track_event
 
 
 def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: list[BaseCallbackHandler]) -> list[Any]:

@@ -63,7 +63,7 @@ class BaseEvent(BaseModel):
     unique_id: str = Field(default_factory=get_unique_id)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     event_type: str = Field(default=None, init=False)  # Automatically set
-    cost:Optional[float] = Field(default=0) 
+    cost: Optional[float] = Field(default=0)
     error_message: Optional[str] = Field(default=None)
     
     def __init__(self, **data):
@@ -73,14 +73,17 @@ class BaseEvent(BaseModel):
 class ExtractFlowEvent(BaseEvent):
     n_flows: int
     prompt_length: int
+    llm_policy: dict
 
 class ExtractFlowPoliciesEvent(BaseEvent):
     n_policies_per_flow: list[int]
+    llm_policy: dict
     
 class GenerateRelationsGraphEvent(BaseEvent):
     n_edges: int
     avg_edge_weight: float
     std_edge_weight : float
+    llm_edge: dict
 
 class GenerateDatasetEvent(BaseEvent):
     initial_n_samples: int
@@ -90,11 +93,17 @@ class GenerateDatasetEvent(BaseEvent):
     avg_challenge_score: float
     std_challenge_score: float
     avg_n_policies: float
+    llm_description_generator: dict
+    llm_description_refinement: dict
+    llm_event_graph_generator: dict
     
 class RunSimulationEvent(BaseEvent):
     n_dialogs: int
     avg_n_user_messages_per_dialog: float
     avg_n_chatbot_messages_per_dialog: float
+    llm_critique: dict
+    llm_user: dict
+    llm_chat: dict 
     
 class AnalyzeSimulationResultsEvent(BaseEvent):
     failure_rate : float

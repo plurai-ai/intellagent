@@ -12,9 +12,13 @@ import yaml
 import pandas as pd
 import json
 import uuid
-from simulator.healthcare_analytics import RunSimulationEvent, AnalyzeSimulationResultsEvent, ExceptionEvent, \
-    track_event
 from simulator.utils.analysis import get_dialog_policies
+from simulator.healthcare_analytics import (
+    RunSimulationEvent,
+    AnalyzeSimulationResultsEvent,
+    ExceptionEvent,
+    track_event
+)
 
 logger = None
 
@@ -154,7 +158,10 @@ class SimulatorExecutor:
                                            all_res) if all_res else 0,
                                        avg_n_chatbot_messages_per_dialog=sum(
                                            len(entry['res']['chatbot_messages']) for entry in all_res) / len(
-                                           all_res) if all_res else 0))
+                                           all_res) if all_res else 0,
+                                       llm_critique=self.dialog_manager.config['critique_config']['llm'],
+                                       llm_user=self.dialog_manager.config['llm_user'],
+                                       llm_chat=self.dialog_manager.config['llm_chat']))
         logger.info(f"{ConsoleColor.CYAN}Analyzing the results{ConsoleColor.RESET}")
         self.analyze_results(all_res, experiment_dir)
 
