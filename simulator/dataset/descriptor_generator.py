@@ -122,6 +122,7 @@ class DescriptionGenerator:
         track_event(ExtractFlowEvent(cost=result['usage'],
                                      n_flows=len(flows.dict()['flows']),
                                      prompt_length=len(self.prompt),
+                                     llm_policy=self.config['llm_policy'],
                                      error_message=error_message))
         return flows.dict()['flows']
 
@@ -160,6 +161,7 @@ class DescriptionGenerator:
         self.total_cost += extract_policies_cost
         track_event(ExtractFlowPoliciesEvent(cost=extract_policies_cost,
                                              n_policies_per_flow=n_policies_per_flow,
+                                             llm_policy=self.config['llm_policy'],
                                              error_message=batch_error_message
                                              )
                     )
@@ -214,6 +216,7 @@ class DescriptionGenerator:
                                                 n_edges=n_edges,
                                                 avg_edge_weight=avg_edge_weight,
                                                 std_edge_weight=std_edge_weight,
+                                                llm_edge=self.config['llm_edge'],
                                                 error_message=batch_error_message
                                                 ))
 
