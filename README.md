@@ -16,7 +16,7 @@
 
 <h4 align="center">
     <p>
-        <a href="https://plurai-ai.github.io/chas/">Documentation</a> |
+        <a href="https://chas-doc.plurai.ai/">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
         <a href="https://plurai.substack.com/">NewsLetter</a> |
         <a href="https://plurai.ai/blog/chas-announcement">Paper</a>
@@ -43,7 +43,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 - 💪 Enables confident deployment of more reliable chatbot agents
 
 
-> To understand the key concepts and how the CHAS system operates, refer to the [system overview guide](https://plurai-ai.github.io/chas/How_it_Works/how-it-works/)
+> To understand the key concepts and how the CHAS system operates, refer to the [system overview guide](https://chas-doc.plurai.ai/How_it_Works/how-it-works/)
 
 ## 🔍 Demo
 
@@ -51,7 +51,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 ## :fire: Quickstart
 
-> For a more detailed and comprehensive guide, see the [Start Guide](https://plurai-ai.github.io/chas/quick_start/installation/).
+> For a more detailed and comprehensive guide, see the [Start Guide](https://chas-doc.plurai.ai/quick_start/installation/).
 
 
 
@@ -118,7 +118,7 @@ For more complex (slower) environment with a database, run the following command
 python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 ```
 
-Explore the [Customization](https://plurai-ai.github.io/chas/customization/custom_environment/) options to configure the simulation for your environment, or delve into the [examples](https://plurai-ai.github.io/chas/examples/education/) we provide to learn more about its capabilities.
+Explore the [Customization](https://chas-doc.plurai.ai/customization/custom_environment/) options to configure the simulation for your environment, or delve into the [examples](https://chas-doc.plurai.ai/examples/education/) we provide to learn more about its capabilities.
 #### Step 4 - See the Results
 
 To visualize the simulation results using streamlit, run:
