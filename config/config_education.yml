@@ -6,4 +6,8 @@ environment:
 
 dataset:
     num_samples: 20
+    cost_limit: 3
+
+dialog_manager:
+    cost_limit: 2
 
