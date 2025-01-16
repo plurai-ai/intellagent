@@ -42,6 +42,9 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 - 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
 - 💪 Enables confident deployment of more reliable chatbot agents
 
+
+> To understand the key concepts and how the CHAS system operates, refer to the [system overview guide](https://plurai-ai.github.io/chas/How_it_Works/how-it-works/)
+
 ## 🔍 Demo
 
 ![simulator_recording](./docs/simulator_recording.gif)
