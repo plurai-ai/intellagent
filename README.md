@@ -3,7 +3,7 @@
   src="./docs/figures/logo.png">
 </h1>
 <p align="center">
-  <i>Know your Chatbot</i>
+  <i>Know Your Chat-Agent to Unleash Its Full Potential</i>
 </p>
 
 <p align="center">
