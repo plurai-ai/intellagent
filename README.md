@@ -36,11 +36,18 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 ## Key Features
 
+- 🔬 **Generate Thousands of Edge-Case Scenarios:**  
+  Automatically generate highly realistic edge-case scenarios tailored specifically to your chat agent.
 
-- 🔬 Simulates thousands of **realistic** edge-case events tailored to your chatbot agent and system data schema
-- 🤖 Simulates user interactions with your agent based on generated events
-- 📊 Comprehensive report with evaluation metrics including success rates, policy & tools failure points, complexity-level analysis
-- 💪 Enables confident deployment of more reliable chatbot agents
+- 🤖 **Simulate Diverse User Interactions:**  
+  Evaluate your agent across a wide spectrum of scenarios with varying complexity levels.
+
+- 📊 **Comprehensive Performance Evaluations:**  
+  Access detailed metrics, including success rates across policies, tools, and complexity tiers, to uncover strengths and areas for improvement.
+
+- 💪 **Confident Deployment of Robust Chat Agents:**  
+  Deploy chat agents that are reliable, resilient, and ready for real-world interactions.
+
 
 
 > To understand the key concepts and how the CHAS system operates, refer to the [system overview guide](https://chas-doc.plurai.ai/How_it_Works/how-it-works/)
