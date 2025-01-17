@@ -3,7 +3,7 @@
   src="./docs/figures/logo.png">
 </h1>
 <p align="center">
-  <i>Know your chatbot</i>
+  <i>Know your Chatbot</i>
 </p>
 
 <p align="center">
@@ -88,7 +88,7 @@ openai:
   OPENAI_API_KEY: "your-api-key-here"
 ```
 
-To change the default LLM provider or model for either the CHAS system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_edcation.yml` file:
+To change the default LLM provider or model for either the CHAS system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_education.yml` file:
 
 
 ```yaml
