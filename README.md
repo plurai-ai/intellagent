@@ -125,6 +125,11 @@ For more complex (slower) environment with a database, run the following command
 python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 ```
 
+> **Troubleshooting**  
+> - **rate limit messages** → Decrease `num_workers` variables in the `config_default` file.  
+> - **Frequent timeout errors** → Increase the `timeout` values in the `config_default` file.
+
+
 Explore the [Customization](https://chas-doc.plurai.ai/customization/custom_environment/) options to configure the simulation for your environment, or delve into the [examples](https://chas-doc.plurai.ai/examples/education/) we provide to learn more about its capabilities.
 #### Step 4 - See the Results
 
@@ -176,7 +181,7 @@ If you prefer not to have your usage tracked, you can disable this feature by se
 
 ## ✉️ Support / Contact us
 - Join our Community for discussions, updates and announcements [Community Discord](https://discord.gg/YWbT87vAau)
-- Our email: [‫chas@plurai.ai‬](mailto:chas@plurai.ai)
+- Contact us: [‫Plurai‬](https://plurai.ai/contact-us)
 - [GitHub Issues](https://github.com/plurai-ai/chas/issues) for bug reports and feature requests
 
 
