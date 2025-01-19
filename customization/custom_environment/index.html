@@ -20,7 +20,7 @@
     
     
       
-        <title>Custom Environment - CHAS: Chat-Agent-Simulator</title>
+        <title>Custom Environment - IntellAgent: Uncover Your Agent's Blind Spots</title>
       
     
     
@@ -86,7 +86,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="IntellAgent: Uncover Your Agent&#39;s Blind Spots" class="md-header__button md-logo" aria-label="IntellAgent: Uncover Your Agent's Blind Spots" data-md-component="logo">
       
   <img src="../../assets/images/favicon.png" alt="logo">
 
@@ -99,7 +99,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            CHAS: Chat-Agent-Simulator
+            IntellAgent: Uncover Your Agent's Blind Spots
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -234,7 +234,7 @@
   
     
   
-  📘 How CHAS Works
+  📘 How IntellAgent Works
 
         </a>
       </li>
@@ -326,12 +326,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="IntellAgent: Uncover Your Agent&#39;s Blind Spots" class="md-nav__button md-logo" aria-label="IntellAgent: Uncover Your Agent's Blind Spots" data-md-component="logo">
       
   <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
-    CHAS: Chat-Agent-Simulator
+    IntellAgent: Uncover Your Agent's Blind Spots
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -509,7 +509,7 @@
             
   
   <span class="md-ellipsis">
-    📘 How CHAS Works
+    📘 How IntellAgent Works
   </span>
   
 
@@ -519,7 +519,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            📘 How CHAS Works
+            📘 How IntellAgent Works
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1067,12 +1067,12 @@ We also provide two examples of custom environments: <a href="../../examples/edu
 <p>This variable specifies the path to a prompt file. The file should be a simple text file (<code>.txt</code>) or a markdown file (<code>.md</code>) containing the desired prompt.
 The prompt doesn't have to be the exact chatbot system prompt, it can also be a document that describes the list of policies that should be tested. In this case the chatbot system prompt should be also provided (see <a href="../custom_chatbot/#setting-the-system-prompt">tool chatbot modification</a>).</p>
 <p><strong>Example of prompt file:</strong>
-For a complete example of a prompt file, see the <a href="https://github.com/plurai-ai/chas/blob/main/examples/airline/input/wiki.md">airline chat-agent system prompt</a>.</p>
+For a complete example of a prompt file, see the <a href="https://github.com/plurai-ai/intellagent/blob/main/examples/airline/input/wiki.md">airline chat-agent system prompt</a>.</p>
 <hr />
 <h3 id="database_folder">database_folder</h3>
 <p>This variable specifies the path to a folder containing CSV files. Each CSV file represents a database table used by the system and must include at least one row as an example. It is recommended to provide meaningful and indicative names for the columns in each CSV file.</p>
 <p><strong>Example of database_folder:</strong>
-For a complete example of a database folder, see the <a href="https://github.com/plurai-ai/chas/tree/main/examples/airline/input/data">airline chat-agent database scheme folder</a>.</p>
+For a complete example of a database folder, see the <a href="https://github.com/plurai-ai/intellagent/tree/main/examples/airline/input/data">airline chat-agent database scheme folder</a>.</p>
 <p>The folder should contain CSV files that define your database tables. Here's an example structure from an airline booking system:</p>
 <p><strong>flights.csv</strong></p>
 <table>
@@ -1175,7 +1175,7 @@ In the following way:</p>
 <p><strong>The data variable will contain a dictionary of dataframe, where the name is the table name (according to the csv file name in the database folder).</strong></p>
 <p>Optionally, you can define a tool schema by creating a variable named <code>&lt;function_name&gt;_schema</code>. If no schema variable is provided, the system will infer the schema automatically.</p>
 <p><strong>Example of a valid <code>tools_file</code>:</strong><br />
-See <a href="https://github.com/plurai-ai/chas/blob/main/examples/airline/input/tools/agent_tools.py">airline chat-agent tools python script</a> for reference.</p>
+See <a href="https://github.com/plurai-ai/intellagent/blob/main/examples/airline/input/tools/agent_tools.py">airline chat-agent tools python script</a> for reference.</p>
 <hr />
 <h3 id="database_validators-optional">database_validators (optional)</h3>
 <p>Data validators are crucial components of the system.<br />
@@ -1200,7 +1200,7 @@ def user_id_validator(new_df, dataset):
 <li>The <code>@validator</code> decorator requires the table name as an argument.</li>
 <li>The validator function is applied before new data is inserted into the database.</li>
 </ul>
-<p>For a complete example of validators in action, see the airline booking system validators at <a href="https://github.com/plurai-ai/chas/blob/main/examples/airline/input/validators/data_validators.py">airline chat-agent database validators python script</a>. This example includes validators for:
+<p>For a complete example of validators in action, see the airline booking system validators at <a href="https://github.com/plurai-ai/intellagent/blob/main/examples/airline/input/validators/data_validators.py">airline chat-agent database validators python script</a>. This example includes validators for:
 - User ID validation (preventing duplicate users)
 - Flight ID validation (ensuring unique flight numbers)
 - Flight validation (verifying flight details in reservations)

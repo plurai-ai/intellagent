@@ -18,7 +18,7 @@
     
     
       
-        <title>5 Minute Version - CHAS: Chat-Agent-Simulator</title>
+        <title>5 Minute Version - IntellAgent: Uncover Your Agent's Blind Spots</title>
       
     
     
@@ -84,7 +84,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-header__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="IntellAgent: Uncover Your Agent&#39;s Blind Spots" class="md-header__button md-logo" aria-label="IntellAgent: Uncover Your Agent's Blind Spots" data-md-component="logo">
       
   <img src="../../assets/images/favicon.png" alt="logo">
 
@@ -97,7 +97,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            CHAS: Chat-Agent-Simulator
+            IntellAgent: Uncover Your Agent's Blind Spots
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -234,7 +234,7 @@
   
     
   
-  📘 How CHAS Works
+  📘 How IntellAgent Works
 
         </a>
       </li>
@@ -324,12 +324,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CHAS: Chat-Agent-Simulator" class="md-nav__button md-logo" aria-label="CHAS: Chat-Agent-Simulator" data-md-component="logo">
+    <a href="../.." title="IntellAgent: Uncover Your Agent&#39;s Blind Spots" class="md-nav__button md-logo" aria-label="IntellAgent: Uncover Your Agent's Blind Spots" data-md-component="logo">
       
   <img src="../../assets/images/favicon.png" alt="logo">
 
     </a>
-    CHAS: Chat-Agent-Simulator
+    IntellAgent: Uncover Your Agent's Blind Spots
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -584,7 +584,7 @@
             
   
   <span class="md-ellipsis">
-    📘 How CHAS Works
+    📘 How IntellAgent Works
   </span>
   
 
@@ -594,7 +594,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            📘 How CHAS Works
+            📘 How IntellAgent Works
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1009,11 +1009,11 @@
 
   <h1>5 Minute Version</h1>
 
-<p>This is a '5-minute version', if you just want to run CHAS quickly on example data.
+<p>This is a '5-minute version', if you just want to run IntellAgent quickly on example data.
 If you want more in-depth information, go to the <a href="../installation/">Installation Guide</a>.</p>
 <h4 id="step-1-download-and-install">Step 1 - Download and install</h4>
-<pre><code class="language-bash">git clone git@github.com:plurai-ai/chas.git
-cd chas
+<pre><code class="language-bash">git clone git@github.com:plurai-ai/intellagent.git
+cd intellagent
 </code></pre>
 <p>You can use Conda or pip to install the dependencies.</p>
 <p>Using pip: </p>
@@ -1024,8 +1024,8 @@ cd chas
 <pre><code class="language-yaml">openai:
   OPENAI_API_KEY: &quot;your-api-key-here&quot;
 </code></pre>
-<p>To change the default LLM provider or model for either the CHAS system or the chatbot, you can easily update the configuration file. For instance, modify the <code>config/config_edcation.yml</code> file:</p>
-<pre><code class="language-yaml">llm_chas:
+<p>To change the default LLM provider or model for either the IntellAgent system or the chatbot, you can easily update the configuration file. For instance, modify the <code>config/config_edcation.yml</code> file:</p>
+<pre><code class="language-yaml">llm_intellagent:
     type: 'azure'
 
 llm_chat:
@@ -1043,6 +1043,11 @@ llm_chat:
 <p>For more complex (slower) environment with a database, run the following command:</p>
 <pre><code class="language-bash">python run.py --output_path results/airline --config_path ./config/config_airline.yml 
 </code></pre>
+<blockquote>
+<p><strong>Troubleshooting</strong><br />
+- <strong>Rate limit messages</strong> → Decrease <code>num_workers</code> variables in the <code>config_default</code> file.<br />
+- <strong>Frequent timeout errors</strong> → Increase the <code>timeout</code> values in the <code>config_default</code> file.</p>
+</blockquote>
 <p>Explore all the <a href="../configuration/">Customization</a> options to configure the simulation for your environment.  or delve into the <a href="../../examples/education/">examples</a> we provide to learn more about its capabilities.</p>
 <h4 id="step-4-see-the-results">Step 4 - See the Results</h4>
 <p>To understand all the simulator generated artifacts, see the <a href="../Running_the_Simulator/#2-view-results">Results</a> section.</p>
