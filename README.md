@@ -3,7 +3,7 @@
   src="./docs/figures/logo.png">
 </h1>
 <p align="center">
-  <i>Know Your Chat-Agent to Unleash Its Full Potential</i>
+  <i>Uncover Your Agent's Blind Spots to Unlock Its Full Potential</i>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
         <a href="https://intellagent-doc.plurai.ai/">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
         <a href="https://plurai.substack.com/">NewsLetter</a> |
-        <a href="https://plurai.ai/blog/intellagent-announcement">Paper</a>
+        <a href="https://plurai.substack.com/p/intellagent-an-open-source-multi">Paper</a>
  </p>
 </h4>
 
@@ -29,24 +29,23 @@
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
+**IntellAgent** is a powerful multi-agent framework designed to deliver automated diagnostics for AI agents. It simulates thousands of edge-case scenarios to test your agent from every angle, uncover weaknesses, and provide actionable insights for optimization.
 
-**IntellAgent** is a cutting-edge multi-agent framework designed to provide In-depth automated diagnostics for advanced chatbot systems, particularly those integrated with databases and tools. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, IntellAgent helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
-
-Don't limit your chatbot's potential because of what you don't know. Use IntellAgent to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
+Don't let unknowns hold your agent back. With IntellAgent, you can understand its limits, address gaps, and deploy confidently.
 
 ## Key Features
 
 - 🔬 **Generate Thousands of Edge-Case Scenarios:**  
-  Automatically generate highly realistic edge-case scenarios tailored specifically to your chat agent.
+  Automatically generate highly realistic edge-case scenarios tailored specifically to your agent.
 
 - 🤖 **Simulate Diverse User Interactions:**  
   Evaluate your agent across a wide spectrum of scenarios with varying complexity levels.
 
 - 📊 **Comprehensive Performance Evaluations:**  
-  Access detailed metrics, including success rates across policies, tools, and complexity tiers, to uncover strengths and areas for improvement.
+  Gain detailed metrics to uncover performance gaps, identify areas for improvement, and make informed decisions to optimize your models.
 
-- 💪 **Confident Deployment of Robust Chat Agents:**  
-  Deploy chat agents that are reliable, resilient, and ready for real-world interactions.
+- 💪 **Confident Deployment of Robust Agents:**  
+  Deploy agents that are reliable, resilient, and ready for real-world interactions.
 
 
 
@@ -149,7 +148,7 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 - [ ] Enable Event Generation from Existing Databases
 - [ ] Implement API Integration for External Chatbot Agents
 - [ ] Add Personality Dimensions to User Agents
-- [ ] Optimize Chatbot Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/contact-us) access)
+- [ ] Optimize Chat-Agent Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/contact-us) access)
     - [ ] System Prompt Optimization
     - [ ] Tools Optimization
     - [ ] Graph structure Optimization
@@ -161,11 +160,11 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
 
 Your contributions are greatly appreciated! If you're eager to contribute, kindly refer to our [Contributing Guidelines](docs/contributing.md)) for detailed information. We’re particularly keen on receiving new examples and environments to enrich the project.
 
-If you wish to be part of our journey, join our [Discord Community](https://discord.gg/YWbT87vAau) and subscribe to our [Newsletter](https://plurai.substack.com/). Stay updated on the latest advancements, open-source releases, and cutting-edge tools driving the future of Conversational AI. We're excited to have you with us!
+If you wish to be part of our journey, join our [Discord Community](https://discord.gg/YWbT87vAau) and subscribe to our [Newsletter](https://plurai.substack.com/). Stay updated on the latest advancements, open-source releases, and cutting-edge tools driving the future of Reliable Conversational AI. We're excited to have you with us!
 
 ## Citation
 
-If you have used our code in your research, please cite our [paper](https://plurai.ai/blog/intellagent-announcement):
+If you have used our code in your research, please cite our [paper](https://plurai.substack.com/p/intellagent-an-open-source-multi):
 
 ```
 @misc{TODO}

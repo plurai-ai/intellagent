@@ -1,4 +1,4 @@
-# How Chat-Agent-Simulator works
+# How IntellAgent works
 
 IntellAgent operates through a sophisticated AI pipeline powered by Large Language Models (LLMs) and Langraph agents. This document outlines the step-by-step optimization process flows.
 
