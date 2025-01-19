@@ -125,7 +125,7 @@ python run.py --output_path results/airline --config_path ./config/config_airlin
 ```
 
 > **Troubleshooting**  
-> - **rate limit messages** → Decrease `num_workers` variables in the `config_default` file.  
+> - **Rate limit messages** → Decrease `num_workers` variables in the `config_default` file.  
 > - **Frequent timeout errors** → Increase the `timeout` values in the `config_default` file.
 
 
