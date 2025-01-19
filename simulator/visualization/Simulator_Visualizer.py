@@ -29,14 +29,14 @@ html_code = f'''
 st.markdown(html_code, unsafe_allow_html=True)
 
 #st.image(base_path + 'images/plurai_logo.png', width=300)  # Added line to display the Plurai logo
-st.write("### Welcome to Plurai Chat-Agent-Simulator (CHAS)!")
+st.write("### Welcome to Plurai IntellAgent!")
 
 st.markdown(
     """
-   **Chat-Agent-Simulator (CHAS)** a cutting-edge multi-agent framework designed to provide fine-grained diagnostics for chatbot systems.
-    This demo allows you to explore the capabilities of Plurai's chatbot simulator, which simulates thousands of edge-case scenarios to evaluate chatbot agents comprehensively.
+   **IntellAgent** is a multi-agent framework designed to provide fine-grained diagnostics for Conversational AI systems.
+    This demo allows you to explore the capabilities of Plurai's chat-agent simulator, which simulates thousands of edge-case scenarios to discover failure points, performance gaps, and inform optimization decisions for chat-agents.
 
-    #### Want to optimize your chatbot and take it to the next level?
+    #### Want to optimize your chat-agent and take it to the next level?
     - Check out [Plurai Booster](https://plurai.ai/#products)
 
     #### Want to learn more? Or need help with integration?

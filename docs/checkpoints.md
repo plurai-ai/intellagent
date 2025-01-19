@@ -1,6 +1,6 @@
 # Checkpoints and Cost Saving and Monitoring
 
-The CHAS system is optimized for cost efficiency and provides multiple levels of checkpoints to reduce expenses.
+The IntellAgent system is optimized for cost efficiency and provides multiple levels of checkpoints to reduce expenses.
 
 This document outlines the different types of checkpoints and their locations within the pipeline.
 
