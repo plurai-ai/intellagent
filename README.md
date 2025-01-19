@@ -10,16 +10,16 @@
     <!-- community badges -->
     <a href="https://discord.gg/YWbT87vAau"><img src="https://img.shields.io/badge/Join-Discord-blue.svg"/></a>
     <!-- license badge -->
-    <a href="https://github.com/plurai-ai/chas/blob/main/LICENSE">
+    <a href="https://github.com/plurai-ai/intellagent/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-green.svg"></a>
 </p>
 
 <h4 align="center">
     <p>
-        <a href="https://chas-doc.plurai.ai/">Documentation</a> |
+        <a href="https://intellagent-doc.plurai.ai/">Documentation</a> |
         <a href="#fire-quickstart">Quick start</a> |
         <a href="https://plurai.substack.com/">NewsLetter</a> |
-        <a href="https://plurai.ai/blog/chas-announcement">Paper</a>
+        <a href="https://plurai.ai/blog/intellagent-announcement">Paper</a>
  </p>
 </h4>
 
@@ -30,9 +30,9 @@
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 
-**Chat-Agent-Simulator (CHAS)** is a cutting-edge multi-agent framework designed to provide In-depth automated diagnostics for advanced chatbot systems, particularly those integrated with databases and tools. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, CHAS helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
+**IntellAgent** is a cutting-edge multi-agent framework designed to provide In-depth automated diagnostics for advanced chatbot systems, particularly those integrated with databases and tools. It simulates thousands of edge-case scenarios to comprehensively evaluate chatbot agents. By stress-testing your agent from all angles in wide-range of complexity levels, IntellAgent helps identify potential failure points and provides detailed performance analysis to ensure reliable deployment.
 
-Don't limit your chatbot's potential because of what you don't know. Use CHAS to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
+Don't limit your chatbot's potential because of what you don't know. Use IntellAgent to know exactly what your agent can handle, fix what it can't, and deploy with confidence.
 
 ## Key Features
 
@@ -50,7 +50,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 
 
-> To understand the key concepts and how the CHAS system operates, refer to the [system overview guide](https://chas-doc.plurai.ai/How_it_Works/how-it-works/)
+> To understand the key concepts and how the IntellAgent system operates, refer to the [system overview guide](https://intellagent-doc.plurai.ai/How_it_Works/how-it-works/)
 
 ## 🔍 Demo
 
@@ -58,7 +58,7 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 ## :fire: Quickstart
 
-> For a more detailed and comprehensive guide, see the [Start Guide](https://chas-doc.plurai.ai/quick_start/installation/).
+> For a more detailed and comprehensive guide, see the [Start Guide](https://intellagent-doc.plurai.ai/quick_start/installation/).
 
 
 
@@ -68,14 +68,14 @@ Don't limit your chatbot's potential because of what you don't know. Use CHAS to
 
 
 
-Chat-Agent-Simulator (CHAS) requires `python >= 3.9`
+IntellAgent requires `python >= 3.9`
 <br />
 
 #### Step 1 - Download and install
 
 ```bash
-git clone git@github.com:plurai-ai/chas.git
-cd chas
+git clone git@github.com:plurai-ai/intellagent.git
+cd intellagent
 ```
 
 You can use Conda or pip to install the dependencies.
@@ -95,11 +95,11 @@ openai:
   OPENAI_API_KEY: "your-api-key-here"
 ```
 
-To change the default LLM provider or model for either the CHAS system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_education.yml` file:
+To change the default LLM provider or model for either the IntellAgent system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_education.yml` file:
 
 
 ```yaml
-llm_chas:
+llm_intellagent:
     type: 'azure'
 
 llm_chat:
@@ -114,7 +114,7 @@ dataset:
 
 
 ####  Step 3 - Run the Simulator
-If you're utilizing Azure OpenAI services for the `llm_chas`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
+If you're utilizing Azure OpenAI services for the `llm_intellagent`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
 
 For fast simple environment without a database, run the following command:
 ```bash
@@ -130,7 +130,7 @@ python run.py --output_path results/airline --config_path ./config/config_airlin
 > - **Frequent timeout errors** → Increase the `timeout` values in the `config_default` file.
 
 
-Explore the [Customization](https://chas-doc.plurai.ai/customization/custom_environment/) options to configure the simulation for your environment, or delve into the [examples](https://chas-doc.plurai.ai/examples/education/) we provide to learn more about its capabilities.
+Explore the [Customization](https://intellagent-doc.plurai.ai/customization/custom_environment/) options to configure the simulation for your environment, or delve into the [examples](https://intellagent-doc.plurai.ai/examples/education/) we provide to learn more about its capabilities.
 #### Step 4 - See the Results
 
 To visualize the simulation results using streamlit, run:
@@ -165,7 +165,7 @@ If you wish to be part of our journey, join our [Discord Community](https://disc
 
 ## Citation
 
-If you have used our code in your research, please cite our [paper](https://plurai.ai/blog/chas-announcement):
+If you have used our code in your research, please cite our [paper](https://plurai.ai/blog/intellagent-announcement):
 
 ```
 @misc{TODO}
@@ -175,13 +175,13 @@ If you have used our code in your research, please cite our [paper](https://plur
 
 ## 🔍 Open Analytics
 
-We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](https://github.com/plurai-ai/chas/healthcare_analytics.py).
+We collect basic usage metrics to better understand our users' needs and improve our services. As a transparent startup, we are committed to open-sourcing all the data we collect. **Plurai does not track any information that can identify you or your company.** You can review the specific metrics we track in the [code](https://github.com/plurai-ai/intellagent/healthcare_analytics.py).
 
 If you prefer not to have your usage tracked, you can disable this feature by setting the `PLURAI_DO_NOT_TRACK` flag to true.
 
 ## ✉️ Support / Contact us
 - Join our Community for discussions, updates and announcements [Community Discord](https://discord.gg/YWbT87vAau)
 - Contact us: [‫Plurai‬](https://plurai.ai/contact-us)
-- [GitHub Issues](https://github.com/plurai-ai/chas/issues) for bug reports and feature requests
+- [GitHub Issues](https://github.com/plurai-ai/intellagent/issues) for bug reports and feature requests
 
 

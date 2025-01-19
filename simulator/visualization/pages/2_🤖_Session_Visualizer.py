@@ -135,7 +135,7 @@ with divider2:
 with col2:
     st.markdown(
         "<h1 style='text-align: center;'>"
-        "🕵️ Plurai dialog</h1>",
+        "🕵️ IntellAgent dialog</h1>",
         unsafe_allow_html=True
     )
 

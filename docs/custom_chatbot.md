@@ -10,7 +10,7 @@ Before customizing the chatbot, ensure the environment is set up by following th
 ## Tool-Calling Agent
 
 If you're using a basic tool-calling agent, the only required modification (apart from environment customization) is selecting the appropriate LLM.  
-CHAS supports all LangChain-compatible tool supported LLMs. Simply define the LLM type and name in the [configuration file](.././config/config_default.yml) according to your chatbot settings:  
+IntellAgent supports all LangChain-compatible tool supported LLMs. Simply define the LLM type and name in the [configuration file](.././config/config_default.yml) according to your chatbot settings:  
 
 ```yaml
 llm_chat:

@@ -1,4 +1,4 @@
-name: chas
+name: intellagent
 channels:
   - defaults
   - conda-forge

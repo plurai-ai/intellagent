@@ -1,7 +1,7 @@
 # Architecture System Overview 
 <img src="./figures/arch_overview.png" alt="Architecture System overview" width="90%">
 
-The CHAS system pipeline consists of three main components:
+The IntellAgent system pipeline consists of three main components:
 
 1. **Event Generation**
    - Input: Database schema and either:
@@ -29,7 +29,7 @@ The CHAS system pipeline consists of three main components:
      - Complexity-based evaluation reports
 
 ## 1. Event Generation
-The CHAS Event Generator creates realistic chatbot interactions through a multi-stage pipeline that transforms high-level policies into concrete scenarios with corresponding database states. The process consists of three main components:
+The IntellAgent Event Generator creates realistic chatbot interactions through a multi-stage pipeline that transforms high-level policies into concrete scenarios with corresponding database states. The process consists of three main components:
 
 ### 1.1 Policy Analysis & Graph Construction
 The `DescriptionGenerator` class handles the initial policy analysis through these steps:

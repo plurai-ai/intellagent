@@ -1,6 +1,6 @@
 # How Chat-Agent-Simulator works
 
-Chat-Agent-Simulator (CHAS) operates through a sophisticated AI pipeline powered by Large Language Models (LLMs) and Langraph agents. This document outlines the step-by-step optimization process flows.
+IntellAgent operates through a sophisticated AI pipeline powered by Large Language Models (LLMs) and Langraph agents. This document outlines the step-by-step optimization process flows.
 
 ## Pipeline Overview
 
@@ -23,7 +23,7 @@ The system automatically:
 ![Flow and Policies Generation](./figures/flow_and_policies_decomposition.png)
 
 ### 3. Policies Graph Generation
-CHAS creates a weighted graph structure where:
+IntellAgent creates a weighted graph structure where:
 - Nodes represent individual policies
 - Edges indicate relationships between policies
 - Edge weights reflect the challenge score of implementing connected policies together
@@ -43,7 +43,7 @@ Each scenario is assigned varying challenge scores to ensure thorough testing ac
 ![Generate Dataset Event](./figures/generate_dataset_event.png)
 
 ### 5. Simulation Execution
-CHAS runs generated scenarios through an interactive dialog system, capturing:
+IntellAgent runs generated scenarios through an interactive dialog system, capturing:
 - Event execution details
 - Complete dialog logs
 - Simulated user interactions
@@ -69,4 +69,4 @@ The framework is designed with modularity and adaptability in mind, allowing for
 - Customizable evaluation metrics
 - Scalable testing scenarios
 
-This architecture ensures that CHAS can evolve to meet changing testing needs while maintaining comprehensive coverage of potential edge cases and failure points.
+This architecture ensures that IntellAgent can evolve to meet changing testing needs while maintaining comprehensive coverage of potential edge cases and failure points.
