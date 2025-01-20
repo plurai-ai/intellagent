@@ -1,5 +1,5 @@
 <div align="center">
- <img src="./docs/figures/logo.png" alt="IntellAgent Logo" width="200">
+ <img src="./docs/figures/intellagent_logo.png" alt="IntellAgent Logo" width="200">
  
  <i>Uncover Your Agent's Blind Spots to Unlock Its Full Potential</i>
 
