@@ -29,23 +29,28 @@
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-**IntellAgent** is a powerful multi-agent framework designed to deliver automated diagnostics for AI agents. It simulates thousands of edge-case scenarios to test your agent from every angle, uncover weaknesses, and provide actionable insights for optimization.
 
-Don't let unknowns hold your agent back. With IntellAgent, you can understand its limits, address gaps, and deploy confidently.
+# IntellAgent: Build Reliable Conversational AI Agents
 
-## Key Features
+Most conversational AI agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
 
-- 🔬 **Generate Thousands of Edge-Case Scenarios:**  
-  Automatically generate highly realistic edge-case scenarios tailored specifically to your agent.
+**This is where IntellAgent steps in.** Our multi-agent framework helps you test your agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
 
-- 🤖 **Simulate Diverse User Interactions:**  
-  Evaluate your agent across a wide spectrum of scenarios with varying complexity levels.
+### Key Features
+- 🔬 **Edge-Case Generation**  
+ Automatically create thousands of realistic test scenarios tailored to your agent's use cases and requirements
 
-- 📊 **Comprehensive Performance Evaluations:**  
-  Gain detailed metrics to uncover performance gaps, identify areas for improvement, and make informed decisions to optimize your models.
+- 🤖 **User Interaction Simulation**  
+ Test your agent against diverse user behaviors and conversation patterns across varying complexity levels
 
-- 💪 **Confident Deployment of Robust Agents:**  
-  Deploy agents that are reliable, resilient, and ready for real-world interactions.
+- 📊 **Performance Analytics**  
+ Get detailed metrics and insights to identify weaknesses, track improvements, and optimize your agent's performance
+
+- 💪 **Production-Ready Deployment**  
+ Deploy with confidence knowing your agent has been thoroughly tested against real-world scenarios
+
+Stop hoping your agent will work in production. Know it will. Start building robust conversational agents that your users can trust.
+
 
 
 
