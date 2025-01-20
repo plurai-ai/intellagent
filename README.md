@@ -11,7 +11,8 @@
  [Newsletter](https://plurai.substack.com/) |
  [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent)
 </div>
-Most conversational agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
+
+Most conversational agents fail in production due to hallucinations, inconsistent responses, and policy violations all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
 
 **This is where IntellAgent steps in.** IntellAgent's multi-agent framework helps you test your conversational agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
 
