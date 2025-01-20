@@ -12,26 +12,19 @@
  [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent)
 </div>
 
-Most conversational agents fail in production due to hallucinations, inconsistent responses, and policy violations all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
+# IntellAgent
 
-**This is where IntellAgent steps in.** IntellAgent's multi-agent framework helps you test your conversational agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
+# IntellAgent
 
-### Key Features
-- 🔬 **Edge-Case Generation**  
- Automatically create thousands of realistic test scenarios tailored to your conversational agent's use cases and requirements
+Conversational Agents promise to revolutionize how businesses engage with customers, but many companies fall short of this potential. Instead of deploying versatile conversational agents that delight users, they face hallucinations, inconsistent responses, and policy violations. These reliability issues force organizations to restrict their conversational agents to basic operations (like read-only access and limited tool integration), eroding trust and damaging reputations.
 
-- 🤖 **User Interaction Simulation**  
- Test your conversational agent against diverse user behaviors and conversation patterns across varying complexity levels
+This is where IntellAgent transforms the landscape. Instead of restricting your conversational agent's capabilities due to uncertainty, IntellAgent empowers you to:
 
-- 📊 **Performance Analytics**  
- Get detailed metrics and insights to identify weaknesses, track improvements, and optimize your conversational agent's performance
-
-- 💪 **Production-Ready Deployment**  
- Deploy with confidence knowing your conversational agent has been thoroughly tested against real-world scenarios
+1. 🔍 **Discover the Unknown**: Automatically generate realistic, diverse edge-case scenarios tailored to your conversational agent
+2. 📊 **Performance Analytics**: Get detailed metrics and insights to identify weaknesses, areas for improvement, and to optimize your conversational agent's performance
+3. ✅ **Deploy with Confidence**: Release reliable conversational agents ready for real-world conversations
 
 Stop hoping your agent will work in production. Know it will. Start building robust conversational agents that your users can trust.
-
-
 > To understand the key concepts and how the IntellAgent system operates, refer to the [system overview guide](https://intellagent-doc.plurai.ai/How_it_Works/how-it-works/)
 
 ## 🔍 Demo
