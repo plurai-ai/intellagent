@@ -9,7 +9,7 @@
  [Documentation](https://intellagent-doc.plurai.ai/) |
  [Quick Start](#fire-quickstart) |
  [Newsletter](https://plurai.substack.com/) |
- [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent)
+ [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent-framework)
 </div>
 
 # IntellAgent
@@ -139,7 +139,7 @@ If you wish to be part of our journey, join our [Discord Community](https://disc
 
 ## Citation
 
-If you have used our code in your research, please cite our [paper](https://plurai.substack.com/p/intellagent-an-open-source-multi):
+If you have used our code in your research, please cite our [paper](https://plurai.substack.com/p/intellagent-a-multi-agent-framework):
 
 ```
 @misc{TODO}
