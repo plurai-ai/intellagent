@@ -1,7 +1,7 @@
 <div align="center">
- <img src="./docs/figures/intellagent_logo.png" alt="IntellAgent Logo" width="200">
+ <img src="./docs/figures/logo.png" alt="IntellAgent Logo" width="600">
  
-  <i>A Multi-Agent Framework to Diagnose your Conversational AI Agent</i>
+ <p><i>A Multi-Agent Framework to Diagnose your Conversational AI Agent</i></p>
 
  [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
  [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
@@ -11,7 +11,6 @@
  [Newsletter](https://plurai.substack.com/) |
  [Paper](https://plurai.substack.com/p/intellagent-an-open-source-multi)
 </div>
-
 Most conversational AI agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
 
 **This is where IntellAgent steps in.** IntellAgent's multi-agent framework helps you test your agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
