@@ -14,8 +14,6 @@
 
 # IntellAgent
 
-# IntellAgent
-
 Conversational Agents promise to revolutionize how businesses engage with customers, but many companies fall short of this potential. Instead of deploying versatile conversational agents that delight users, they face hallucinations, inconsistent responses, and policy violations. These reliability issues force organizations to restrict their conversational agents to basic operations (like read-only access and limited tool integration), eroding trust and damaging reputations.
 
 This is where IntellAgent transforms the landscape. Instead of restricting your conversational agent's capabilities due to uncertainty, IntellAgent empowers you to:
