@@ -22,7 +22,8 @@ This is where IntellAgent transforms the landscape. Instead of restricting your 
 2. 📊 **Performance Analytics**: Get detailed metrics and insights to identify weaknesses, areas for improvement, and to optimize your conversational agent's performance
 3. ✅ **Deploy with Confidence**: Release reliable conversational agents ready for real-world conversations
 
-Stop hoping your agent will work in production. Know it will. Start building robust conversational agents that your users can trust.
+Stop hoping your conversational agent will work in production. Know it will. Start building reliable conversational agents that your users can trust.
+
 > To understand the key concepts and how the IntellAgent system operates, refer to the [system overview guide](https://intellagent-doc.plurai.ai/How_it_Works/how-it-works/)
 
 ## 🔍 Demo
