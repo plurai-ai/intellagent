@@ -1,26 +1,25 @@
 <div align="center">
- <div style="display: inline-block; text-align: left;">
-   <img src="./docs/figures/logo.png" alt="IntellAgent Logo" width="50" align="left" style="margin-right: 10px;">
-   <h1>IntellAgent</h1>
- </div>
- 
- <i>Uncover Your Agent's Blind Spots to Unlock Its Full Potential</i>
+  <div style="display: inline-block; text-align: left;">
+    <img src="./docs/figures/logo.png" alt="IntellAgent Logo" width="100" align="left" style="margin-right: 10px;">
+    <h1>IntellAgent</h1>
+  </div>
+  
+  <i>Uncover Your Agent's Blind Spots to Unlock Its Full Potential</i>
 
- [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
- [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
+  [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
+  [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
 
- [Documentation](https://intellagent-doc.plurai.ai/) |
- [Quick Start](#fire-quickstart) |
- [Newsletter](https://plurai.substack.com/) |
- [Paper](https://plurai.substack.com/p/intellagent-an-open-source-multi)
+  [Documentation](https://intellagent-doc.plurai.ai/) |
+  [Quick Start](#fire-quickstart) |
+  [Newsletter](https://plurai.substack.com/) |
+  [Paper](https://plurai.substack.com/p/intellagent-an-open-source-multi)
 </div>
 
 Most conversational AI agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
 
 **This is where IntellAgent steps in.** IntellAgent's multi-agent framework helps you test your agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
 
-## 🎯 Our Mission
-We Are on a Mission to Make Conversational AI Reliable
+Our mission is to empower developers to make their Conversational AI Agents reliable.
 
 ### Key Features
 - 🔬 **Edge-Case Generation**  
