@@ -69,7 +69,7 @@ openai:
   OPENAI_API_KEY: "your-api-key-here"
 ```
 
-To change the default LLM provider or model for either the IntellAgent system or the chat-agent, you can easily update the configuration file. For instance, modify the `config/config_education.yml` file:
+To change the default LLM provider or model for either the IntellAgent system or the chatbot, you can easily update the configuration file. For instance, modify the `config/config_education.yml` file:
 
 
 ```yaml
