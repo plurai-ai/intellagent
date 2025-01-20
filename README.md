@@ -1,25 +1,21 @@
+<p align="left">
+ <img src="./docs/figures/logo.png" alt="IntellAgent Logo" width="150">
+</p>
+
 <div align="center">
-  <img src="./docs/figures/logo.png" alt="IntellAgent Logo" height="200">
+ <h1>IntellAgent</h1>
+ <i>Uncover Your Agent's Blind Spots to Unlock Its Full Potential</i>
 
-  # IntellAgent: Build Reliable Conversational AI Agents
+ [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
+ [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
 
-  *Uncover Your Agent's Blind Spots to Unlock Its Full Potential*
-
-  [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
-  [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
-
-  [Documentation](https://intellagent-doc.plurai.ai/) |
-  [Quick Start](#fire-quickstart) |
-  [Newsletter](https://plurai.substack.com/) |
-  [Paper](https://plurai.substack.com/p/intellagent-an-open-source-multi)
+ [Documentation](https://intellagent-doc.plurai.ai/) |
+ [Quick Start](#fire-quickstart) |
+ [Newsletter](https://plurai.substack.com/) |
+ [Paper](https://plurai.substack.com/p/intellagent-an-open-source-multi)
 </div>
 
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-
-# IntellAgent: Build Reliable Conversational AI Agents
+# Build Reliable Conversational AI Agents
 
 Most conversational AI agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
 
