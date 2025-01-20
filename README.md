@@ -1,7 +1,7 @@
 <div align="center">
- <img src="./docs/figures/logo.png" alt="IntellAgent Logo" width="600">
+ <img src="./docs/figures/intellagent_logo.png" alt="IntellAgent Logo" width="600">
  
- <p><i>A Multi-Agent Framework to Diagnose your Conversational AI Agent</i></p>
+ <p><i>A Multi-Agent Framework to Diagnose your Conversational Agent</i></p>
 
  [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
  [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
@@ -9,24 +9,24 @@
  [Documentation](https://intellagent-doc.plurai.ai/) |
  [Quick Start](#fire-quickstart) |
  [Newsletter](https://plurai.substack.com/) |
- [Paper](https://plurai.substack.com/p/intellagent-an-open-source-multi)
+ [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent)
 </div>
-Most conversational AI agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
+Most conversational agents fail in production due to hallucinations, inconsistent responses, and policy violations - all stemming from small, manually curated test datasets. Without comprehensive testing, critical weaknesses remain hidden until they impact real users.
 
-**This is where IntellAgent steps in.** IntellAgent's multi-agent framework helps you test your agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
+**This is where IntellAgent steps in.** IntellAgent's multi-agent framework helps you test your conversational agent from every angle, uncover its weaknesses, and provide actionable insights for optimization and confident deployment.
 
 ### Key Features
 - 🔬 **Edge-Case Generation**  
- Automatically create thousands of realistic test scenarios tailored to your agent's use cases and requirements
+ Automatically create thousands of realistic test scenarios tailored to your conversational agent's use cases and requirements
 
 - 🤖 **User Interaction Simulation**  
- Test your agent against diverse user behaviors and conversation patterns across varying complexity levels
+ Test your conversational agent against diverse user behaviors and conversation patterns across varying complexity levels
 
 - 📊 **Performance Analytics**  
- Get detailed metrics and insights to identify weaknesses, track improvements, and optimize your agent's performance
+ Get detailed metrics and insights to identify weaknesses, track improvements, and optimize your conversational agent's performance
 
 - 💪 **Production-Ready Deployment**  
- Deploy with confidence knowing your agent has been thoroughly tested against real-world scenarios
+ Deploy with confidence knowing your conversational agent has been thoroughly tested against real-world scenarios
 
 Stop hoping your agent will work in production. Know it will. Start building robust conversational agents that your users can trust.
 
@@ -128,7 +128,7 @@ This will launch a[ Streamlit dashboard](./README.md#-demo) showing detailed ana
     - [ ] CrewAI
     - [ ] AutoGen
 - [ ] Enable Event Generation from Existing Databases
-- [ ] Implement API Integration for External Chatbot Agents
+- [ ] Implement API Integration for External Conversational Agents
 - [ ] Add Personality Dimensions to User Agents
 - [ ] Optimize Chat-Agent Performance Using Simulator Diagnostics (Available now with [premium](https://plurai.ai/contact-us) access)
     - [ ] System Prompt Optimization
