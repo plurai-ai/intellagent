@@ -1,7 +1,7 @@
 <div align="center">
  <img src="./docs/figures/intellagent_logo.png" alt="IntellAgent Logo" width="200">
  
- <i>Uncover Your Agent's Blind Spots to Unlock Its Full Potential</i>
+  <i>A Multi-Agent Framework to Diagnose your Conversational AI Agent</i>
 
  [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
  [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
