@@ -1,7 +1,7 @@
 <div align="center">
  <img src="./docs/figures/intellagent_logo.png" alt="IntellAgent Logo" width="600">
  
- <p><i>A Multi-Agent Framework to Diagnose your Conversational Agent</i></p>
+ <p><i>Uncover Your Agent's Blind Spots</i></p>
 
  [![Discord](https://img.shields.io/badge/Join-Discord-blue.svg)](https://discord.gg/YWbT87vAau)
  [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/plurai-ai/intellagent/blob/main/LICENSE)
@@ -12,17 +12,23 @@
  [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent-framework)
 </div>
 
-# IntellAgent
+Simulate interactions, analyze performance, and gain actionable insights for conversational agents. Test, evaluate, and optimize your agent to ensure reliable real-world deployment.
 
-Conversational Agents promise to revolutionize how businesses engage with customers, but many companies fall short of this potential. Instead of deploying versatile conversational agents that delight users, they face hallucinations, inconsistent responses, and policy violations. These reliability issues force organizations to restrict their conversational agents to basic operations (like read-only access and limited tool integration), eroding trust and damaging reputations.
+IntellAgent is an advanced multi-agent framework that transforms the evaluation and optimization of conversational agents. By simulating thousands of realistic, challenging interactions, IntellAgent stress-tests agents to uncover hidden failure points. These insights enhance agent performance, reliability, and user experience.
 
-This is where IntellAgent transforms the landscape. Instead of restricting your conversational agent's capabilities due to uncertainty, IntellAgent empowers you to:
+### Key Features
 
-1. 🔍 **Discover the Unknown**: Automatically generate realistic, diverse edge-case scenarios tailored to your conversational agent
-2. 📊 **Performance Analytics**: Get detailed metrics and insights to identify weaknesses, areas for improvement, and to optimize your conversational agent's performance
-3. ✅ **Deploy with Confidence**: Release reliable conversational agents ready for real-world conversations
+- 🔬 **Generate Thousands of Edge-Case Scenarios:**  
+  Automatically generate highly realistic edge-case scenarios tailored specifically to your agent.
 
-Stop hoping your conversational agent will work in production. Know it will. Start building reliable conversational agents that your users can trust.
+- 🤖 **Simulate Diverse User Interactions:**  
+  Evaluate your agent across a wide spectrum of scenarios with varying complexity levels.
+
+- 📊 **Comprehensive Performance Evaluations:**  
+Access detailed analysis to identify performance gaps, prioritize improvements, and compare outcomes across experiments.
+- 💪 **Simple integration:**  
+  Simple integration to your conversational agent.
+
 
 > To understand the key concepts and how the IntellAgent system operates, refer to the [system overview guide](https://intellagent-doc.plurai.ai/How_it_Works/how-it-works/)
 
