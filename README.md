@@ -9,7 +9,7 @@
  [Documentation](https://intellagent-doc.plurai.ai/) |
  [Quick Start](#fire-quickstart) |
  [Newsletter](https://plurai.substack.com/) |
- [Paper](https://plurai.substack.com/p/intellagent-a-multi-agent-framework)
+ [Paper](https://arxiv.org/pdf/2501.11067)
 </div>
 
 Simulate interactions, analyze performance, and gain actionable insights for conversational agents. Test, evaluate, and optimize your agent to ensure reliable real-world deployment.
@@ -145,10 +145,15 @@ If you wish to be part of our journey, join our [Discord Community](https://disc
 
 ## Citation
 
-If you have used our code in your research, please cite our [paper](https://plurai.substack.com/p/intellagent-a-multi-agent-framework):
+If you have used our code in your research, please cite our [paper](https://arxiv.org/pdf/2501.11067):
 
 ```
-@misc{TODO}
+@misc{2501.11067,
+Author = {Elad Levi and Ilan Kadar},
+Title = {IntellAgent: A Multi-Agent Framework for Evaluating Conversational AI Systems},
+Year = {2025},
+Eprint = {arXiv:2501.11067},
+}
 ```
 
 
