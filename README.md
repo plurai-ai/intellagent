@@ -94,10 +94,10 @@ dataset:
 
 > **Tokens Usage**
 > 
-> We invest lots of effort minimizing to minimizing the total cost of running the simulator 
+> We invest lots of effort in minimizing the total cost of running the simulator 
 > - Using the default parameters, the expected cost per sample is approximately $0.10
 > - You can control expenses by modifying the `cost_limit` limit parameter in the config file
-> - We are working on leveraging user data which will reduce significantly the cost per sample
+> - We are working on leveraging user data which will significantly reduce the cost per sample
 
 ####  Step 3 - Run the Simulator
 If you're utilizing Azure OpenAI services for the `llm_intellagent`, ensure you [disable](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/content-filters) the default `jailbreak` filter before running the simulator.
