@@ -29,8 +29,16 @@ Access detailed analysis to identify performance gaps, prioritize improvements, 
 - 💪 **Simple integration:**  
   Simple integration to your conversational agent.
 
-
-> To understand the key concepts and how the IntellAgent system operates, refer to the [system overview guide](https://intellagent-doc.plurai.ai/How_it_Works/how-it-works/)
+## How it works
+![simulator_recording](./docs/figures/overview.gif)
+IntellAgent framework consists of three steps:
+- Given the user prompt (and optional additional information such as tools and database schema)
+  - The system decomposes the prompt into a policy graph.
+  - It samples a subset of policies based on their concurrence in real conversation distributions.
+  - It generates a scenario of user-chatbot interaction (including system databases) to address the selected subset of policies.
+- Simulating the user-chatbot interaction using a user agent.
+- Critiquing the conversation and providing feedback on the tested policies.
+> To better understand the key concepts and how the IntellAgent system operates, refer to the [system overview guide](https://intellagent-doc.plurai.ai/How_it_Works/how-it-works/)
 
 ## 🔍 Demo
 
