@@ -6,7 +6,7 @@ environment:
 
 dataset:
     num_samples: 10
-    cost_limit: 3
+    cost_limit: 3 #In dollars
 
 dialog_manager:
-    cost_limit: 3
+    cost_limit: 3 #In dollars
