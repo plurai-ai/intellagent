@@ -18,6 +18,8 @@ st.set_page_config(page_title="Experiments report", page_icon="../../../docs/plu
 
 
 def _format_arrow(val):
+    if pd.isna(val):
+        return val
     return f"{abs(val):.0f}%" if val == 0 else f"{'↑' if val > 0 else '↓'} {abs(val):.0f}%"
 
 
@@ -36,6 +38,8 @@ def _format_binary(val):
 
 
 def _color_arrow(val):
+    if pd.isna(val):
+        return "color: black"
     return "color: green" if val > 0 else "color: red" if val < 0 else "color: black"
 
 
