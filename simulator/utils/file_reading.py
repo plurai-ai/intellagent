@@ -87,7 +87,7 @@ def override_llm(config, llm_config):
     return config
 
 
-def override_config(override_config_file, config_file='config/config_default.yml'):
+def override_config(override_config_file, config_file):
     """
     Override the default configuration file with the override configuration file
     :param config_file: The default configuration file
