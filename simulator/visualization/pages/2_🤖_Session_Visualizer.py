@@ -69,46 +69,58 @@ def update_thread_list():
 
 
 def on_select_thread():
+    st.write("Starting on_select_thread function")  # Log message to indicate the start of the function
     conn = sqlite3.connect(st.session_state["memory_path"])
     cursor = conn.cursor()
     event_id = st.session_state["selected_event"]
     thread_id = st.session_state["threads"][st.session_state["event_id"].index(event_id)]
 
+    if thread_id is None:
+        st.error("Thread ID is None. Cannot execute the query.")
+        return
+
     st.session_state["chatbot_log"] = "Updated Content for Selected Thread"
 
-    with col2:
-        cursor.execute("SELECT * FROM Dialog WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
-        rows = cursor.fetchall()
-        for i,row in enumerate(rows):
-            if row[1] == 'AI':
-                st.chat_message('AI').write(row[2])
-            else:
-                # Skip the last message if it's a stop signal and not the end message
-                if '###STOP' in row[2] and i < len(rows)-1:
-                    continue
-                st.chat_message('User').write(row[2])
-    with col1:
-        cursor.execute("SELECT * FROM Tools WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
-        rows = cursor.fetchall()
-        for row in rows:
-            logger_chat.log_message(f"- Invoke function: {row[1]}", 'debug')
-            logger_chat.log_message(f"+ Args: {row[2]}", 'info')
-            if 'Error:' in row[3]:
-                logger_chat.log_message(f'Response:<br>{row[3]}<br>----------<br>', 'error')
-            else:
-                logger_chat.log_message(f'Response:<br>{row[3]}<br>----------<br>', 'warning')
-        mk = logger_chat.get_markdown()
-        st.markdown(mk, unsafe_allow_html=True)
+    try:
+        with col2:
+            cursor.execute("SELECT * FROM Dialog WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
+            rows = cursor.fetchall()
+            for i,row in enumerate(rows):
+                if row[1] == 'AI':
+                    st.chat_message('AI').write(row[2])
+                else:
+                    # Skip the last message if it's a stop signal and not the end message
+                    if '###STOP' in row[2] and i < len(rows)-1:
+                        continue
+                    st.chat_message('User').write(row[2])
+        with col1:
+            cursor.execute("SELECT * FROM Tools WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
+            rows = cursor.fetchall()
+            for row in rows:
+                logger_chat.log_message(f"- Invoke function: {row[1]}", 'debug')
+                logger_chat.log_message(f"+ Args: {row[2]}", 'info')
+                if 'Error:' in row[3]:
+                    logger_chat.log_message(f'Response:<br>{row[3]}<br>----------<br>', 'error')
+                else:
+                    logger_chat.log_message(f'Response:<br>{row[3]}<br>----------<br>', 'warning')
+            mk = logger_chat.get_markdown()
+            st.markdown(mk, unsafe_allow_html=True)
 
-    with col3:
-        cursor.execute("SELECT * FROM Thoughts WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[1] == '':
-                continue
-            logger_user.log_message(row[1] + '<br>', 'info')
-        mk = logger_user.get_markdown()
-        st.markdown(mk, unsafe_allow_html=True)
+        with col3:
+            cursor.execute("SELECT * FROM Thoughts WHERE thread_id = ? ORDER BY time ASC", (thread_id,))
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[1] == '':
+                    continue
+                logger_user.log_message(row[1] + '<br>', 'info')
+            mk = logger_user.get_markdown()
+            st.markdown(mk, unsafe_allow_html=True)
+    except sqlite3.Error as e:
+        st.error(f"An error occurred while executing the query: {e}")
+    finally:
+        conn.close()
+
+    st.write("Finished on_select_thread function")  # Log message to indicate the end of the function
 
 st.set_page_config(page_title="Session vizualization", page_icon="./docs/plurai_icon.png", layout="wide")
 
