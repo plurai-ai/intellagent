@@ -69,7 +69,6 @@ def update_thread_list():
 
 
 def on_select_thread():
-    st.write("Starting on_select_thread function")  # Log message to indicate the start of the function
     conn = sqlite3.connect(st.session_state["memory_path"])
     cursor = conn.cursor()
     event_id = st.session_state["selected_event"]
@@ -119,8 +118,6 @@ def on_select_thread():
         st.error(f"An error occurred while executing the query: {e}")
     finally:
         conn.close()
-
-    st.write("Finished on_select_thread function")  # Log message to indicate the end of the function
 
 st.set_page_config(page_title="Session vizualization", page_icon="./docs/plurai_icon.png", layout="wide")
 
