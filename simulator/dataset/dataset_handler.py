@@ -65,7 +65,7 @@ class Dataset:
             events, events_cost = self.event_generator.symbolics_to_events(event_symbols)
         else:  # No database!
             events = [Event(description=description,
-                            database={}, scenario=descriptions[0].event_description) for description in descriptions]
+                            database={}, scenario=description.event_description) for description in descriptions]
             events_cost, symbols_cost, events_constraints_cost = 0, 0, 0
 
         minibatch_cost = description_cost + symbols_cost + events_constraints_cost + events_cost
