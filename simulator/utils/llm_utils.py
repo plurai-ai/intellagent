@@ -267,6 +267,12 @@ def get_llm(config: dict, timeout=60):
                              anthropic_api_key=LLM_ENV['anthropic']['ANTHROPIC_KEY'],
                              model_kwargs=model_kwargs, timeout=timeout)
 
+    elif config['type'].lower() == 'nvidia':
+        from langchain_nvidia_ai_endpoints import ChatNVIDIA
+        return ChatNVIDIA(temperature=temperature, model=config['name'],
+                             api_key=LLM_ENV['nvidia']['NVIDIA_API_KEY'],
+                             model_kwargs=model_kwargs, timeout=timeout)
+
     elif config['type'].lower() == 'huggingfacepipeline':
         device = config.get('gpu_device', -1)
         device_map = config.get('device_map', None)

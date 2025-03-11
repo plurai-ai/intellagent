@@ -17,3 +17,6 @@ anthropic_vertex: # gcloud auth application-default login
 
 anthropic:
   ANTHROPIC_KEY : ''
+
+nvidia:
+  NVIDIA_API_KEY: ''
