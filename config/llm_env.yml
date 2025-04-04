@@ -17,3 +17,8 @@ anthropic_vertex: # gcloud auth application-default login
 
 anthropic:
   ANTHROPIC_KEY : ''
+
+oracle:
+  SERVICE_ENDPOINT: ''
+  COMPARTMENT_ID: ''
+

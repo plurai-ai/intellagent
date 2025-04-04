@@ -160,6 +160,21 @@ def convert_to_anthropic_tools(
                                   'input_schema': oai_formatted["parameters"]})
     return result_schema
 
+def convert_to_oci_schema(tools_schema: list[dict]) -> list[dict]:
+    res_schema = []
+    for tool in tools_schema:
+        tool = tool['function']
+        parameters = {}
+        for i, p in tool['parameters']['properties'].items():
+            parameters[i] = p
+            if i not in tool['parameters']['required']:
+                parameters[i]['default'] = ''
+            parameters[i]['is_required'] = i in tool['parameters']['required']
+        res_schema.append({'title': tool['name'], 'description': tool['description'], 'properties': parameters})
+    return res_schema
+
+
+
 
 class DummyCallback:
     """
@@ -253,6 +268,16 @@ def get_llm(config: dict, timeout=60):
         return ChatGoogleGenerativeAI(temperature=temperature, model=config['name'],
                                       google_api_key=LLM_ENV['google']['GOOGLE_API_KEY'],
                                       model_kwargs=model_kwargs, timeout=timeout)
+    elif config['type'].lower() == 'oracle':
+        from langchain_community.chat_models.oci_generative_ai import ChatOCIGenAI
+        if not "max_tokens" in model_kwargs:
+            model_kwargs['max_tokens'] = 4000
+        return ChatOCIGenAI(
+            model_id=config['name'],
+            service_endpoint=LLM_ENV['oracle']['SERVICE_ENDPOINT'],
+            compartment_id=LLM_ENV['oracle']['COMPARTMENT_ID'],
+            model_kwargs=model_kwargs,
+        )
 
     elif config['type'].lower() == 'anthropic_vertex':
         from langchain_google_vertexai.model_garden import ChatAnthropicVertex
