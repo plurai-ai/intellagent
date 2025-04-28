@@ -6,7 +6,7 @@ from langchain.tools import StructuredTool
 class Think():
     @staticmethod
     def invoke(data: Dict[str, Any], thought: str) -> str:
-        return ""
+        return thought
 
     @staticmethod
     def get_info() -> Dict[str, Any]:

@@ -8,7 +8,7 @@ class Think():
     @staticmethod
     def invoke(data: Dict[str, Any], thought: str) -> str:
         # This method does not change the state of the data; it simply returns an empty string.
-        return ""
+        return thought
 
     @staticmethod
     def get_info() -> Dict[str, Any]:
