@@ -5,8 +5,8 @@ environment:
     database_validators: ''
     task_description:  # If you don't want to infer you can simply provide it in the field 'content'
         llm:
-            type: 'openai'
-            name: 'gpt-4o'
+            type: 'nvidia'
+            name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
         extraction_prompt:
             prompt_hub_name: 'eladlev/task_extraction'
 
@@ -38,17 +38,17 @@ description_generator:
         num_workers: 3
         timeout: 20 # in seconds
     llm_policy:
-        type: 'openai'
-        name: 'gpt-4o'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_edge:
-        type: 'openai'
-        name: 'gpt-4o-mini'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_description:
-        type: 'openai'
-        name: 'gpt-4o'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_refinement:
-        type: 'openai'
-        name: 'gpt-4o'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
 
 event_generator:
     symbolic_enrichment_config:
@@ -63,8 +63,8 @@ event_generator:
         timeout: 40 # in seconds
     event_graph:
         llm:
-            type: 'openai'
-            name: 'gpt-4o'
+            type: 'nvidia'
+            name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
         prompt_restrictions:
             prompt_hub_name: 'eladlev/filter_restrictions'
         prompt_final_res:
@@ -84,14 +84,14 @@ dialog_manager:
         prompt:
             prompt_hub_name: 'eladlev/end_critique'
         llm:
-            type: 'openai'
-            name: 'gpt-4o'
+            type: 'nvidia'
+            name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_user:
-        type: 'openai'
-        name: 'gpt-4o'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_chat:
-        type: 'openai'
-        name: 'gpt-4o'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     num_workers: 5
     timeout: 200 # in seconds
     mini_batch_size: 10
@@ -102,8 +102,8 @@ analysis:
     prompt:
         prompt_hub_name: 'eladlev/analysis_info'
     llm:
-        type: 'openai'
-        name: 'gpt-4o'
+        type: 'nvidia'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     num_workers: 3
     timeout: 20 # in seconds
 
