@@ -6,7 +6,7 @@ environment:
     task_description:  # If you don't want to infer you can simply provide it in the field 'content'
         llm:
             type: 'nvidia'
-            name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+            name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
         extraction_prompt:
             prompt_hub_name: 'eladlev/task_extraction'
 
@@ -39,16 +39,16 @@ description_generator:
         timeout: 20 # in seconds
     llm_policy:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_edge:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_description:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_refinement:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
 
 event_generator:
     symbolic_enrichment_config:
@@ -64,7 +64,7 @@ event_generator:
     event_graph:
         llm:
             type: 'nvidia'
-            name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+            name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
         prompt_restrictions:
             prompt_hub_name: 'eladlev/filter_restrictions'
         prompt_final_res:
@@ -85,13 +85,13 @@ dialog_manager:
             prompt_hub_name: 'eladlev/end_critique'
         llm:
             type: 'nvidia'
-            name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+            name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_user:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     llm_chat:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     num_workers: 5
     timeout: 200 # in seconds
     mini_batch_size: 10
@@ -103,7 +103,7 @@ analysis:
         prompt_hub_name: 'eladlev/analysis_info'
     llm:
         type: 'nvidia'
-        name: 'nvidia/llama-3.3-nemotron-super-49b-v1'
+        name: 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
     num_workers: 3
     timeout: 20 # in seconds
 
