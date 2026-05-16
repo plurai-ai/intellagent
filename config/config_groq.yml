@@ -1,0 +1,71 @@
+# Groq provider example — runs the education scenario using fast open-weight models hosted by Groq.
+#
+# User flow:
+#   1. Get a Groq API key: https://console.groq.com/keys
+#   2. Set GROQ_API_KEY in config/llm_env.yml (or pass api_key on each llm block below)
+#   3. pip install langchain-groq
+#   4. python run.py --output_path results/groq_education \
+#                    --config_path ./config/config_groq.yml
+#
+# The model must support native tool-calling.
+# Tool-capable models (see https://console.groq.com/docs/models for the current list):
+#   llama-3.3-70b-versatile, llama-3.1-70b-versatile, mixtral-8x7b-32768
+# Smaller/older models (e.g. llama-3.1-8b-instant) may not support tool-calling reliably.
+#
+# Note on rate limits: Groq's free tier has aggressive per-minute caps. For full simulation
+# runs, either keep num_workers low or upgrade to a paid plan.
+
+environment:
+  prompt_path: 'examples/education/input/wiki.md'
+  tools_file: ''
+  database_folder: ''
+  database_validators: ''
+
+# llm_intellagent overrides all framework LLMs (user sim, critique, policy extractor, etc.)
+llm_intellagent:
+  type: 'groq'
+  name: 'llama-3.3-70b-versatile'
+
+# llm_chat overrides the chatbot being evaluated
+llm_chat:
+  type: 'groq'
+  name: 'llama-3.3-70b-versatile'
+
+# Groq's free-tier rate limits favor modest concurrency
+description_generator:
+  policies_config:
+    num_workers: 2
+    timeout: 60
+  edge_config:
+    num_workers: 2
+    timeout: 60
+  description_config:
+    num_workers: 2
+    timeout: 60
+  refinement_config:
+    num_workers: 2
+    timeout: 60
+
+event_generator:
+  symbolic_enrichment_config:
+    num_workers: 2
+    timeout: 60
+  symbolic_constraints_config:
+    num_workers: 2
+    timeout: 60
+  event_graph:
+    num_workers: 2
+    timeout: 120
+
+dialog_manager:
+  num_workers: 2
+  timeout: 600
+  cost_limit: 999
+
+analysis:
+  num_workers: 2
+  timeout: 60
+
+dataset:
+  num_samples: 5
+  cost_limit: 999
