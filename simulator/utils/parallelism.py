@@ -36,6 +36,7 @@ def batch_invoke(llm_function, inputs: list[Any], num_workers: int, callbacks: l
                 error = 'Error while running: ' + str(e)
                 track_event(ExceptionEvent(exception_type=type(e).__name__,
                                    error_message=error))
+            accumulate_usage = 0
             for cb in CB:
                 accumulate_usage = cb.total_cost
         pbar.update(1)  # Update the progress bar
@@ -78,6 +79,7 @@ async def batch_ainvoke(llm_async_function, inputs: list[Any], num_workers: int,
                 error = 'Error while running: ' + str(e)
                 track_event(ExceptionEvent(exception_type=type(e).__name__,
                                    error_message=error))
+            accumulate_usage = 0
             for cb in CB:
                 accumulate_usage = cb.total_cost
         return {'index': i, 'result': result, 'usage': accumulate_usage, 'error': error}
@@ -95,7 +97,7 @@ async def batch_ainvoke(llm_async_function, inputs: list[Any], num_workers: int,
                 track_event(ExceptionEvent(exception_type=type(e).__name__,
                                    error_message=error_message))
                 return {'index': func_input[0], 'result': None, 'usage': 0,
-                        'error': 'error_message'}  # Return None or any appropriate value for a failed task
+                        'error': error_message}  # Return None or any appropriate value for a failed task
 
     # Create tasks
     tasks = [task_runner(func_input) for func_input in sample_generator()]
