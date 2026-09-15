@@ -25,3 +25,6 @@ oracle:
 ollama:
   HOST: 'http://localhost:11434'  # Change only if running Ollama on a remote machine
 
+groq:
+  GROQ_API_KEY: ''  # Get a key at https://console.groq.com/keys
+

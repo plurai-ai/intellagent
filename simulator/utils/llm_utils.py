@@ -315,5 +315,18 @@ def get_llm(config: dict, timeout=60):
                 LLM_ENV.get('ollama', {}).get('HOST', 'http://localhost:11434'),
             ),
         )
+    elif config['type'].lower() == 'groq':
+        from langchain_groq import ChatGroq
+        # Groq offers fast inference on open-weight models (Llama, Mixtral, Gemma).
+        # Get an API key at https://console.groq.com/keys and set GROQ_API_KEY in llm_env.yml.
+        # See https://console.groq.com/docs/models for the current model list and tool-calling support.
+        return ChatGroq(
+            model=config['name'],
+            temperature=temperature,
+            api_key=config.get(
+                'api_key',
+                LLM_ENV.get('groq', {}).get('GROQ_API_KEY', ''),
+            ),
+        )
     else:
         raise NotImplementedError("LLM not implemented")
