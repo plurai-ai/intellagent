@@ -4,7 +4,7 @@ import json
 from copy import deepcopy
 from typing import Any, Dict, List
 from langchain.tools import StructuredTool
-from util import get_dict_json
+from util import get_dict_json, update_df
 import pandas as pd
 class BookReservation():
     @staticmethod
@@ -111,7 +111,7 @@ class BookReservation():
             data['reservations'].loc[len(reservations)] = reservation
         reservations[reservation_id] = reservation
         user["reservations"].append(reservation_id)
-        data['users'].loc[data['users']['user_id'] == user['user_id'], 'reservations'] = str(user["reservations"])
+        update_df(data['users'], user, 'user_id')
         return json.dumps(reservation)
 
     @staticmethod

@@ -92,6 +92,7 @@ class ModifyPendingOrderPayment():
             except:
                 pass
         update_df(data['orders'], order, 'order_id')
+        update_df(data['users'], user, 'user_id')
         return json.dumps(order)
 
     @staticmethod
