@@ -121,8 +121,9 @@ class SqliteSaver:
 
     def read_dialog(self, thread_id: str):
         try:
-            self.cursor.execute("SELECT thread_id, role, message FROM Dialog WHERE thread_id = ?", (thread_id,))
-            rows = self.cursor.fetchall()
+            with self.lock:
+                self.cursor.execute("SELECT thread_id, role, message FROM Dialog WHERE thread_id = ?", (thread_id,))
+                rows = self.cursor.fetchall()
             return rows if rows else None  # Return None if no rows are found
         except sqlite3.Error as e:
             print(f"An error occurred while reading from Dialog: {e}")
@@ -132,8 +133,9 @@ class SqliteSaver:
 
     def read_thought(self, thread_id: str):
         try:
-            self.cursor.execute("SELECT thread_id, message FROM Thoughts WHERE thread_id = ?", (thread_id,))
-            rows = self.cursor.fetchall()
+            with self.lock:
+                self.cursor.execute("SELECT thread_id, message FROM Thoughts WHERE thread_id = ?", (thread_id,))
+                rows = self.cursor.fetchall()
             return rows if rows else None  # Return None if no rows are found
         except sqlite3.Error as e:
             print(f"An error occurred while reading from Thoughts: {e}")
@@ -143,8 +145,9 @@ class SqliteSaver:
 
     def read_tool(self, thread_id: str):
         try:
-            self.cursor.execute("SELECT * FROM Tools WHERE thread_id = ?", (thread_id,))
-            rows = self.cursor.fetchall()
+            with self.lock:
+                self.cursor.execute("SELECT * FROM Tools WHERE thread_id = ?", (thread_id,))
+                rows = self.cursor.fetchall()
             return rows if rows else None  # Return None if no rows are found
         except sqlite3.Error as e:
             print(f"An error occurred while reading from Tools: {e}")
