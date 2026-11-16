@@ -1,4 +1,7 @@
 import os
+from pathlib import Path
+
+import pytest
 from textwrap import dedent
 
 import yaml
@@ -185,16 +188,38 @@ def test_override_config_deep_merges_yaml_and_applies_llm_overrides(tmp_path):
     assert result["dialog_manager"]["llm_chat"]["name"] == "chat-override"
 
 
-def test_get_last_created_directory_returns_newest_directory(tmp_path):
-    """When multiple directories exist, then the newest created directory is returned."""
+def _set_directory_ctimes(monkeypatch, timestamps):
+    """Keep real filesystem metadata, but make the ordering under test explicit."""
+    real_stat = Path.stat
+
+    def stat_with_ctime(path, *args, **kwargs):
+        result = real_stat(path, *args, **kwargs)
+        if path in timestamps:
+            fields = list(result)
+            fields[9] = timestamps[path]  # st_ctime, not the settable st_mtime
+            return os.stat_result(fields)
+        return result
+
+    monkeypatch.setattr(Path, "stat", stat_with_ctime)
+
+
+@pytest.mark.parametrize("newest_name", ["older", "newer"])
+def test_get_last_created_directory_returns_newest_directory(tmp_path, monkeypatch, newest_name):
+    """The largest st_ctime wins, independently of names and creation order."""
     older_dir = tmp_path / "older"
     newer_dir = tmp_path / "newer"
     older_dir.mkdir()
     newer_dir.mkdir()
 
+    newest_dir = tmp_path / newest_name
+    _set_directory_ctimes(monkeypatch, {
+        older_dir: 20 if newest_dir == older_dir else 10,
+        newer_dir: 20 if newest_dir == newer_dir else 10,
+    })
+
     result = get_last_created_directory(tmp_path)
 
-    assert result == newer_dir
+    assert result == newest_dir
 
 
 def test_get_last_created_directory_returns_none_for_missing_path(tmp_path):
@@ -206,8 +231,9 @@ def test_get_last_created_directory_returns_none_for_missing_path(tmp_path):
     assert result is None
 
 
-def test_get_last_db_returns_latest_memory_db_path(tmp_path):
-    """When a results tree has multiple experiments, then the latest memory database path is returned."""
+@pytest.mark.parametrize("newest_name", ["older", "newer"])
+def test_get_last_db_returns_latest_memory_db_path(tmp_path, monkeypatch, newest_name):
+    """Select the database below the results directory with the largest st_ctime."""
     results_dir = tmp_path / "results"
     older_exp = results_dir / "older" / "experiments" / "run-a"
     newer_exp = results_dir / "newer" / "experiments" / "run-b"
@@ -216,9 +242,15 @@ def test_get_last_db_returns_latest_memory_db_path(tmp_path):
     (older_exp / "memory.db").write_text("old")
     (newer_exp / "memory.db").write_text("new")
 
+    newest_exp = older_exp if newest_name == "older" else newer_exp
+    _set_directory_ctimes(monkeypatch, {
+        results_dir / "older": 20 if newest_name == "older" else 10,
+        results_dir / "newer": 20 if newest_name == "newer" else 10,
+    })
+
     result = get_last_db(str(results_dir))
 
-    assert result == str(newer_exp / "memory.db")
+    assert result == str(newest_exp / "memory.db")
 
 
 def test_get_last_db_returns_none_when_memory_db_is_missing(tmp_path):
